@@ -1,18 +1,34 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MonopHelper.Services;
+using Index = MonopHelper.Pages.InGame.Index;
 
 namespace MonopHelper.Pages;
 
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
+    private readonly GameService _gameManager;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public IndexModel(ILogger<IndexModel> logger, GameService gameManager)
     {
         _logger = logger;
+        _gameManager = gameManager;
     }
 
-    public void OnGet()
+    [BindProperty]
+    [DisplayName("Name")]
+    [Required(ErrorMessage = "Please give this game a name for reference.")]
+    [MaxLength(50, ErrorMessage = "The name cannot be longer than 50 characters.")]
+    public string GameName { get; set; }
+    
+    public async Task<IActionResult> OnPost()
     {
+        if (!ModelState.IsValid) return Page();
+        
+        var gameId = await _gameManager.CreateGame(GameName);
+        return RedirectToPage($"/InGame/{nameof(Index)}", new {id = gameId});
     }
 }

@@ -1,0 +1,16 @@
+@page
+@model MonopHelper.Pages.InGame.NotFound
+
+@{
+    ViewData["Title"] = "No Game Found";
+}
+
+<h1>@ViewData["Title"]</h1>
+<br/>
+<button class="btn btn-primary" onclick="Redirect()">Create New Game</button>
+
+<script>
+    function Redirect(){
+        location.assign("/");
+    }
+</script>
