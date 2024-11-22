@@ -262,10 +262,10 @@ namespace MonopHelper.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DiceOne")
+                    b.Property<byte>("DiceOne")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DiceTwo")
+                    b.Property<byte>("DiceTwo")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("GameId")

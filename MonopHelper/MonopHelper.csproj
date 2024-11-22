@@ -22,7 +22,7 @@
 
     <ItemGroup>
       <Folder Include="Models\ViewModels\" />
-      <Folder Include="Services\" />
+      <Folder Include="Services\InGame\" />
     </ItemGroup>
 
 </Project>

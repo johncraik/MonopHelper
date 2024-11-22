@@ -1,0 +1,6 @@
+@page "{id}"
+@model MonopHelper.Pages.InGame.Index
+
+@{
+    ViewData["Title"] = @Model.CurrentGame?.GameName ?? "Unknown";
+}
