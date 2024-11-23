@@ -23,6 +23,6 @@ public class Loan
     public int Pass(int numPasses)
     {
         var percent = (int)Math.Round(Amount * (0.05*numPasses), 0);
-        return ((int)Math.Round(percent / 10d)) * 10;
+        return ((int)Math.Ceiling(percent / 10d)) * 10;
     }
 }

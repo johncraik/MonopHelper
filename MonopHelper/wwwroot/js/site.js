@@ -1,9 +1,4 @@
-﻿function ShowAddPlayer(){
-    let addPlayers = document.getElementById("AddPlayers");
-    addPlayers.hidden = false;
-}
-
-function AddPlayer(){
+﻿function AddPlayer(){
     let player = EnsurePlayers();
     
     let playerDisplay = document.getElementById("GamePlayers");
@@ -17,9 +12,6 @@ function AddPlayer(){
                 eval(scripts[i].innerHTML);
             }
         }
-
-        let addPlayers = document.getElementById("AddPlayers");
-        addPlayers.hidden = true;
     });
 }
 

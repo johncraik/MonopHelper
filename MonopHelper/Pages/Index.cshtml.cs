@@ -22,7 +22,7 @@ public class IndexModel : PageModel
     public NewGamePlayers NoPlayers { get; set; }
     
     [BindProperty]
-    [DisplayName("Name")]
+    [DisplayName("Game Name")]
     [Required(ErrorMessage = "Please give this game a name for reference.")]
     [MaxLength(50, ErrorMessage = "The name cannot be longer than 50 characters.")]
     public string GameName { get; set; }

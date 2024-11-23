@@ -24,13 +24,13 @@ public class GameController : Controller
     public IActionResult NewGamePlayersPartial(string players)
     {
         var model = new NewGamePlayers(players);
-        return PartialView("CreateGame/_NewGamePlayers", model);
+        return PartialView("InGame/_NewGamePlayers", model);
     }
 
     public async Task<IActionResult> LoadGamesPartial()
     {
         var model = await _gameManager.FetchGames();
-        return PartialView("CreateGame/_LoadGames", model);
+        return PartialView("InGame/_LoadGames", model);
     }
 
     [HttpPost]

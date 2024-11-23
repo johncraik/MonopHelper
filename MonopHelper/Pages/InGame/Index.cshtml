@@ -52,7 +52,7 @@
                         @{
                             if (p.Properties.Count == 0)
                             {
-                                <p>No properties handed in to free parking</p>
+                                <p>No properties have been handed in to free parking.</p>
                             }
 
                             foreach (var prop in p.Properties)
@@ -64,7 +64,7 @@
                     <div class="mb divider">
                         <div class="mb">
                             <h4 style="display: inline-block" class="mr">Loans</h4>
-                            <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;">New Loan</button>
+                            <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;" onclick="location.assign('/InGame/NewLoan/@(p.Player.Id)')">New Loan</button>
                         </div>
                         @{
                             if (p.Loans.Count == 0)
@@ -79,7 +79,9 @@
                                         <th>Loan Amount</th>
                                         <th>Repaid Amount</th>
                                         <th>Outstanding</th>
-                                        <th></th>
+                                        <th>
+                                            <button class="btn rounded-pill btn-sm btn-warning" onclick="location.assign('/InGame/RepayLoan/@(p.Player.Id)?all=true')">Repay All</button>
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -98,7 +100,7 @@
                                                         }
                                                         else
                                                         {
-                                                            <button class="btn btn-sm btn-success">Repay</button>
+                                                            <button class="btn btn-sm btn-success" onclick="location.assign('/InGame/RepayLoan/@(loan.Id)?all=false')">Repay</button>
                                                         }
                                                     }
                                                 </td>

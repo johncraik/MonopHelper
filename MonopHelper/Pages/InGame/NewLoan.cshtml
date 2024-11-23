@@ -1,0 +1,24 @@
+@page "{id}"
+@model MonopHelper.Pages.InGame.NewLoan
+
+@{
+    ViewData["Title"] = $"{Model.Player?.PlayerName} | New Loan";
+}
+
+<div class="card">
+    <div class="card-header text-white bg-danger">
+        @ViewData["Title"]
+    </div>
+    <div class="card-body bg-light">
+        <button class="btn btn-sm btn-primary rounded-pill px-4 mb-4" onclick="location.assign('/InGame/' + @Model.Player?.GameId)">Go Back</button>
+        <form method="post">
+            <label asp-for="Loan.Amount"></label>
+            <input asp-for="Loan.Amount" class="form-control" type="number"/>
+            <span class="text-danger mb" asp-validation-for="Loan.Amount"></span><br/>
+
+            <input type="hidden" asp-for="Loan.PlayerId" value="@Model.Player?.Id"/>
+            <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+            <input type="submit" class="btn btn-warning mt mb" value="Take out Loan"/>
+        </form>
+    </div>
+</div>

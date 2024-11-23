@@ -1,0 +1,116 @@
+@page "{id}"
+@model MonopHelper.Pages.InGame.RepayLoan
+
+@{
+    ViewData["Title"] = $"{Model.Player?.PlayerName} | Repay Loan";
+    
+    //Set amounts:
+    var amount = Model.Loan?.Amount;
+    var repaid = Model.Loan?.RepaidAmount;
+    var outstanding = Model.Loan?.Outstanding();
+    var p5 = Model.Loan?.Pass(1);
+    var p10 = Model.Loan?.Pass(2);
+    var p15 = Model.Loan?.Pass(3);
+
+    if (Model.RepayAll)
+    {
+        amount = Model.AllLoans.Sum(l => l.Amount);
+        repaid = Model.AllLoans.Sum(l => l.RepaidAmount);
+        outstanding = Model.AllLoans.Sum(l => l.Outstanding());
+        p5 = Model.AllLoans.Sum(l => l.Pass(1));
+        p10 = Model.AllLoans.Sum(l => l.Pass(2));
+        p15 = Model.AllLoans.Sum(l => l.Pass(3));
+    }
+}
+
+<div class="card">
+    <div class="card-header text-white bg-danger">
+        @ViewData["Title"]
+    </div>
+    <div class="card-body bg-light">
+        <button class="btn btn-sm btn-primary rounded-pill px-4 mb-4" onclick="location.assign('/InGame/' + @Model.Player?.GameId)">Go Back</button>
+    
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="mb divider">
+                    <p><b>Loan Information</b></p>
+                    <table class="table table-hover table-sm table-striped">
+                        <tr>
+                            <td>@(Model.RepayAll ? "Total" : "") Loan Amount: </td>
+                            <td>@amount</td>
+                        </tr>
+                        <tr>
+                            <td>Amount Repaid: </td>
+                            <td>@repaid</td>
+                        </tr>
+                        <tr>
+                            <td>Outstanding: </td>
+                            <td>@outstanding</td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td>
+                        </tr>
+                        <tr>
+                            <td>One pass (5%) repayment: </td>
+                            <td>@p5</td>
+                        </tr>
+                        <tr>
+                            <td>Two passes (10%) repayment: </td>
+                            <td>@p10</td>
+                        </tr>
+                        <tr>
+                            <td>Three passes (15%) repayment: </td>
+                            <td>@p15</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-sm-6">
+                <div class="mb divider">
+                    <p><b>Repayment Options</b></p>
+                    <form method="post" asp-page-handler="OnePass">
+                        <label>One Pass (5%):</label><br/>
+                        <input type="hidden" asp-for="RepayAmount" value="@p5"/>
+                        <input type="hidden" asp-for="LoanId" value="@Model.Loan?.Id"/>
+                        <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+                        <input type="hidden" asp-for="PlayerId" value="@Model.Player?.Id"/>
+                        <input type="hidden" asp-for="RepayAll"/>
+                        <input type="submit" class="btn btn-sm btn-warning mt" value="Repay 5%"/>
+                    </form>
+                    <br/>
+                    <form method="post" asp-page-handler="TwoPass">
+                        <label>Two Passes (10%):</label><br/>
+                        <input type="hidden" asp-for="RepayAmount" value="@p10"/>
+                        <input type="hidden" asp-for="LoanId" value="@Model.Loan?.Id"/>
+                        <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+                        <input type="hidden" asp-for="PlayerId" value="@Model.Player?.Id"/>
+                        <input type="hidden" asp-for="RepayAll"/>
+                        <input type="submit" class="btn btn-sm btn-warning mt" value="Repay 10%"/>
+                    </form>
+                    <br/>
+                    <form method="post" asp-page-handler="ThreePass">
+                        <label>Three Passes (15%):</label><br/>
+                        <input type="hidden" asp-for="RepayAmount" value="@p15"/>
+                        <input type="hidden" asp-for="LoanId" value="@Model.Loan?.Id"/>
+                        <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+                        <input type="hidden" asp-for="PlayerId" value="@Model.Player?.Id"/>
+                        <input type="hidden" asp-for="RepayAll"/>
+                        <input type="submit" class="btn btn-sm btn-warning mt" value="Repay 15%"/>
+                    </form>
+                    <br/>
+                    <form method="post" asp-page-handler="Custom">
+                        <label>Custom Amount:</label><br/>
+                        <input type="number" class="form-control" asp-for="RepayAmount"/>
+                        <input type="hidden" asp-for="LoanId" value="@Model.Loan?.Id"/>
+                        <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+                        <input type="hidden" asp-for="PlayerId" value="@Model.Player?.Id"/>
+                        <input type="hidden" asp-for="RepayAll"/>
+                        <input type="submit" class="btn btn-sm btn-warning mt" value="Repay Custom"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
