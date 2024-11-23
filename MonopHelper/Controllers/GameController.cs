@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Models.ViewModels;
 using MonopHelper.Services;
+using MonopHelper.Services.InGame;
 
 namespace MonopHelper.Controllers;
 
 public class GameController : Controller
 {
     private readonly GameService _gameManager;
+    private readonly PlayerService _playerService;
 
-    public GameController(GameService gameManager)
+    public GameController(GameService gameManager, PlayerService playerService)
     {
         _gameManager = gameManager;
+        _playerService = playerService;
     }
     
     public IActionResult Index()
@@ -28,5 +31,11 @@ public class GameController : Controller
     {
         var model = await _gameManager.FetchGames();
         return PartialView("CreateGame/_LoadGames", model);
+    }
+
+    [HttpPost]
+    public async Task<int> LeaveJail(int id)
+    {
+        return await _playerService.LeaveJail(id);
     }
 }

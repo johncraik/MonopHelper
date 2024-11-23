@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
 using MonopHelper.Models;
 using MonopHelper.Models.ViewModels;
+using MonopHelper.Services.InGame;
 
 namespace MonopHelper.Services;
 
@@ -9,11 +10,16 @@ public class GameService
 {
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _config;
+    private readonly PropertyService _propertyService;
+    private readonly LoanService _loanService;
 
-    public GameService(ApplicationDbContext context, IConfiguration config)
+    public GameService(ApplicationDbContext context, IConfiguration config, PropertyService propertyService,
+        LoanService loanService)
     {
         _context = context;
         _config = config;
+        _propertyService = propertyService;
+        _loanService = loanService;
     }
 
     public async Task<int> CreateGame(string name)
@@ -85,12 +91,8 @@ public class GameService
         var inGamePlayers = new List<InGamePlayer>();
         foreach (var p in players)
         {
-            var properties = await _context.PlayerToProperties.Include(pp => pp.Property)
-                .Where(pp => pp.PlayerId == p.Id).Select(pp => pp.Property)
-                .OrderBy(prop => prop.Colour).ToListAsync();
-            var loans = await _context.PlayerToLoans.Include(pl => pl.Loan)
-                .Where(pl => pl.PlayerId == p.Id).Select(pl => pl.Loan)
-                .OrderBy(l => l.Repaid).ToListAsync();
+            var properties = await _propertyService.GetPlayerProperties(p.Id);
+            var loans = await _loanService.GetPlayerLoans(p.Id);
             
             inGamePlayers.Add(new InGamePlayer
             {

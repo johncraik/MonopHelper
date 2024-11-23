@@ -1,11 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
+using MonopHelper.Models;
 using MonopHelper.Services;
+using MonopHelper.Services.InGame;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<GameService>();
+builder.Services.AddTransient<PlayerService>();
+builder.Services.AddTransient<PropertyService>();
+builder.Services.AddTransient<LoanService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

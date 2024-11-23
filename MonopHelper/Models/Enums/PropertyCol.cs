@@ -13,3 +13,15 @@ public enum PropertyCol
     Station,
     Utility
 }
+
+public static class PropCol
+{
+    public static string GetPropertyString(PropertyCol col)
+    {
+        return col switch
+        {
+            PropertyCol.DarkBlue => "Dark Blue",
+            _ => col.ToString()
+        };
+    }
+}

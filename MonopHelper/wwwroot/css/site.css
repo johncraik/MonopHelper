@@ -50,6 +50,7 @@ h1{
 }
 
 .divider{
+  background: #e6e6e6;
   padding: 20px;
   border: #ddd 2px ridge;
   border-radius: 6px;

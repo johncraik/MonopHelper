@@ -1,0 +1,37 @@
+@page "{id}"
+@model MonopHelper.Pages.InGame.HandInProperty
+
+@{
+    ViewData["Title"] = $"{Model.Player?.PlayerName} | Hand in Property";
+}
+
+<div class="card">
+    <div class="card-header text-white bg-danger">
+        @ViewData["Title"]
+    </div>
+    <div class="card-body bg-light">
+        @{
+            if (Model.UnusedCols.Count > 0)
+            {
+                <form method="post">
+                    <label asp-for="SelectedCol"></label><br/>
+                    <select asp-for="SelectedCol" class="form-control" asp-items="Model.UnusedCols"></select><br/>
+                    <span class="text-danger mb" asp-validation-for="SelectedCol"></span><br/>
+                    
+                    <input type="hidden" asp-for="PlayerId" value="@Model.Player?.Id"/>
+                    <input type="hidden" asp-for="GameId" value="@Model.Player?.GameId"/>
+                    <input type="submit" class="btn btn-warning" value="Hand in the Selected Property"/>
+                </form>
+            }
+            else
+            {
+                <p>All property types have been handed into free parking for @(Model.Player?.PlayerName ?? "(Unknown Player)")</p>
+                <p>
+                    @(Model.Player?.PlayerName ?? "(Unknown Player)") must purge a property.
+                    If there are no properties to purge, take half the cash (max 1,000) but do not claim the property in free parking.
+                </p>
+            }
+        }
+    </div>
+</div>
+

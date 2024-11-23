@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
 
@@ -10,9 +11,11 @@ using MonopHelper.Data;
 namespace MonopHelper.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241123144131_RemovedPlayerToProperty")]
+    partial class RemovedPlayerToProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
@@ -248,9 +251,6 @@ namespace MonopHelper.Data.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("Repaid")
                         .HasColumnType("INTEGER");
 
@@ -258,8 +258,6 @@ namespace MonopHelper.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PlayerId");
 
                     b.ToTable("Loans");
                 });
@@ -291,6 +289,21 @@ namespace MonopHelper.Data.Migrations
                     b.HasIndex("GameId");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("MonopHelper.Models.PlayerToLoan", b =>
+                {
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LoanId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PlayerId", "LoanId");
+
+                    b.HasIndex("LoanId");
+
+                    b.ToTable("PlayerToLoans");
                 });
 
             modelBuilder.Entity("MonopHelper.Models.Property", b =>
@@ -363,17 +376,6 @@ namespace MonopHelper.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.Loan", b =>
-                {
-                    b.HasOne("MonopHelper.Models.Player", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
             modelBuilder.Entity("MonopHelper.Models.Player", b =>
                 {
                     b.HasOne("MonopHelper.Models.Game", "Game")
@@ -383,6 +385,25 @@ namespace MonopHelper.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("MonopHelper.Models.PlayerToLoan", b =>
+                {
+                    b.HasOne("MonopHelper.Models.Loan", "Loan")
+                        .WithMany()
+                        .HasForeignKey("LoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MonopHelper.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Loan");
+
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("MonopHelper.Models.Property", b =>

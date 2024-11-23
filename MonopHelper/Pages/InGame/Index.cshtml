@@ -1,4 +1,5 @@
 @page "{id}"
+@using MonopHelper.Models.Enums
 @model MonopHelper.Pages.InGame.Index
 
 @{
@@ -39,14 +40,14 @@
                             </div>
                             <div class="col-sm-6">
                                 <span class="badge rounded-pill px-3 py-2 bg-warning text-dark mt mb mr">Jail Cost: @p.Player.JailCost</span>
-                                <button class="btn btn-sm btn-success">Leave Jail</button>
+                                <button class="btn btn-sm btn-success" onclick="LeaveJail('@(p.Player.Id)', '@(p.Player.PlayerName)')">Leave Jail</button>
                             </div>
                         </div>
                     </div>
                     <div class="mb divider">
                         <div class="mb">
                             <h4 style="display: inline-block" class="mr">Free Parking</h4>
-                            <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;">Hand in Property</button>
+                            <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;" onclick="location.assign('/InGame/HandInProperty/@(p.Player.Id)')">Hand in Property</button>
                         </div>
                         @{
                             if (p.Properties.Count == 0)
@@ -56,7 +57,7 @@
 
                             foreach (var prop in p.Properties)
                             {
-                                <span class="badge rounded-pill px-4 py-2 prop-@((int)prop.Colour) mr">@prop.GetPropertyString()</span>
+                                <span class="badge rounded-pill px-4 py-2 prop-@((int)prop.Colour) mr">@(PropCol.GetPropertyString(prop.Colour))</span>
                             }
                         }
                     </div>

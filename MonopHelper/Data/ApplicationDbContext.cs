@@ -13,8 +13,6 @@ public class ApplicationDbContext : IdentityDbContext
     
     public DbSet<Game> Games { get; set; }
     public DbSet<Player> Players { get; set; }
-    public DbSet<PlayerToProperty> PlayerToProperties { get; set; }
     public DbSet<Property> Properties { get; set; }
-    public DbSet<PlayerToLoan> PlayerToLoans { get; set; }
     public DbSet<Loan> Loans { get; set; }
 }

@@ -40,3 +40,26 @@ function EnsurePlayers(){
 function LoadGame(id){
     location.assign("/InGame/" + id)
 }
+
+
+function LeaveJail(id, name){
+    Swal.fire({
+        title: "Are you sure you want " + name + " to leave jail?",
+        icon: "question",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No"
+    }).then((result) => {
+        if(result.isConfirmed){
+            Swal.fire(name + " has left jail!", "", "success").then((r) => {
+                $.ajax({
+                    type: 'POST',
+                    url: '../Game/LeaveJail?id=' + id,
+                    success: function (game){
+                        location.assign("/InGame/" + game);
+                    }
+                })
+            });
+        }
+    })
+}

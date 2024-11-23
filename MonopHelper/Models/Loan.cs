@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MonopHelper.Models;
 
 public class Loan
@@ -6,6 +8,11 @@ public class Loan
     public int Amount { get; set; }
     public int RepaidAmount { get; set; }
     public bool Repaid { get; set; }
+    
+    public int PlayerId { get; set; }
+    
+    [ForeignKey(nameof(PlayerId))]
+    public virtual Player Player { get; set; }
 
     public int Outstanding()
     {
