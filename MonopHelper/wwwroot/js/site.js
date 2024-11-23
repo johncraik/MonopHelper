@@ -106,3 +106,18 @@ function SetNumber(id, name){
         }
     })
 }
+
+function DeleteGame(form){
+    Swal.fire({
+        title: "Delete Game?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            Swal.fire("Game Deleted", "", "success").then((r) => {
+                form.submit();
+            });
+        }
+    })
+}

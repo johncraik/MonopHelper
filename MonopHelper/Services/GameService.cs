@@ -115,7 +115,6 @@ public class GameService
     {
         game.IsDeleted = true;
         _context.Games.Update(game);
-        if(players is { Count: > 0 }) _context.Players.RemoveRange(players);
 
         await _context.SaveChangesAsync();
     }
