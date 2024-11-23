@@ -11,5 +11,5 @@ public class Game
     [MaxLength(50)]
     public required string GameName { get; set; }
     public DateTime DateCreated { get; set; }
-    
+    public bool IsDeleted { get; set; }
 }

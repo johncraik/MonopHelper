@@ -33,7 +33,7 @@ public class GameService
 
     public async Task<bool> AddPlayers(string? p, int game)
     {
-        if (p == null) return false;
+        if (p == null || p.Contains(NewGamePlayers.NoPlayers)) return false;
         
         var players = new NewGamePlayers(p);
         var addPlayers = players.Players.Select(player => new Player
@@ -52,10 +52,55 @@ public class GameService
 
     public async Task<(Game? game, List<Player> players)> FetchGame(int id, string userId)
     {
-        var game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id && g.UserId == userId);
+        var game = await _context.Games.FirstOrDefaultAsync(g => !g.IsDeleted && g.Id == id && g.UserId == userId);
         var players = await _context.Players.Where(p => p.GameId == id).ToListAsync();
 
         return (game, players);
+    }
+
+    public async Task<List<LoadGame>> FetchGames(DateTime? date = null, string search = "")
+    {
+        var qry = _context.Games.Where(g => !g.IsDeleted);
+
+        if (date != null) qry = qry.Where(g => g.DateCreated.Date == date);
+        if (!string.IsNullOrEmpty(search))
+            qry = qry.Where(g => g.GameName.Contains(search));
+
+        var loadGames = new List<LoadGame>();
+        foreach (var game in await qry.ToListAsync())
+        {
+            var players = await _context.Players.Where(p => p.GameId == game.Id).ToListAsync();
+            loadGames.Add(new LoadGame
+            {
+                Game = game,
+                Players = players
+            });
+        }
+
+        return loadGames;
+    }
+
+    public async Task<List<InGamePlayer>> GetInGamePlayers(List<Player> players)
+    {
+        var inGamePlayers = new List<InGamePlayer>();
+        foreach (var p in players)
+        {
+            var properties = await _context.PlayerToProperties.Include(pp => pp.Property)
+                .Where(pp => pp.PlayerId == p.Id).Select(pp => pp.Property)
+                .OrderBy(prop => prop.Colour).ToListAsync();
+            var loans = await _context.PlayerToLoans.Include(pl => pl.Loan)
+                .Where(pl => pl.PlayerId == p.Id).Select(pl => pl.Loan)
+                .OrderBy(l => l.Repaid).ToListAsync();
+            
+            inGamePlayers.Add(new InGamePlayer
+            {
+                Player = p,
+                Properties = properties,
+                Loans = loans
+            });
+        }
+
+        return inGamePlayers;
     }
 
     public async Task DeleteGame(int id, string userId)
@@ -66,7 +111,8 @@ public class GameService
     
     public async Task DeleteGame(Game game, List<Player>? players)
     {
-        _context.Games.Remove(game);
+        game.IsDeleted = true;
+        _context.Games.Update(game);
         if(players is { Count: > 0 }) _context.Players.RemoveRange(players);
 
         await _context.SaveChangesAsync();

@@ -1,0 +1,31 @@
+@model List<MonopHelper.Models.ViewModels.LoadGame>
+
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+    <tr class="table-dark">
+        <th>Game Name</th>
+        <th>Players</th>
+        <th>Date Created</th>
+        <th style="width: 60px"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        foreach (var game in Model)
+        {
+            var players = game.Players.Select(p => p.PlayerName).Aggregate("", (current, p) => current + (p + ", "));
+            players = players == "" ? "No players found!" : players[..^2];
+
+            <tr>
+                <td>@game.Game.GameName</td>
+                <td>@players</td>
+                <td>@game.Game.DateCreated.ToString("g")</td>
+                <td>
+                    <button class="btn btn-sm btn-info text-white" onclick="LoadGame('@(game.Game.Id)')">Load</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

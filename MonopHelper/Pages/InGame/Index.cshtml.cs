@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Services;
 using MonopHelper.Models;
+using MonopHelper.Models.ViewModels;
 
 namespace MonopHelper.Pages.InGame;
 
@@ -17,17 +18,18 @@ public class Index : PageModel
     }
     
     public Game? CurrentGame { get; set; }
-    public List<Player> Players { get; set; }
+    public List<InGamePlayer> Players { get; set; }
     
     [BindProperty]
     public int GameId { get; set; }
     
     public async Task<IActionResult> OnGet(int id)
     {
-        (var game, Players) = await _gameManager.FetchGame(id, _config["init_userId"] ?? "default");
+        var (game, players) = await _gameManager.FetchGame(id, _config["init_userId"] ?? "default");
         if (game == null) return RedirectToPage(nameof(NotFound));
 
         CurrentGame = game;
+        Players = await _gameManager.GetInGamePlayers(players);
         
         return Page();
     }

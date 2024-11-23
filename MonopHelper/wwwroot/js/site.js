@@ -36,3 +36,7 @@ function EnsurePlayers(){
     document.getElementById("SetPlayers").value = player;
     return player;
 }
+
+function LoadGame(id){
+    location.assign("/InGame/" + id)
+}

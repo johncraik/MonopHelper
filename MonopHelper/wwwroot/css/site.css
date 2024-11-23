@@ -1,3 +1,16 @@
+:root{
+  --brownP: #4f2f16;
+  --blueP: #46a4e8;
+  --pinkP: #de1b96;
+  --orangeP: #f78e0c;
+  --redP: #bf2424;
+  --yellowP: #e8d52c;
+  --greenP: #1d691a;
+  --darkBlueP: #1f1352;
+  --station: #222;
+  --util: #ccc;
+}
+
 html {
   font-size: 14px;
 }
@@ -19,8 +32,28 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #fff; /* For browsers that do not support gradients */
+  background-image: linear-gradient(#fff, #bbb);
 }
 
+h1{
+  font-size: 32px;
+}
+
+.card{
+  box-shadow: 2px 5px 18px #888888;
+  border-radius: 15px;
+}
+
+.card-body{
+  border-radius: 15px;
+}
+
+.divider{
+  padding: 20px;
+  border: #ddd 2px ridge;
+  border-radius: 6px;
+}
 
 .mr{
   margin-right: 10px;
@@ -33,4 +66,45 @@ body {
 }
 .mb{
   margin-bottom: 10px;
+}
+
+.prop-0{
+  background: var(--brownP);
+  color: white;
+}
+.prop-1{
+  background: var(--blueP);
+  color: white;
+}
+.prop-2{
+  background: var(--pinkP);
+  color: white;
+}
+.prop-3{
+  background: var(--orangeP);
+  color: white;
+}
+.prop-4{
+  background: var(--redP);
+  color: white;
+}
+.prop-5{
+  background: var(--yellowP);
+  color: black;
+}
+.prop-6{
+  background: var(--greenP);
+  color: white;
+}
+.prop-7{
+  background: var(--darkBlueP);
+  color: white;
+}
+.prop-8{
+  background: var(--station);
+  color: white;
+}
+.prop-9{
+  background: var(--util);
+  color: black;
 }

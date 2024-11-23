@@ -12,13 +12,15 @@
         <form method="post">
             <label asp-for="GameName"></label>
             <input class="form-control" type="text" asp-for="GameName"/>
-            <span class="text-danger" asp-validation-for="GameName"></span>
+            <span class="text-danger mb mt" asp-validation-for="GameName"></span>
             <br/>
             
             <div id="GamePlayers">
                 <partial name="CreateGame/_NewGamePlayers" model="Model.NoPlayers"/>
             </div>
             <input type="hidden" asp-for="Players" value="" id="SetPlayers"/>
+            <span asp-validation-for="Players" class="text-danger mb mt"></span>
+            <br/>
             
             <div class="mt mb" id="AddPlayers" hidden="@true">
                 <label>Player Name</label>

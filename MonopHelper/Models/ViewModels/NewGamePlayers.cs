@@ -2,7 +2,7 @@ namespace MonopHelper.Models.ViewModels;
 
 public class NewGamePlayers
 {
-    private const string NoPlayers = "No players added!";
+    public const string NoPlayers = "No players added!";
     private const string PlayerDelimiter = "/#/";
     public List<string> Players { get; init; }
 

@@ -43,11 +43,14 @@ public class IndexModel : PageModel
         var gameId = await _gameManager.CreateGame(GameName);
         var playersAdded = await _gameManager.AddPlayers(p, gameId);
 
-        return !playersAdded ? InvalidPost(p) : RedirectToPage($"/InGame/{nameof(Index)}", new {id = gameId});
+        return !playersAdded ? InvalidPost(p, "Please add some players to this game!") 
+            : RedirectToPage($"/InGame/{nameof(Index)}", new {id = gameId});
     }
 
-    private IActionResult InvalidPost(string? p)
+    private IActionResult InvalidPost(string? p, string noPlayersError = "")
     {
+        if(noPlayersError != "") ModelState["Players"]?.Errors.Add(noPlayersError);
+        
         NoPlayers = new NewGamePlayers(p);
         return Page();
     }
