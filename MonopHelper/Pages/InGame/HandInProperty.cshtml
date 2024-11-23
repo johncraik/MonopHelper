@@ -11,6 +11,7 @@
     </div>
     <div class="card-body bg-light">
         @{
+            <button class="btn btn-sm btn-primary rounded-pill px-4 mb-4" onclick="location.assign('/InGame/' + @Model.Player?.GameId)">Go Back</button>
             if (Model.UnusedCols.Count > 0)
             {
                 <form method="post">

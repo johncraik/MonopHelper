@@ -36,7 +36,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <span class="badge rounded-pill px-3 py-2 bg-info mt mb mr">Dice Number: @p.Player.DiceOne+@p.Player.DiceTwo</span>
-                                <button class="btn btn-sm btn-success">@(p.Player.DiceOne == 0 ? "Set" : "Change") Number</button>
+                                <button class="btn btn-sm btn-success" onclick="SetNumber('@(p.Player.Id)', '@(p.Player.PlayerName)')">@(p.Player.DiceOne == 0 ? "Set" : "Change") Number</button>
                             </div>
                             <div class="col-sm-6">
                                 <span class="badge rounded-pill px-3 py-2 bg-warning text-dark mt mb mr">Jail Cost: @p.Player.JailCost</span>
@@ -57,7 +57,7 @@
 
                             foreach (var prop in p.Properties)
                             {
-                                <span class="badge rounded-pill px-4 py-2 prop-@((int)prop.Colour) mr">@(PropCol.GetPropertyString(prop.Colour))</span>
+                                <span class="badge rounded-pill px-4 py-2 prop-@((int)prop.Colour) ml mr mb">@(PropCol.GetPropertyString(prop.Colour))</span>
                             }
                         }
                     </div>

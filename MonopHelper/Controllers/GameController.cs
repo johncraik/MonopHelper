@@ -38,4 +38,10 @@ public class GameController : Controller
     {
         return await _playerService.LeaveJail(id);
     }
+
+    [HttpPost]
+    public async Task<int> SetNumber(int id, int d1, int d2)
+    {
+        return await _playerService.SetNumber(id, (byte)d1, (byte)d2);
+    }
 }

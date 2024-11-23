@@ -63,3 +63,54 @@ function LeaveJail(id, name){
         }
     })
 }
+
+function SetNumber(id, name){
+    Swal.fire({
+        title: "Set " + name + "'s first dice:",
+        icon: "info",
+        input: "select",
+        inputOptions: {
+            1: "1",
+            2: "2",
+            3: "3",
+            4: "4",
+            5: "5",
+            6: "6"
+        },
+        showDenyButton: true,
+        confirmButtonText: "Set Number",
+        denyButtonText: "Cancel"
+    }).then((d1) => {
+        if(d1.isConfirmed){
+            Swal.fire({
+                title: "Set " + name + "'s second dice:",
+                icon: "info",
+                input: "select",
+                inputOptions: {
+                    1: "1",
+                    2: "2",
+                    3: "3",
+                    4: "4",
+                    5: "5",
+                    6: "6"
+                },
+                showDenyButton: true,
+                confirmButtonText: "Set Number",
+                denyButtonText: "Cancel"
+            }).then((d2) => {
+                if(d2.isConfirmed){
+                    Swal.fire(name + "'s number has been set!", "", "success").then((r) => {
+                        $.ajax({
+                            type: 'POST',
+                            url: '../Game/SetNumber?id=' + id + '&d1=' + d1.value + '&d2=' + d2.value,
+                            success: function (game){
+                                location.assign("/InGame/" + game);
+                            }
+                        })
+                    });
+                }
+            })
+            
+        }
+    })
+}
