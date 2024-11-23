@@ -1,4 +1,38 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function ShowAddPlayer(){
+    let addPlayers = document.getElementById("AddPlayers");
+    addPlayers.hidden = false;
+}
 
-// Write your JavaScript code.
+function AddPlayer(){
+    let player = EnsurePlayers();
+    
+    let playerDisplay = document.getElementById("GamePlayers");
+    let url = "Game/NewGamePlayersPartial?players=" + encodeURIComponent(player);
+
+    fetch(url).then(data => {return data.text()}).then(body => {
+        playerDisplay.innerHTML = body;
+        var scripts = playerDisplay.querySelectorAll('script');
+        for (let i = 0; i < scripts.length; i++) {
+            if (scripts[i].type !== "text/x-template") {
+                eval(scripts[i].innerHTML);
+            }
+        }
+
+        let addPlayers = document.getElementById("AddPlayers");
+        addPlayers.hidden = true;
+    });
+}
+
+function EnsurePlayers(){
+    let inp = document.getElementById("PlayerName");
+    let player = inp.value + "/#/";
+    inp.value = "";
+    let currPlayers = document.getElementsByClassName("player");
+
+    for (let i = 0; i < currPlayers.length; i++){
+        player += (currPlayers[i].innerText + "/#/")
+    }
+
+    document.getElementById("SetPlayers").value = player;
+    return player;
+}

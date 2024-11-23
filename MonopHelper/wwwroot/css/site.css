@@ -20,3 +20,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.mr{
+  margin-right: 10px;
+}
+.ml{
+  margin-left: 10px;
+}
+.mt{
+  margin-top: 10px;
+}
+.mb{
+  margin-bottom: 10px;
+}

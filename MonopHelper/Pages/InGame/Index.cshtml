@@ -4,3 +4,34 @@
 @{
     ViewData["Title"] = @Model.CurrentGame?.GameName ?? "Unknown";
 }
+
+<h1 class="mt mb text-center"><b>@ViewData["Title"]</b></h1>
+
+@{
+    if (Model.Players.Count == 0)
+    {
+        <div class="card text-center">
+            <div class="card-body bg-danger text-white">
+                <h4 class="card-title"><b>No players found for this game!</b></h4>
+                <form method="post" asp-page-handler="DeleteGame">
+                    <input type="hidden" asp-for="GameId" value="@Model.CurrentGame?.Id"/>
+                    <input type="submit" class="btn btn-warning mt mb" value="Delete Game"/>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var player in Model.Players)
+        {
+            <div class="card mt mb text-center">
+                <div class="card-header text-white bg-primary">
+                    @player.PlayerName
+                </div>
+                <div class="card-body bg-light">
+                    Player actions.....<br/>
+                </div>
+            </div>
+        }
+    }
+}

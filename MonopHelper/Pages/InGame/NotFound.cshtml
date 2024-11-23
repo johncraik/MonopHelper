@@ -5,9 +5,11 @@
     ViewData["Title"] = "No Game Found";
 }
 
-<h1>@ViewData["Title"]</h1>
-<br/>
-<button class="btn btn-primary" onclick="Redirect()">Create New Game</button>
+<div class="text-center">
+    <h1 class="mt mb">@ViewData["Title"]</h1>
+    <br/>
+    <button class="btn btn-primary" onclick="Redirect()">Create New Game</button>
+</div>
 
 <script>
     function Redirect(){

@@ -1,0 +1,6 @@
+@model MonopHelper.Models.ViewModels.NewGamePlayers
+
+@foreach (var player in Model.Players)
+{
+    <span class="badge bg-info mr mb player">@player</span>
+}
