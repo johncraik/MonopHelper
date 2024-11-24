@@ -37,9 +37,9 @@ public class GameService
         return game.Id;
     }
 
-    public async Task<bool> AddPlayers(string? p, int game)
+    public async Task<(bool, string)> AddPlayers(string? p, int game)
     {
-        if (p == null || p.Contains(NewGamePlayers.NoPlayers)) return false;
+        if (p == null || p.Contains(NewGamePlayers.NoPlayers)) return (false, "Please add some players to this game!");
         
         var players = new NewGamePlayers(p);
         var addPlayers = players.Players.Select(player => new Player
@@ -48,12 +48,13 @@ public class GameService
                 DiceOne = 0,
                 DiceTwo = 0,
                 GameId = game,
-                JailCost = 50
+                JailCost = 50,
+                Triple = 1000
             }).ToList();
 
         await _context.Players.AddRangeAsync(addPlayers);
         await _context.SaveChangesAsync();
-        return true;
+        return addPlayers.Count > 1 ? (true, "") : (false, "You can't play yourself!");
     }
 
     public async Task<(Game? game, List<Player> players)> FetchGame(int id, string userId)
@@ -106,6 +107,22 @@ public class GameService
         return loadGames.OrderByDescending(g => g.Game.DateCreated).ToList();
     }
 
+    public async Task<InGamePlayer?> GetInGamePlayer(int playerId)
+    {
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+        if (player == null) return null;
+        
+        var properties = await _propertyService.GetPlayerProperties(player.Id);
+        var loans = await _loanService.GetPlayerLoans(player.Id);
+            
+        return new InGamePlayer
+        {
+            Player = player,
+            Properties = properties,
+            Loans = loans
+        };
+    }
+    
     public async Task<List<InGamePlayer>> GetInGamePlayers(List<Player> players)
     {
         var inGamePlayers = new List<InGamePlayer>();

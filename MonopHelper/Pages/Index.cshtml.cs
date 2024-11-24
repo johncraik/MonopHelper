@@ -41,9 +41,9 @@ public class IndexModel : PageModel
         if (!ModelState.IsValid) return InvalidPost(p);
         
         var gameId = await _gameManager.CreateGame(GameName);
-        var playersAdded = await _gameManager.AddPlayers(p, gameId);
+        var (playersAdded, msg) = await _gameManager.AddPlayers(p, gameId);
 
-        return !playersAdded ? InvalidPost(p, "Please add some players to this game!") 
+        return !playersAdded ? InvalidPost(p, msg) 
             : RedirectToPage($"/InGame/{nameof(Index)}", new {id = gameId});
     }
 

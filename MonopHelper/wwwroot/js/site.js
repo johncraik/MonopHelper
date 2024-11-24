@@ -1,18 +1,22 @@
-﻿function AddPlayer(){
-    let player = EnsurePlayers();
-    
-    let playerDisplay = document.getElementById("GamePlayers");
-    let url = "Game/NewGamePlayersPartial?players=" + encodeURIComponent(player);
-
+﻿function FetchPartial(url, model){
     fetch(url).then(data => {return data.text()}).then(body => {
-        playerDisplay.innerHTML = body;
-        var scripts = playerDisplay.querySelectorAll('script');
+        model.innerHTML = body;
+        var scripts = model.querySelectorAll('script');
         for (let i = 0; i < scripts.length; i++) {
             if (scripts[i].type !== "text/x-template") {
                 eval(scripts[i].innerHTML);
             }
         }
     });
+}
+
+function AddPlayer(){
+    let player = EnsurePlayers();
+    
+    let playerDisplay = document.getElementById("GamePlayers");
+    let url = "Game/NewGamePlayersPartial?players=" + encodeURIComponent(player);
+
+    FetchPartial(url, playerDisplay);
 }
 
 function EnsurePlayers(){
@@ -48,8 +52,10 @@ function LeaveJail(id, name, cost){
                 $.ajax({
                     type: 'POST',
                     url: '../Game/LeaveJail?id=' + id,
-                    success: function (game){
-                        location.assign("/InGame/" + game);
+                    success: function (player){
+                        let url = "../Game/InGamePlayerPartial?playerId=" + player;
+                        let display = document.getElementById(player + "_Partial");
+                        FetchPartial(url, display);
                     }
                 })
             });
@@ -96,14 +102,41 @@ function SetNumber(id, name){
                         $.ajax({
                             type: 'POST',
                             url: '../Game/SetNumber?id=' + id + '&d1=' + d1.value + '&d2=' + d2.value,
-                            success: function (game){
-                                location.assign("/InGame/" + game);
+                            success: function (player){
+                                let url = "../Game/InGamePlayerPartial?playerId=" + player;
+                                let display = document.getElementById(player + "_Partial");
+                                FetchPartial(url, display);
                             }
                         })
                     });
                 }
             })
             
+        }
+    })
+}
+
+function ClaimTriple(id, name, amount){
+    Swal.fire({
+        title: "Are you sure you want " + name + " to claim a triple?",
+        html: name + ' will receive: <b><span class="money">₩</span>' + amount.toLocaleString() + '</b>',
+        icon: "question",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No"
+    }).then((result) => {
+        if(result.isConfirmed){
+            Swal.fire(name + " has claimed a triple!", "", "success").then((r) => {
+                $.ajax({
+                    type: 'POST',
+                    url: '../Game/ClaimTriple?id=' + id,
+                    success: function (player){
+                        let url = "../Game/InGamePlayerPartial?playerId=" + player;
+                        let display = document.getElementById(player + "_Partial");
+                        FetchPartial(url, display);
+                    }
+                })
+            });
         }
     })
 }

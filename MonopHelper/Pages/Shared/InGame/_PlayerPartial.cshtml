@@ -1,0 +1,110 @@
+@using MonopHelper.Models.Enums
+@model MonopHelper.Models.ViewModels.InGamePlayer?
+
+@{
+    if (Model == null)
+    {
+        <div class="card mt mb text-center">
+            <div class="card-body bg-danger">
+                <h3>An error has occurred!</h3>
+                <p>Please reload the page.</p>
+                <button class="btn btn-warning mt mb" onclick="location.reload()">Reload</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card mt mb text-center">
+            <div class="card-header text-white bg-primary">
+                <h3>@Model.Player.PlayerName</h3>
+            </div>
+            <div class="card-body bg-light">
+                <div class="mb divider">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <span class="badge rounded-pill px-3 py-2 bg-primary mt mb mr">Dice Number: @Model.Player.DiceOne+@Model.Player.DiceTwo</span>
+                            <button class="btn btn-sm btn-success" onclick="SetNumber('@(Model.Player.Id)', '@(Model.Player.PlayerName)')">@(Model.Player.DiceOne == 0 ? "Set" : "Change") Number</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="badge rounded-pill px-3 py-2 bg-danger text-white mt mb mr">Jail Cost: <span class="money">₩</span>@Model.Player.JailCost.ToString("N0")</span>
+                            <button class="btn btn-sm btn-success" onclick="LeaveJail('@(Model.Player.Id)', '@(Model.Player.PlayerName)', '@(Model.Player.JailCost)')">Leave Jail</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="badge rounded-pill px-3 py-2 bg-info text-white mt mb mr">Triple Value: <span class="money">₩</span>@Model.Player.Triple.ToString("N0")</span>
+                            <button class="btn btn-sm btn-success" onclick="ClaimTriple('@(Model.Player.Id)', '@(Model.Player.PlayerName)', '@(Model.Player.Triple)')">Claim Triple</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb divider">
+                    <div class="mb">
+                        <h4 style="display: inline-block" class="mr">Free Parking</h4>
+                        <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;" onclick="location.assign('/InGame/HandInProperty/@(Model.Player.Id)')">Hand in Property</button>
+                    </div>
+                    @{
+                    if (Model.Properties.Count == 0)
+                    {
+                    <p>No properties have been handed in to free parking.</p>
+                    }
+
+                    foreach (var prop in Model.Properties)
+                    {
+                    <span class="badge rounded-pill px-4 py-2 prop-@((int)prop.Colour) ml mr mb">@(PropCol.GetPropertyString(prop.Colour))</span>
+                    }
+                    }
+                </div>
+                <div class="mb divider">
+                    <div class="mb">
+                        <h4 style="display: inline-block" class="mr">Loans</h4>
+                        <button class="btn btn-sm btn-warning ml" style="display: inline-block; margin-bottom: 8px;" onclick="location.assign('/InGame/NewLoan/@(Model.Player.Id)')">New Loan</button>
+                    </div>
+                    @{
+                    if (Model.Loans.Count == 0)
+                    {
+                    <p>No loans have been taken out.</p>
+                    }
+                    else
+                    {
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr class="table-dark">
+                            <th>Loan Amount</th>
+                            <th>Repaid Amount</th>
+                            <th>Outstanding</th>
+                            <th>
+                                <button class="btn rounded-pill btn-sm btn-warning" onclick="location.assign('/InGame/RepayLoan/@(Model.Player.Id)?all=true')">Repay All</button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @{
+                        foreach (var loan in Model.Loans)
+                        {
+                        <tr class="table-@(loan.Repaid ? "success" : "light")">
+                            <td><span class="money">₩</span>@loan.Amount.ToString("N0")</td>
+                            <td><span class="money">₩</span>@loan.RepaidAmount.ToString("N0")</td>
+                            <td><span class="money">₩</span>@loan.Outstanding().ToString("N0")</td>
+                            <td>
+                                @{
+                                if (loan.Repaid)
+                                {
+                                <span class="text-success"><b>Paid</b></span>
+                                }
+                                else
+                                {
+                                <button class="btn btn-sm btn-success" onclick="location.assign('/InGame/RepayLoan/@(loan.Id)?all=false')">Repay</button>
+                                }
+                                }
+                            </td>
+                        </tr>
+                        }
+                        }
+                        </tbody>
+                    </table>
+                    }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+

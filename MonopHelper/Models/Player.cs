@@ -10,6 +10,7 @@ public class Player
     public byte DiceOne { get; set; }
     public byte DiceTwo { get; set; }
     public int JailCost { get; set; }
+    public int Triple { get; set; }
     
     public int GameId { get; set; }
     [ForeignKey(nameof(GameId))]

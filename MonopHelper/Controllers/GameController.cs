@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MonopHelper.Models;
 using MonopHelper.Models.ViewModels;
 using MonopHelper.Services;
 using MonopHelper.Services.InGame;
@@ -36,6 +37,12 @@ public class GameController : Controller
         return PartialView("InGame/_LoadGames", model);
     }
 
+    public async Task<IActionResult> InGamePlayerPartial(int playerId)
+    {
+        var model = await _gameManager.GetInGamePlayer(playerId);
+        return PartialView("InGame/_PlayerPartial", model);
+    }
+
     [HttpPost]
     public async Task<int> LeaveJail(int id)
     {
@@ -46,5 +53,11 @@ public class GameController : Controller
     public async Task<int> SetNumber(int id, int d1, int d2)
     {
         return await _playerService.SetNumber(id, (byte)d1, (byte)d2);
+    }
+
+    [HttpPost]
+    public async Task<int> ClaimTriple(int id)
+    {
+        return await _playerService.ClaimTriple(id);
     }
 }
