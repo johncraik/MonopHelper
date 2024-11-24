@@ -45,6 +45,11 @@ h1{
   border-radius: 15px;
 }
 
+.card-header{
+  font-size: 22px;
+  font-weight: 700;
+}
+
 .card-body{
   border-radius: 15px;
 }
@@ -54,6 +59,10 @@ h1{
   padding: 20px;
   border: #ddd 2px ridge;
   border-radius: 6px;
+}
+
+.list{
+  padding: 0 10px;
 }
 
 .money{

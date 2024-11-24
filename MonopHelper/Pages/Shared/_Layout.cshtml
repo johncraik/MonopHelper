@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using Version = MonopHelper.Services.Version
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - MonopHelper</title>
+    <title>@ViewData["Title"] - Monopoly Helper</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/MonopHelper.styles.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/sweetalert2.css" asp-append-version="true"/>
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet">
-
 </head>
 <body>
 <header>
@@ -20,7 +20,7 @@
                     <img class="mr" src="~/favicon.ico" width="30px" height="30px" alt="Logo"/>
                     <b>Monopoly Helper</b>
                 </div>
-                
+
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -28,11 +28,30 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Index">New Game</a>
+                    <li class="nav-item dropdown ml mr">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="standardGameDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Standard Game
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="standardGameDropdown">
+                            <li><a class="dropdown-item" asp-page="/Create">New Game</a></li>
+                            <li><a class="dropdown-item" asp-page="/Load">Load Game</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Load">Load Game</a>
+
+                    <li class="nav-item dropdown ml mr">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="cardsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Cards
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="cardsDropdown">
+                            <li><a class="dropdown-item" asp-page="/Cards/Index">Play Cards</a></li>
+                            <li><a class="dropdown-item" asp-page="/Cards/Manage">Manage Cards</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ml mr">
+                        <a class="nav-link text-dark" asp-page="/Version">
+                            Version History
+                        </a>
                     </li>
                 </ul>
                 @* <partial name="_LoginPartial"/> *@
@@ -47,7 +66,7 @@
 </div>
 <footer class="border-top footer text-muted">
     <div class="container">
-        v1.0.0
+        @V.GetVersion()
     </div>
 </footer>
 

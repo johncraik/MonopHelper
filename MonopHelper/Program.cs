@@ -7,6 +7,7 @@ using MonopHelper.Services.InGame;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<MonopHelper.Services.Version>();
 builder.Services.AddTransient<GameService>();
 builder.Services.AddTransient<PlayerService>();
 builder.Services.AddTransient<PropertyService>();

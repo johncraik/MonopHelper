@@ -1,0 +1,73 @@
+@page
+@model MonopHelper.Pages.Version
+
+@{
+    ViewData["Title"] = "Version History";
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        @ViewData["Title"]
+    </div>
+    <div class="card-body bg-light">
+        <h4>Version: 1.0</h4>
+        <div class="list mb">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Added standard game.
+                </li>
+                <li class="list-group-item">
+                    Add players to games.
+                </li>
+                <li class="list-group-item">
+                    Track player numbers and jail cost.
+                </li>
+                <li class="list-group-item">
+                    Track properties handed in to free parking.
+                </li>
+                <li class="list-group-item">
+                    Track player loans and the amount that is due.
+                </li>
+                <li class="list-group-item">
+                    Can open games that are not deleted.
+                </li>
+                <li class="list-group-item">
+                    Can remove games.
+                </li>
+            </ul>
+        </div>
+
+        <h4>Version: 1.1</h4>
+        <div class="list mb">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Can track player triples.
+                </li>
+                <li class="list-group-item">
+                    Added version in footer.
+                </li>
+            </ul>
+        </div>
+
+        <h4>Version: 1.2</h4>
+        <div class="list mb">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Add version history.
+                </li>
+                <li class="list-group-item">
+                    Index page is a generic home page with links to areas of the website.
+                </li>
+                <li class="list-group-item">
+                    Added cards into the game.
+                </li>
+                <li class="list-group-item">
+                    Can manage cards by uploading/adding new cards, modifying existing ones, or removing cards.
+                </li>
+                <li class="list-group-item">
+                    Different card decks based on difficulty.
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
