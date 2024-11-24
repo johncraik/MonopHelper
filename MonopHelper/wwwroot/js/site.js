@@ -122,3 +122,31 @@ function DeleteGame(form){
         }
     })
 }
+
+
+function FetchGameTbl(txt, date){
+    let tbl = document.getElementById("LoadGames");
+    let url = "Game/LoadGamesPartial?txt=" + encodeURIComponent(txt) + "&dateTxt=" + date;
+
+    fetch(url).then(data => {return data.text()}).then(body => {
+        tbl.innerHTML = body;
+        var scripts = tbl.querySelectorAll('script');
+        for (let i = 0; i < scripts.length; i++) {
+            if (scripts[i].type !== "text/x-template") {
+                eval(scripts[i].innerHTML);
+            }
+        }
+    });
+}
+
+function Search(search){
+    let txt = search.value;
+    let date = document.getElementById("DateFilter").value;
+    FetchGameTbl(txt, date);
+}
+
+function FilterDate(picker){
+    let date = picker.value;
+    let txt = document.getElementById("SearchTxt").value;
+    FetchGameTbl(txt, date);
+}

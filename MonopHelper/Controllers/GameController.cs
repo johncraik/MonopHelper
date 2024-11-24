@@ -27,9 +27,12 @@ public class GameController : Controller
         return PartialView("InGame/_NewGamePlayers", model);
     }
 
-    public async Task<IActionResult> LoadGamesPartial()
+    public async Task<IActionResult> LoadGamesPartial(string txt = "", string dateTxt = "")
     {
-        var model = await _gameManager.FetchGames();
+        var success = DateTime.TryParse(dateTxt, out var date);
+        if (!success) date = new DateTime(1,1,1);
+        
+        var model = await _gameManager.FetchGames(date, txt);
         return PartialView("InGame/_LoadGames", model);
     }
 

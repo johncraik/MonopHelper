@@ -14,4 +14,7 @@ public class Player
     public int GameId { get; set; }
     [ForeignKey(nameof(GameId))]
     public virtual Game Game { get; set; }
+    
+    public virtual List<Property> Properties { get; set; }
+    public virtual List<Loan> Loans { get; set; }
 }

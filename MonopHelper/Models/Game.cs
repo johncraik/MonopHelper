@@ -12,4 +12,6 @@ public class Game
     public required string GameName { get; set; }
     public DateTime DateCreated { get; set; }
     public bool IsDeleted { get; set; }
+    
+    public virtual List<Player> Players { get; set; }
 }

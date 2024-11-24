@@ -10,7 +10,17 @@
         Filter Games
     </div>
     <div class="card-body bg-light">
-        
+        <div class="row">
+            <div class="col-sm-6 mb">
+                <span class="mb"><b>Search Games:</b></span>
+                <input id="SearchTxt" type="text" class="form-control" onchange="Search(this)"/>
+            </div>
+
+            <div class="col-sm-6 mb">
+                <span class="mb"><b>Specific Date:</b></span>
+                <input id="DateFilter" type="date" class="form-control" onchange="FilterDate(this)"/>
+            </div>
+        </div>
     </div>
 </div>
 

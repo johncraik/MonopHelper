@@ -66,14 +66,34 @@ public class GameService
 
     public async Task<List<LoadGame>> FetchGames(DateTime? date = null, string search = "")
     {
-        var qry = _context.Games.Where(g => !g.IsDeleted);
+        var qry = _context.Games.Include(g => g.Players).Where(g => !g.IsDeleted);
 
-        if (date != null) qry = qry.Where(g => g.DateCreated.Date == date);
+        if (date != null && date.Value.Date != new DateTime(1,1,1).Date) qry = qry.Where(g => g.DateCreated.Date == date);
+
+        var games = await qry.ToListAsync();
         if (!string.IsNullOrEmpty(search))
-            qry = qry.Where(g => g.GameName.Contains(search));
+        {
+            //Search game name:
+            var oldQry = qry;
+            qry = oldQry.Where(g => g.GameName.ToLower().Contains(search.ToLower()));
+            
+            //Search players:
+            var plyQry = oldQry.Select(g => g.Players);
+            var gamesWithPlayers = new List<Game>();
+            foreach (var players in plyQry)
+            {
+                if (players.Select(p => p.PlayerName.ToLower())
+                    .Any(player => player.Contains(search, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    gamesWithPlayers.Add(players.First().Game);
+                }
+            }
+            
+            games = (await qry.ToListAsync()).Concat(gamesWithPlayers).ToList();
+        }
 
         var loadGames = new List<LoadGame>();
-        foreach (var game in await qry.ToListAsync())
+        foreach (var game in games)
         {
             var players = await _context.Players.Where(p => p.GameId == game.Id).ToListAsync();
             loadGames.Add(new LoadGame
@@ -83,7 +103,7 @@ public class GameService
             });
         }
 
-        return loadGames;
+        return loadGames.OrderByDescending(g => g.Game.DateCreated).ToList();
     }
 
     public async Task<List<InGamePlayer>> GetInGamePlayers(List<Player> players)
