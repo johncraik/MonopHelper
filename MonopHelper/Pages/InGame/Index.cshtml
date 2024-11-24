@@ -39,8 +39,8 @@
                                 <button class="btn btn-sm btn-success" onclick="SetNumber('@(p.Player.Id)', '@(p.Player.PlayerName)')">@(p.Player.DiceOne == 0 ? "Set" : "Change") Number</button>
                             </div>
                             <div class="col-sm-6">
-                                <span class="badge rounded-pill px-3 py-2 bg-warning text-dark mt mb mr">Jail Cost: @p.Player.JailCost</span>
-                                <button class="btn btn-sm btn-success" onclick="LeaveJail('@(p.Player.Id)', '@(p.Player.PlayerName)')">Leave Jail</button>
+                                <span class="badge rounded-pill px-3 py-2 bg-warning text-dark mt mb mr">Jail Cost: <span class="money">₩</span>@p.Player.JailCost.ToString("N0")</span>
+                                <button class="btn btn-sm btn-success" onclick="LeaveJail('@(p.Player.Id)', '@(p.Player.PlayerName)', '@(p.Player.JailCost)')">Leave Jail</button>
                             </div>
                         </div>
                     </div>
@@ -89,9 +89,9 @@
                                         foreach (var loan in p.Loans)
                                         {
                                             <tr class="table-@(loan.Repaid ? "success" : "light")">
-                                                <td>@loan.Amount</td>
-                                                <td>@loan.RepaidAmount</td>
-                                                <td>@loan.Outstanding()</td>
+                                                <td><span class="money">₩</span>@loan.Amount.ToString("N0")</td>
+                                                <td><span class="money">₩</span>@loan.RepaidAmount.ToString("N0")</td>
+                                                <td><span class="money">₩</span>@loan.Outstanding().ToString("N0")</td>
                                                 <td>
                                                     @{
                                                         if (loan.Repaid)

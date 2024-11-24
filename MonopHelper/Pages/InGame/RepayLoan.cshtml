@@ -37,30 +37,30 @@
                     <table class="table table-hover table-sm table-striped">
                         <tr>
                             <td>@(Model.RepayAll ? "Total" : "") Loan Amount: </td>
-                            <td>@amount</td>
+                            <td style="width: 23%"><span class="money">₩</span>@amount?.ToString("N0")</td>
                         </tr>
                         <tr>
                             <td>Amount Repaid: </td>
-                            <td>@repaid</td>
+                            <td><span class="money">₩</span>@repaid?.ToString("N0")</td>
                         </tr>
                         <tr>
                             <td>Outstanding: </td>
-                            <td>@outstanding</td>
+                            <td><span class="money">₩</span>@outstanding?.ToString("N0")</td>
                         </tr>
-                        <tr>
-                            <td></td><td></td>
-                        </tr>
+                    </table>
+                    <p><b>Standard Repayments</b></p>
+                    <table class="table table-hover table-sm table-striped">
                         <tr>
                             <td>One pass (5%) repayment: </td>
-                            <td>@p5</td>
+                            <td style="width: 23%"><span class="money">₩</span>@p5?.ToString("N0")</td>
                         </tr>
                         <tr>
                             <td>Two passes (10%) repayment: </td>
-                            <td>@p10</td>
+                            <td><span class="money">₩</span>@p10?.ToString("N0")</td>
                         </tr>
                         <tr>
                             <td>Three passes (15%) repayment: </td>
-                            <td>@p15</td>
+                            <td><span class="money">₩</span>@p15?.ToString("N0")</td>
                         </tr>
                     </table>
                 </div>

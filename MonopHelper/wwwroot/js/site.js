@@ -34,9 +34,10 @@ function LoadGame(id){
 }
 
 
-function LeaveJail(id, name){
+function LeaveJail(id, name, cost){
     Swal.fire({
         title: "Are you sure you want " + name + " to leave jail?",
+        html: 'This will cost: <b><span class="money">₩</span>' + cost.toLocaleString() + '</b>',
         icon: "question",
         showDenyButton: true,
         confirmButtonText: "Yes",
