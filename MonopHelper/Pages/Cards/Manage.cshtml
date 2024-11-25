@@ -4,3 +4,65 @@
 @{
     ViewData["Title"] = "Manage Cards";
 }
+
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#cards" type="button" role="tab" aria-controls="cards" aria-selected="true">Cards</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="cardTypes-tab" data-bs-toggle="tab" data-bs-target="#types" type="button" role="tab" aria-controls="types" aria-selected="false">Card Types</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="cardDecks-tab" data-bs-toggle="tab" data-bs-target="#decks" type="button" role="tab" aria-controls="decks" aria-selected="false">Card Decks</button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body bg-light tab-content">
+        <div class="tab-pane fade show active" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    Upload Cards
+                </div>
+                <div class="card-body bg-light">
+                    <p>Create an Excel file with the following headings. Save the file as a 'cvs' file.</p>
+                    <table class="table table-sm table-bordered table-secondary">
+                        <tr>
+                            <td>Text</td>
+                            <td>Cost</td>
+                        </tr>
+                    </table>
+                    <p>Input a negative cost to take money from the player. Leave cost blank if there is no cost involved.</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Select Card Deck
+                </div>
+                <div class="card-body bg-light">
+                    <label>Card Deck</label>
+                    <select asp-items="Model.CardDecks" class="form-control" onchange="ShowCards(this)"></select>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Cards
+                </div>
+                <div class="card-body bg-light" id="CardsTable">
+                    <partial name="Cards/_CardsTable" model="Model.Cards"/>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="types" role="tabpanel" aria-labelledby="cardTypes-tab">
+            
+        </div>
+        
+        <div class="tab-pane fade" id="decks" role="tabpanel" aria-labelledby="cardDecks-tab">
+            
+        </div>
+    </div>
+</div>

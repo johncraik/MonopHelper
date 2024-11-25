@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Models;
 using MonopHelper.Models.ViewModels;
 using MonopHelper.Services;
+using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 
 namespace MonopHelper.Controllers;
@@ -10,11 +11,13 @@ public class GameController : Controller
 {
     private readonly GameService _gameManager;
     private readonly PlayerService _playerService;
+    private readonly CardService _cardService;
 
-    public GameController(GameService gameManager, PlayerService playerService)
+    public GameController(GameService gameManager, PlayerService playerService, CardService cardService)
     {
         _gameManager = gameManager;
         _playerService = playerService;
+        _cardService = cardService;
     }
     
     public IActionResult Index()
@@ -59,5 +62,15 @@ public class GameController : Controller
     public async Task<int> ClaimTriple(int id)
     {
         return await _playerService.ClaimTriple(id);
+    }
+    
+    /*
+     * ----------------
+     */
+
+    public async Task<IActionResult> CardsTablePartial(int id)
+    {
+        var model = await _cardService.GetCardsFromDeck(id);
+        return PartialView("Cards/_CardsTable", model);
     }
 }

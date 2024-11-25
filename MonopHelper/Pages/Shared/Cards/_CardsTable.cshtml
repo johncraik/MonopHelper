@@ -1,0 +1,28 @@
+@model List<MonopHelper.Models.GameDb.Cards.Card>
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+    <tr class="table-dark">
+        <th>Card Type</th>
+        <th>Card Text</th>
+        <th>Cost</th>
+        <th style="width: 60px"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        foreach (var card in Model)
+        {
+            var cost = card.Cost?.ToString() ?? "";
+            if (cost == "") cost = "-";
+            
+            <tr>
+                <td>@card.CardType.Name</td>
+                <td>@card.Text</td>
+                <td>@cost</td>
+                <td></td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

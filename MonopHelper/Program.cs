@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
 using MonopHelper.Models;
 using MonopHelper.Services;
+using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +14,17 @@ builder.Services.AddTransient<PlayerService>();
 builder.Services.AddTransient<PropertyService>();
 builder.Services.AddTransient<LoanService>();
 
+builder.Services.AddTransient<CardService>();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
+var gameDb = builder.Configuration.GetConnectionString("Game") ??
+                       throw new InvalidOperationException("Connection string 'Game' not found.");
+builder.Services.AddDbContext<GameDbContext>(options =>
+    options.UseSqlite(gameDb));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
