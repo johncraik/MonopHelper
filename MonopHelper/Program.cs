@@ -37,7 +37,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = true;
+        options.SignIn.RequireConfirmedAccount = false; //TODO: Implement email confirmation
         options.Password.RequireDigit = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireLowercase = true;
@@ -142,7 +142,8 @@ async Task Defaults(IApplicationBuilder a)
             UserName = "serveradmin",
             EmailConfirmed = true,
             TwoFactorEnabled = false,
-            DisplayName = "Admin"
+            DisplayName = "Admin",
+            TenantId = 1
         };
         await userManager.CreateAsync(adminUser);
         await userManager.AddToRoleAsync(adminUser, "Admin");
