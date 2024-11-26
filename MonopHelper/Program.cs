@@ -108,6 +108,20 @@ async Task Defaults(IApplicationBuilder a)
             await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
+    
+    //Create tenant:
+    var noTenant = await context.Tenants.FirstOrDefaultAsync(t => t.TenantName == "NO_TENANT");
+    if (noTenant == null)
+    {
+        noTenant = new Tenant
+        {
+            TenantName = "NO_TENANT",
+            DateCreated = DateTime.Now,
+            IsDeleted = false
+        };
+        await context.Tenants.AddAsync(noTenant);
+        await context.SaveChangesAsync();
+    }
 
     //Create role:
     await ConfirmRoleSetup("Admin");
