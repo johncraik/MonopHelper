@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Models.ViewModels;
@@ -7,6 +8,7 @@ using MonopHelper.Services;
 
 namespace MonopHelper.Pages;
 
+[Authorize]
 public class Create : PageModel
 {
     private readonly GameService _gameManager;

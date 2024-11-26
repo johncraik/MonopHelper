@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Models;
@@ -6,6 +7,7 @@ using MonopHelper.Services;
 
 namespace MonopHelper.Pages;
 
+[Authorize]
 public class Load : PageModel
 {
     private readonly GameService _gameManager;

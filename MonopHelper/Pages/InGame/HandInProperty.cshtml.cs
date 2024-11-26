@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using MonopHelper.Services.InGame;
 
 namespace MonopHelper.Pages.InGame;
 
+[Authorize]
 public class HandInProperty : PageModel
 {
     private readonly PropertyService _propertyService;

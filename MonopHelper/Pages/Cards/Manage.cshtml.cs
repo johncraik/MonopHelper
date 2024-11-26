@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,6 +7,7 @@ using MonopHelper.Services.Cards;
 
 namespace MonopHelper.Pages.Cards;
 
+[Authorize]
 public class Manage : PageModel
 {
     private readonly CardService _cardService;

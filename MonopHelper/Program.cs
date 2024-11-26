@@ -1,12 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using MonopHelper.Data;
-using MonopHelper.Models;
+using MonopHelper.Authentication;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication();
 
 builder.Services.AddSingleton<MonopHelper.Services.Version>();
 builder.Services.AddTransient<GameService>();
@@ -20,6 +25,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
+
 var gameDb = builder.Configuration.GetConnectionString("Game") ??
                        throw new InvalidOperationException("Connection string 'Game' not found.");
 builder.Services.AddDbContext<GameDbContext>(options =>
@@ -27,7 +33,17 @@ builder.Services.AddDbContext<GameDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequiredLength = 8;
+        options.User.RequireUniqueEmail = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllers();
@@ -50,11 +66,76 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// var cookiePolicyOptions = new CookiePolicyOptions
+// {
+//     Secure = CookieSecurePolicy.Always,
+//     MinimumSameSitePolicy = SameSiteMode.None
+// };
+// app.UseCookiePolicy(cookiePolicyOptions);
+
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseSession();
 
 app.MapRazorPages();
 app.MapControllerRoute(name: "default", pattern: "{controller=Game}/{action=Index}");
 
+Defaults(app).Wait();
+
 app.Run();
+
+async Task Defaults(IApplicationBuilder a)
+{
+    using var scope = app.Services.CreateScope();
+    var sp = scope.ServiceProvider;
+    var context = sp.GetRequiredService<ApplicationDbContext>();
+    var gameContext = sp.GetRequiredService<GameDbContext>();
+    var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
+
+    //Migrate Database:
+    await context.Database.MigrateAsync();
+    await gameContext.Database.MigrateAsync();
+
+    
+    async Task ConfirmRoleSetup(string role)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    //Create role:
+    await ConfirmRoleSetup("Admin");
+    
+    //Create admin user:
+    var adminUser = await userManager.FindByNameAsync("serveradmin");
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            Email = "jcraik23@gmail.com",
+            UserName = "serveradmin",
+            EmailConfirmed = true,
+            TwoFactorEnabled = false,
+            DisplayName = "Admin"
+        };
+        await userManager.CreateAsync(adminUser);
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+        var p = "TempPassword23@Helperv1.2";
+        await userManager.AddPasswordAsync(adminUser, p);
+        Console.WriteLine("=============================");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine(p);
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("=============================");
+    }
+}

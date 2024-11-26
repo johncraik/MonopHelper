@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Services;
@@ -6,6 +7,7 @@ using MonopHelper.Models.ViewModels;
 
 namespace MonopHelper.Pages.InGame;
 
+[Authorize]
 public class Index : PageModel
 {
     private readonly GameService _gameManager;
