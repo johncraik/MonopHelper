@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
+using MonopHelper.Authentication.UserClaims;
+using MonopHelper.Middleware;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
@@ -46,6 +48,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddScoped<UserInfo>(sp => new UserInfo(sp));
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, GameUserClaimsPrincipalFactory>();
+
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
@@ -79,6 +84,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 //app.UseSession();
+app.UseUserInfo();
 
 app.MapRazorPages();
 app.MapControllerRoute(name: "default", pattern: "{controller=Game}/{action=Index}");

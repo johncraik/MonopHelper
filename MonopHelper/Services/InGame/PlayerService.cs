@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models;
 
@@ -10,15 +11,17 @@ public class PlayerService
     private const int TripleIncrement = 500;
     
     private readonly ApplicationDbContext _context;
+    private readonly UserInfo _userInfo;
 
-    public PlayerService(ApplicationDbContext context)
+    public PlayerService(ApplicationDbContext context, UserInfo userInfo)
     {
         _context = context;
+        _userInfo = userInfo;
     }
 
     public async Task<Player?> GetPlayer(int id)
     {
-        return await _context.Players.FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Players.FirstOrDefaultAsync(p => p.TenantId == _userInfo.TenantId && p.Id == id);
     }
 
     public async Task<int> SetNumber(int id, byte dice1, byte dice2)

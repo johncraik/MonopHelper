@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models;
 using MonopHelper.Models.ViewModels;
@@ -12,21 +14,23 @@ public class GameService
     private readonly IConfiguration _config;
     private readonly PropertyService _propertyService;
     private readonly LoanService _loanService;
+    private readonly UserInfo _userInfo;
 
     public GameService(ApplicationDbContext context, IConfiguration config, PropertyService propertyService,
-        LoanService loanService)
+        LoanService loanService, UserInfo userInfo)
     {
         _context = context;
         _config = config;
         _propertyService = propertyService;
         _loanService = loanService;
+        _userInfo = userInfo;
     }
 
     public async Task<int> CreateGame(string name)
     {
         var game = new Game
         {
-            UserId = _config["init_userId"] ?? "default",
+            UserId = _userInfo.UserId,
             GameName = name,
             DateCreated = DateTime.UtcNow
         };
@@ -49,7 +53,8 @@ public class GameService
                 DiceTwo = 0,
                 GameId = game,
                 JailCost = 50,
-                Triple = 1000
+                Triple = 1000,
+                TenantId = _userInfo.TenantId
             }).ToList();
 
         await _context.Players.AddRangeAsync(addPlayers);
@@ -57,17 +62,20 @@ public class GameService
         return addPlayers.Count > 1 ? (true, "") : (false, "You can't play yourself!");
     }
 
-    public async Task<(Game? game, List<Player> players)> FetchGame(int id, string userId)
+    public async Task<(Game? game, List<Player> players)> FetchGame(int id)
     {
-        var game = await _context.Games.FirstOrDefaultAsync(g => !g.IsDeleted && g.Id == id && g.UserId == userId);
-        var players = await _context.Players.Where(p => p.GameId == id).ToListAsync();
+        var game = await _context.Games.FirstOrDefaultAsync(g => g.TenantId == _userInfo.TenantId 
+                                                                 && !g.IsDeleted && g.Id == id && g.UserId == _userInfo.UserId);
+        var players = await _context.Players.Where(p => p.TenantId == _userInfo.TenantId 
+                                                        && p.GameId == id).ToListAsync();
 
         return (game, players);
     }
 
     public async Task<List<LoadGame>> FetchGames(DateTime? date = null, string search = "")
     {
-        var qry = _context.Games.Include(g => g.Players).Where(g => !g.IsDeleted);
+        var qry = _context.Games.Include(g => g.Players)
+            .Where(g => g.TenantId == _userInfo.TenantId && !g.IsDeleted && g.UserId == _userInfo.UserId);
 
         if (date != null && date.Value.Date != new DateTime(1,1,1).Date) qry = qry.Where(g => g.DateCreated.Date == date);
 
@@ -96,7 +104,8 @@ public class GameService
         var loadGames = new List<LoadGame>();
         foreach (var game in games)
         {
-            var players = await _context.Players.Where(p => p.GameId == game.Id).ToListAsync();
+            var players = await _context.Players.Where(p => p.TenantId == _userInfo.TenantId 
+                                                            && p.GameId == game.Id).ToListAsync();
             loadGames.Add(new LoadGame
             {
                 Game = game,
@@ -109,7 +118,8 @@ public class GameService
 
     public async Task<InGamePlayer?> GetInGamePlayer(int playerId)
     {
-        var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+        var player = await _context.Players.FirstOrDefaultAsync(p => p.TenantId == _userInfo.TenantId 
+                                                                     && p.Id == playerId);
         if (player == null) return null;
         
         var properties = await _propertyService.GetPlayerProperties(player.Id);
@@ -142,9 +152,9 @@ public class GameService
         return inGamePlayers;
     }
 
-    public async Task DeleteGame(int id, string userId)
+    public async Task DeleteGame(int id)
     {
-        var (game, players) = await FetchGame(id, userId);
+        var (game, players) = await FetchGame(id);
         if(game != null) await DeleteGame(game, players);
     }
     

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models;
 using MonopHelper.Models.Enums;
@@ -8,10 +9,12 @@ namespace MonopHelper.Services.InGame;
 public class PropertyService
 {
     private readonly ApplicationDbContext _context;
+    private readonly UserInfo _userInfo;
 
-    public PropertyService(ApplicationDbContext context)
+    public PropertyService(ApplicationDbContext context, UserInfo userInfo)
     {
         _context = context;
+        _userInfo = userInfo;
     }
 
     private readonly List<PropertyCol> _propertyColours =
@@ -36,7 +39,7 @@ public class PropertyService
     
     public async Task<List<Property>> GetPlayerProperties(int playerId)
     {
-        return await _context.Properties.Where(pp => pp.PlayerId == playerId)
+        return await _context.Properties.Where(pp => pp.TenantId == _userInfo.TenantId && pp.PlayerId == playerId)
             .OrderBy(pp => pp.Colour).ToListAsync();
     }
 
@@ -50,6 +53,7 @@ public class PropertyService
     {
         var property = new Property
         {
+            TenantId = _userInfo.TenantId,
             PlayerId = playerId,
             Colour = col
         };

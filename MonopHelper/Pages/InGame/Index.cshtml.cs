@@ -27,7 +27,7 @@ public class Index : PageModel
     
     public async Task<IActionResult> OnGet(int id)
     {
-        var (game, players) = await _gameManager.FetchGame(id, _config["init_userId"] ?? "default");
+        var (game, players) = await _gameManager.FetchGame(id);
         if (game == null) return RedirectToPage(nameof(NotFound));
 
         CurrentGame = game;
@@ -38,7 +38,7 @@ public class Index : PageModel
 
     public async Task<IActionResult> OnPostDeleteGame()
     {
-        await _gameManager.DeleteGame(GameId, _config["init_userId"] ?? "default");
+        await _gameManager.DeleteGame(GameId);
         return RedirectToPage($"~/{nameof(Index)}");
     }
 }

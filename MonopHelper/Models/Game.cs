@@ -6,6 +6,7 @@ namespace MonopHelper.Models;
 public class Game
 {
     public int Id { get; set; }
+    public int TenantId { get; set; }
     public required string UserId { get; set; }
     
     [MaxLength(50)]

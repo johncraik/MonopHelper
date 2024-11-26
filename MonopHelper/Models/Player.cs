@@ -5,6 +5,7 @@ namespace MonopHelper.Models;
 public class Player
 {
     public int Id { get; set; }
+    public int TenantId { get; set; }
     
     public required string PlayerName { get; set; }
     public byte DiceOne { get; set; }

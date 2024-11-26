@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models;
 using SQLitePCL;
@@ -8,15 +9,18 @@ namespace MonopHelper.Services.InGame;
 public class LoanService
 {
     private readonly ApplicationDbContext _context;
+    private readonly UserInfo _userInfo;
 
-    public LoanService(ApplicationDbContext context)
+    public LoanService(ApplicationDbContext context, UserInfo userInfo)
     {
         _context = context;
+        _userInfo = userInfo;
     }
     
     public async Task<List<Loan>> GetPlayerLoans(int playerId, bool repaid = true)
     {
-        var loans = _context.Loans.Where(l => l.PlayerId == playerId)
+        var loans = _context.Loans.Where(l => l.TenantId == _userInfo.TenantId 
+                                              && l.PlayerId == playerId)
             .OrderBy(l => l.Repaid);
 
         if (!repaid) return await loans.Where(l => !l.Repaid).ToListAsync();
@@ -25,11 +29,12 @@ public class LoanService
 
     public async Task<Loan?> FindLoan(int id)
     {
-        return await _context.Loans.FirstOrDefaultAsync(l => l.Id == id);
+        return await _context.Loans.FirstOrDefaultAsync(l => l.TenantId == _userInfo.TenantId && l.Id == id);
     }
 
     public async Task CreateLoan(Loan loan)
     {
+        loan.TenantId = _userInfo.TenantId;
         loan.Repaid = false;
         loan.RepaidAmount = 0;
         await _context.Loans.AddAsync(loan);
