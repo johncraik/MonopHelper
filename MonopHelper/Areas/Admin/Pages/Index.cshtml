@@ -2,5 +2,122 @@
 @model MonopHelper.Areas.Admin.Pages.Index
 
 @{
-    Layout = null;
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Centre";
 }
+
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#Users" type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="cardTypes-tab" data-bs-toggle="tab" data-bs-target="#Tenants" type="button" role="tab" aria-controls="tenants" aria-selected="false">Tenants</button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body bg-light tab-content">
+        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="cards-tab">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Users and Roles
+                </div>
+                <div class="card-body bg-light">
+                    <table class="table table-hover table-striped table-bordered">
+                        <thead>
+                        <tr class="table-dark">
+                            <th>Tenant</th>
+                            <th>Users</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @{
+                            foreach (var tenant in Model.Tenants)
+                            {
+                                <tr>
+                                    <td><b>@tenant.TenantName</b></td>
+                                    <td>
+                                        @{
+                                            var tenantUsers = Model.UsersAndRoles.Where(u => u.User.TenantId == tenant.Id).ToList();
+                                            if (tenantUsers.Count == 0)
+                                            {
+                                                <span>No users in this tenant.</span>
+                                            }
+                                            else
+                                            {
+                                                <table class="table table-bordered table-striped table-hover">
+                                                    <thead>
+                                                    <tr class="table-info">
+                                                        <th>Username</th>
+                                                        <th>Email</th>
+                                                        <th>Roles</th>
+                                                        <th style="width: 130px">Actions</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @{
+                                                        foreach (var user in tenantUsers)
+                                                        {
+                                                            <tr>
+                                                                <td>@user.User.UserName</td>
+                                                                <td>@user.User.Email</td>
+                                                                <td>
+                                                                    @{
+                                                                        if (user.Roles.Count == 0)
+                                                                        {
+                                                                            <span>No Roles</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var roles = user.Roles.Aggregate("", (current, r) => current + (r.Name + ", "));
+                                                                            if (roles.Length > 3)
+                                                                            {
+                                                                                roles = roles[..^2];
+                                                                            }
+
+                                                                            <span>@roles</span>
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn btn-sm btn-link text-info" title="Change Tenant"
+                                                                            onclick="ChangeTenant('@(user.User.Id)', '@(user.User.TenantId)', '@(user.User.DisplayName)')">
+                                                                        <span class="fa-solid fa-house-user"></span>
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-link" title="Manage User"
+                                                                            onclick="location.assign('/Admin/Manage/@(user.User.Id)')">
+                                                                        <span class="fa-solid fa-user-pen"></span>
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-link text-danger" title="Remove User">
+                                                                        <span class="fa-solid fa-x"></span>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="tenants" role="tabpanel" aria-labelledby="cardTypes-tab">
+            <div class="row">
+                <div class="col-sm-8">
+                </div>
+                <div class="col-sm-4">
+                    <button>Add New Tenant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

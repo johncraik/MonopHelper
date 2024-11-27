@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
+using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
@@ -16,6 +17,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 
 builder.Services.AddSingleton<MonopHelper.Services.Version>();
+builder.Services.AddTransient<AdminService>();
+
 builder.Services.AddTransient<GameService>();
 builder.Services.AddTransient<PlayerService>();
 builder.Services.AddTransient<PropertyService>();
@@ -88,6 +91,7 @@ app.UseUserInfo();
 
 app.MapRazorPages();
 app.MapControllerRoute(name: "default", pattern: "{controller=Game}/{action=Index}");
+app.MapControllerRoute(name: "admin", pattern: "{controller=Admin}/{action=Index}");
 
 Defaults(app).Wait();
 
