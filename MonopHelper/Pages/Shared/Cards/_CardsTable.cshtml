@@ -6,7 +6,7 @@
         <th>Card Type</th>
         <th>Card Text</th>
         <th>Cost</th>
-        <th style="width: 60px"></th>
+        <th style="width: 85px"></th>
     </tr>
     </thead>
     <tbody>
@@ -20,7 +20,16 @@
                 <td>@card.CardType.Name</td>
                 <td>@card.Text</td>
                 <td>@cost</td>
-                <td></td>
+                <td>
+                    <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Edit/@(card.Id)')"
+                            title="Edit Card">
+                        <span class="fa-solid fa-pencil"></span>
+                    </button>
+                    <button class="btn btn-sm btn-link" onclick="DeleteCard('@(card.Id)')"
+                            title="Delete Card">
+                        <span class="fa-solid fa-x text-danger"></span>
+                    </button>
+                </td>
             </tr>
         }
     }

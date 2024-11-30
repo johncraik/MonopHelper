@@ -25,6 +25,7 @@ builder.Services.AddTransient<PropertyService>();
 builder.Services.AddTransient<LoanService>();
 
 builder.Services.AddTransient<CardService>();
+builder.Services.AddScoped<UploadCardsService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -92,6 +93,7 @@ app.UseUserInfo();
 app.MapRazorPages();
 app.MapControllerRoute(name: "default", pattern: "{controller=Game}/{action=Index}");
 app.MapControllerRoute(name: "admin", pattern: "{controller=Admin}/{action=Index}");
+app.MapControllerRoute(name: "card", pattern: "{controller=Card}/{action=Index}");
 
 Defaults(app).Wait();
 

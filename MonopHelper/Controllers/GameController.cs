@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using MonopHelper.Models;
 using MonopHelper.Models.ViewModels;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
@@ -62,15 +61,5 @@ public class GameController : Controller
     public async Task<int> ClaimTriple(int id)
     {
         return await _playerService.ClaimTriple(id);
-    }
-    
-    /*
-     * ----------------
-     */
-
-    public async Task<IActionResult> CardsTablePartial(int id)
-    {
-        var model = await _cardService.GetCardsFromDeck(id);
-        return PartialView("Cards/_CardsTable", model);
     }
 }

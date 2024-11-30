@@ -1,0 +1,39 @@
+@page "{id?}"
+@model MonopHelper.Pages.Cards.Edit
+
+@{
+    ViewData["Title"] =  (Model.Adding ? "Create" : "Modify") + " Card";
+}
+
+<div class="card">
+    <div class="card-header text-white bg-danger">
+        @(Model.Adding ? "Create" : "Modify") Card
+    </div>
+    <div class="card-body bg-light">
+        <form method="post">
+            <div class="mt mb">
+                <label asp-for="Input.DeckId"></label>
+                <select asp-for="Input.DeckId" asp-items="Model.CardDecks" class="form-control"></select>
+                <span asp-validation-for="Input.DeckId" class="text-danger"></span>
+            </div>
+            <div class="mt mb">
+                <label asp-for="Input.CardTypeId"></label>
+                <select asp-for="Input.CardTypeId" asp-items="Model.CardTypes" class="form-control"></select>
+                <span asp-validation-for="Input.CardTypeId" class="text-danger"></span>
+            </div>
+            <div class="mt mb">
+                <label asp-for="Input.CardText"></label>
+                <input asp-for="Input.CardText" class="form-control"/>
+                <span asp-validation-for="Input.CardText" class="text-danger"></span>
+            </div>
+            <div class="mt mb">
+                <label asp-for="Input.Cost"></label>
+                <input asp-for="Input.Cost" class="form-control"/>
+                <span asp-validation-for="Input.Cost" class="text-danger"></span>
+            </div>
+            <div class="mt mb">
+                <input class="btn btn-warning" type="submit" value="@(Model.Adding ? "Create" : "Modify") Card"/>
+            </div>
+        </form>
+    </div>
+</div>

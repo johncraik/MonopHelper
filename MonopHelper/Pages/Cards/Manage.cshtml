@@ -1,9 +1,37 @@
-@page
+@page "{id?}"
 @model MonopHelper.Pages.Cards.Manage
 
 @{
     ViewData["Title"] = "Manage Cards";
 }
+
+<div class="modal fade" id="uploadCards" tabindex="-1" role="dialog" aria-labelledby="uploadCards" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload <span id="CardTypeName"></span> Cards</h4>
+                <button type="button" class="btn btn-sm btn-link" data-bs-dismiss="modal">
+                    <span class="fa-solid fa-x text-danger"></span>
+                </button>
+            </div>
+            <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Upload.TypeId" id="TypeId"/>
+                    <input type="hidden" asp-for="Upload.DeckId" id="DeckId" value="@Model.CardDecks?.First()?.Value"/>
+                    <label asp-for="Upload.CsvFile"></label>
+                    <input type="file" class="form-control" asp-for="Upload.CsvFile"/>
+                    <span asp-validation-for="Upload.CsvFile" class="text-danger"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="this.form.submit()">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="card">
     <div class="card-header">
@@ -26,14 +54,38 @@
                     Upload Cards
                 </div>
                 <div class="card-body bg-light">
-                    <p>Create an Excel file with the following headings. Save the file as a 'cvs' file.</p>
-                    <table class="table table-sm table-bordered table-secondary">
-                        <tr>
-                            <td>Text</td>
-                            <td>Cost</td>
-                        </tr>
-                    </table>
-                    <p>Input a negative cost to take money from the player. Leave cost blank if there is no cost involved.</p>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p>
+                                Create an Excel file with the headings 'Text' and 'Cost'. Each row will represent a different card.
+                            </p>
+                            <p>
+                                In the 'Text' column, input what the card will say.
+                                <br/>
+                                In the 'Cost' column input what the player will receive/pay based on the card.
+                                Leave blank if the player does not receive/pay anything (or if the cost is ambiguous, like street repairs).
+                            </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p>
+                                See Example:
+                            </p>
+                            <table class="table table-secondary table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Text</th>
+                                    <th>Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Speeding fine! Pay 20</td>
+                                    <td>-20</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -51,8 +103,34 @@
                 <div class="card-header bg-primary text-white">
                     Cards
                 </div>
-                <div class="card-body bg-light" id="CardsTable">
-                    <partial name="Cards/_CardsTable" model="Model.Cards"/>
+                <div class="card-body bg-light">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <button class="btn btn-info text-white mt mb" style="width: 100%; word-break: break-word; word-wrap: break-word"
+                                    onclick="location.assign('/Cards/Edit/0')">
+                                Create New Card
+                            </button>
+                            
+                            <div class="h-line"></div>
+                            
+                            @{
+                                foreach (var type in Model.CardTypes)
+                                {
+                                    <button class="btn btn-warning mt" style="width: 100%; word-break: break-word; word-wrap: break-word" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#uploadCards" onclick="SetUploadType('@(type.Id)', '@(type.Name)')">
+                                        Upload @type.Name Cards
+                                    </button>
+                                }
+                            }
+
+                            <div class="h-line mt-3"></div>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="card-body bg-light" id="CardsTable">
+                                <partial name="Cards/_CardsTable" model="Model.Cards"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
