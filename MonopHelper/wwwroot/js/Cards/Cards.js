@@ -7,7 +7,7 @@ function ShowCards(decks){
 }
 
 function FetchCards(deckId){
-    let url = "../Card/CardsTablePartial?id=" + deckId;
+    let url = "../../Card/CardsTablePartial?id=" + deckId;
     let model = document.getElementById("CardsTable");
     FetchPartial(url, model);
 }
@@ -27,14 +27,65 @@ function DeleteCard(id){
         if(result.isConfirmed){
             $.ajax({
                 type: 'POST',
-                url: '../Card/RemoveCard?id=' + id,
+                url: '../../Card/RemoveCard?id=' + id,
                 success: function (res){
                     Swal.fire("Card Deleted", "", "success").then((r) => {
-                        FetchCards(id)
+                        let deck = document.getElementById("DeckId").value;
+                        FetchCards(deck);
                     });
                 }
             })
             
+        }
+    })
+}
+
+function EditCardType(id, name){
+    Swal.fire({
+        title: "Rename Card Type",
+        icon: "info",
+        input: "text",
+        name,
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: '../../Card/EditCardType?id=' + id + '&name=' + result.value,
+                success: function (res){
+                    Swal.fire("Card Type Renamed", "", "success").then((r) => {
+                        let url = "../../Card/CardTypesPartial";
+                        let model = document.getElementById("CardTypeTable");
+                        FetchPartial(url, model);
+                    });
+                }
+            })
+
+        }
+    })
+}
+
+function DeleteCardType(id){
+    Swal.fire({
+        title: "Delete Card Type?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: '../../Card/RemoveCardType?id=' + id,
+                success: function (res){
+                    Swal.fire("Card Type Deleted", "", "success").then((r) => {
+                        let url = "../../Card/CardTypesPartial";
+                        let model = document.getElementById("CardTypeTable");
+                        FetchPartial(url, model);
+                    });
+                }
+            })
+
         }
     })
 }

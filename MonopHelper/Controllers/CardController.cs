@@ -23,12 +23,44 @@ public class CardController : Controller
         return PartialView("Cards/_CardsTable", model);
     }
 
+    [HttpPost]
     public async Task<bool> RemoveCard(int id)
     {
         var card = await _cardService.FindCard(id);
         if (card == null) return false;
 
-        await _cardService.RemoveCard(card);
+        card.IsDeleted = true;
+        await _cardService.UpdateCard(card);
+        return true;
+    }
+
+    public async Task<IActionResult> CardTypesPartial()
+    {
+        var model = await _cardService.GetCardTypes();
+        return PartialView("Cards/_CardTypesTable", model);
+    }
+
+    [HttpPost]
+    public async Task<bool> EditCardType(int id, string name)
+    {
+        var cardType = await _cardService.FindCardType(id);
+        if (cardType == null) return false;
+
+        cardType.Name = name;
+        await _cardService.UpdateCardType(cardType);
+        return true;
+    }
+
+    [HttpPost]
+    public async Task<bool> RemoveCardType(int id)
+    {
+        await _cardService.Test();
+        
+        var cardType = await _cardService.FindCardType(id);
+        if (cardType == null) return false;
+
+        cardType.IsDeleted = true;
+        await _cardService.UpdateCardType(cardType);
         return true;
     }
 }

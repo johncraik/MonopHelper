@@ -8,15 +8,15 @@ namespace MonopHelper.Services.Cards;
 
 public class UploadCardsService
 {
-    private readonly GameDbContext _context;
+    private readonly GameDbSet<Card> _cardSet;
     private readonly CardService _cardService;
     private readonly ILogger<UploadCardsService> _logger;
     private readonly UserInfo _userInfo;
 
-    public UploadCardsService(GameDbContext context, CardService cardService, 
+    public UploadCardsService(GameDbSet<Card> cardSet, CardService cardService, 
         ILogger<UploadCardsService> logger, UserInfo userInfo)
     {
-        _context = context;
+        _cardSet = cardSet;
         _cardService = cardService;
         _logger = logger;
         _userInfo = userInfo;
@@ -69,8 +69,7 @@ public class UploadCardsService
             }
 
             //Add cards to db:
-            await _context.Cards.AddRangeAsync(cards);
-            await _context.SaveChangesAsync();
+            await _cardSet.AddAsync(cards);
             
             return true;
         }

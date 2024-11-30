@@ -125,6 +125,6 @@ public class Edit : PageModel
             await _cardService.UpdateCard(card);
         }
         
-        return RedirectToPage(nameof(Manage));
+        return RedirectToPage(nameof(Manage), new {id = card.DeckId});
     }
 }

@@ -17,7 +17,7 @@
             <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" asp-for="Upload.TypeId" id="TypeId"/>
-                    <input type="hidden" asp-for="Upload.DeckId" id="DeckId" value="@Model.CardDecks?.First()?.Value"/>
+                    <input type="hidden" asp-for="Upload.DeckId" id="DeckId" value="@Model.CardDeckDropdown?.First()?.Value"/>
                     <label asp-for="Upload.CsvFile"></label>
                     <input type="file" class="form-control" asp-for="Upload.CsvFile"/>
                     <span asp-validation-for="Upload.CsvFile" class="text-danger"></span>
@@ -90,12 +90,12 @@
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-info text-white">
                     Select Card Deck
                 </div>
                 <div class="card-body bg-light">
                     <label>Card Deck</label>
-                    <select asp-items="Model.CardDecks" class="form-control" onchange="ShowCards(this)"></select>
+                    <select asp-items="Model.CardDeckDropdown" class="form-control" onchange="ShowCards(this)"></select>
                 </div>
             </div>
 
@@ -136,7 +136,36 @@
         </div>
         
         <div class="tab-pane fade" id="types" role="tabpanel" aria-labelledby="cardTypes-tab">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Actions
+                </div>
+                <div class="card-body bg-light">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <button class="btn btn-info text-white mt mb" style="width: 100%"
+                                    onclick="">
+                                Add Card Type
+                            </button>
+                        </div>
+                        <div class="col-sm-6">
+                            <button class="btn btn-warning mt mb" style="width: 100%"
+                                    onclick="">
+                                Import Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    Card Types
+                </div>
+                <div class="card-body bg-light" id="CardTypeTable">
+                    <partial name="Cards/_CardTypesTable" model="Model.CardTypes"/>
+                </div>
+            </div>
         </div>
         
         <div class="tab-pane fade" id="decks" role="tabpanel" aria-labelledby="cardDecks-tab">

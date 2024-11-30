@@ -7,56 +7,60 @@ namespace MonopHelper.Services.Cards;
 
 public class CardService
 {
-    private readonly GameDbContext _context;
+    private readonly GameDbSet<Card> _cardSet;
+    private readonly GameDbSet<CardType> _typeSet;
+    private readonly GameDbSet<CardDeck> _deckSet;
     private readonly UserInfo _userInfo;
 
-    public CardService(GameDbContext context, UserInfo userInfo)
+    public CardService(GameDbSet<Card> cardSet,
+        GameDbSet<CardType> typeSet,
+        GameDbSet<CardDeck> deckSet,
+        UserInfo userInfo)
     {
-        _context = context;
+        _cardSet = cardSet;
+        _typeSet = typeSet;
+        _deckSet = deckSet;
         _userInfo = userInfo;
     }
 
+    public async Task Test() => await _cardSet.Test();
+
     public async Task<List<Card>> GetCardsFromDeck(int deckId)
     {
-        return await _context.Cards.Include(c => c.CardType)
-            .Where(c => c.CardType.TenantId == _userInfo.TenantId && !c.IsDeleted && c.DeckId == deckId)
+        if (!_cardSet.Qry.Any()) return new List<Card>();
+        return await _cardSet.Qry.Include(c => c.CardType)
+            .Where(c => !c.IsDeleted && c.DeckId == deckId)
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
     }
 
     public async Task<List<CardDeck>> GetCardDecks()
     {
-        return await _context.CardDecks.Where(d => d.TenantId == _userInfo.TenantId && !d.IsDeleted)
+        if (!_deckSet.Qry.Any()) return new List<CardDeck>();
+        return await _deckSet.Qry.Where(d => !d.IsDeleted)
             .OrderBy(d => d.DiffRating).ToListAsync();
     }
 
     public async Task<List<CardType>> GetCardTypes()
     {
-        return await _context.CardTypes.Where(t => t.TenantId == _userInfo.TenantId && !t.IsDeleted)
+        if (!_typeSet.Qry.Any()) return new List<CardType>();
+        return await _typeSet.Qry.Where(t => !t.IsDeleted)
             .OrderBy(t => t.Name).ToListAsync();
     }
 
     
-    public async Task<Card?> FindCard(int id) => await _context.Cards.FirstOrDefaultAsync(t => t.Id == id);
+    public async Task<Card?> FindCard(int id) => await _cardSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
     public async Task<CardType?> FindCardType(int id) => 
-        await _context.CardTypes.FirstOrDefaultAsync(t => t.TenantId == _userInfo.TenantId && t.Id == id);
+        await _typeSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
     public async Task<CardDeck?> FindCardDeck(int id) =>
-        await _context.CardDecks.FirstOrDefaultAsync(t => t.TenantId == _userInfo.TenantId && t.Id == id);
+        await _deckSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
 
-    public async Task AddCard(Card card)
-    {
-        await _context.Cards.AddAsync(card);
-        await _context.SaveChangesAsync();
-    }
+    public async Task AddCard(Card card) => await _cardSet.AddAsync(card);
+    public async Task UpdateCard(Card card) => await _cardSet.UpdateAsync(card);
 
-    public async Task UpdateCard(Card card)
-    {
-        _context.Cards.Update(card);
-        await _context.SaveChangesAsync();
-    }
+    public async Task AddCardType(CardType type) => await _typeSet.AddAsync(type);
+    public async Task UpdateCardType(CardType type) => await _typeSet.UpdateAsync(type);
+    
+    public async Task AddCardDeck(CardDeck deck) => await _deckSet.AddAsync(deck);
+    public async Task UpdateCardDeck(CardDeck deck) => await _deckSet.UpdateAsync(deck);
 
-    public async Task RemoveCard(Card card)
-    {
-        _context.Cards.Remove(card);
-        await _context.SaveChangesAsync();
-    }
 }

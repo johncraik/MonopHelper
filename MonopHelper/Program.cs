@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
 using MonopHelper.Middleware;
+using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
@@ -25,6 +24,9 @@ builder.Services.AddTransient<PropertyService>();
 builder.Services.AddTransient<LoanService>();
 
 builder.Services.AddTransient<CardService>();
+builder.Services.AddScoped<GameDbSet<Card>>();
+builder.Services.AddScoped<GameDbSet<CardType>>();
+builder.Services.AddScoped<GameDbSet<CardDeck>>();
 builder.Services.AddScoped<UploadCardsService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??

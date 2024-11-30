@@ -1,0 +1,31 @@
+@model List<MonopHelper.Models.GameDb.Cards.CardType>
+
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+    <tr>
+        <th>Type Name</th>
+        <th style="width: 85px"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        foreach (var ct in Model)
+        {
+            <tr>
+                <td>@ct.Name</td>
+                <td>
+                    <button class="btn btn-sm btn-link" onclick="EditCardType('@(ct.Id)', '@(ct.Name)')"
+                            title="Edit Card Type">
+                        <span class="fa-solid fa-pencil"></span>
+                    </button>
+                    <button class="btn btn-sm btn-link" onclick="DeleteCardType('@(ct.Id)')"
+                            title="Delete Card Type">
+                        <span class="fa-solid fa-x text-danger"></span>
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

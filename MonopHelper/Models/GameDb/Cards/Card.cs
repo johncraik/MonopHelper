@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using MonopHelper.Data;
 
 namespace MonopHelper.Models.GameDb.Cards;
 
-public class Card
+public class Card : TenantedModel
 {
     public int Id { get; set; }
     public required string Text { get; set; }

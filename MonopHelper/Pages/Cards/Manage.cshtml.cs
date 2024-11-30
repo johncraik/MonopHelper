@@ -22,11 +22,14 @@ public class Manage : PageModel
     }
     
     //Cards Tab:
-    public List<SelectListItem> CardDecks { get; set; }
+    public List<SelectListItem> CardDeckDropdown { get; set; }
     public List<Card> Cards { get; set; }
     
     //Card Types Tab:
     public List<CardType> CardTypes { get; set; }
+    
+    //Card Decks Tab:
+    public List<CardDeck> CardDecks { get; set; }
 
     
     //Front End Models:
@@ -50,16 +53,33 @@ public class Manage : PageModel
         if (idIsDeck != null) deckId = idIsDeck.Id;
         
         var decks = await _cardService.GetCardDecks();
-        CardDecks = decks.Select(d => new SelectListItem
+        CardDecks = decks;
+        CardDeckDropdown = decks.Select(d => new SelectListItem
         {
             Text = d.Name,
             Value = d.Id.ToString(),
             Selected = d.Id == deckId
         }).ToList();
+        
+        if(CardDeckDropdown.Count == 0) CardDeckDropdown.Add(new SelectListItem
+        {
+            Text = "No Decks Found!",
+            Value = "-1"
+        });
 
         CardTypes = await _cardService.GetCardTypes();
+
+        var selectedDeckId = 0;
+        if (decks.Count > 0 && deckId == 0)
+        {
+            selectedDeckId = decks.FirstOrDefault()?.Id ?? 0;
+        }
+        else if(deckId > 0)
+        {
+            selectedDeckId = deckId;
+        }
         
-        Cards = await _cardService.GetCardsFromDeck(deckId == 0 ? decks.FirstOrDefault()?.Id ?? 0 : deckId);
+        Cards = await _cardService.GetCardsFromDeck(selectedDeckId);
     }
     
     public async Task<IActionResult> OnGet(int id)
