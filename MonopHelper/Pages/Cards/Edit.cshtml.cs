@@ -1,10 +1,9 @@
 using System.ComponentModel;
-using System.Drawing.Drawing2D;
-using Humanizer;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Build.Framework;
+using MonopHelper.Authentication;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 
@@ -13,10 +12,12 @@ namespace MonopHelper.Pages.Cards;
 public class Edit : PageModel
 {
     private readonly CardService _cardService;
+    private readonly UserInfo _userInfo;
 
-    public Edit(CardService cardService)
+    public Edit(CardService cardService, UserInfo userInfo)
     {
         _cardService = cardService;
+        _userInfo = userInfo;
     }
 
     public List<SelectListItem> CardDecks { get; set; }
@@ -32,8 +33,10 @@ public class Edit : PageModel
         public string CardText { get; set; }
         [DisplayName("Cost to Player")]
         public int? Cost { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a card type!")]
         [DisplayName("Card Type")]
         public int CardTypeId { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a card deck!")]
         [DisplayName("Card Deck")]
         public int DeckId { get; set; }
 
@@ -117,6 +120,10 @@ public class Edit : PageModel
         {
             card = new Card { Text = "" };
             Input.Fill(card);
+            card.TenantId = _userInfo.TenantId;
+
+            var valid = await _cardService.ValidateCard(card.Text);
+            if (!valid) return Page();
             await _cardService.AddCard(card);
         }
         else

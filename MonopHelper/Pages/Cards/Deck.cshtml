@@ -1,0 +1,34 @@
+@page "{id?}"
+@model MonopHelper.Pages.Cards.Deck
+
+@{
+    ViewData["Title"] = (Model.Adding ? "Create" : "Modify") + " Deck";
+}
+
+<div class="card">
+    <div class="card-header text-white bg-danger">
+        @(Model.Adding ? "Create" : "Modify") Card Deck
+    </div>
+    <div class="card-body bg-light">
+        <form method="post">
+            <div class="mt mb-3">
+                <label asp-for="Input.Name" class="mb-1"></label>
+                <input asp-for="Input.Name" class="form-control"/>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+            <div class="mt mb-3">
+                <label asp-for="Input.DiffRating" class="mb-1"></label>
+                <span class="fa-solid fa-circle-info mb" 
+                      title="@($"A numerical rating for how difficult the deck is.")"></span>
+                <input asp-for="Input.DiffRating" class="form-control"/>
+                <span asp-validation-for="Input.DiffRating" class="text-danger"></span>
+            </div>
+            <div class="mt mb" style="display: inline-flex">
+                <input class="btn btn-primary mr" type="submit" value="@(Model.Adding ? "Create" : "Modify") Card Deck"/>
+                <button class="btn btn-warning" type="button" onclick="location.assign('/Cards/Manage/0')">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

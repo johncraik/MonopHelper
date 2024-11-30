@@ -2,7 +2,7 @@ namespace MonopHelper.Data;
 
 public static class TenantId
 {
-    public const string TenantIdName = "TenantId";
+    public const string TenantIdName = nameof(TenantedModel.TenantId);
 }
 
 public class TenantedModel

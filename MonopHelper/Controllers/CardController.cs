@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using MonopHelper.Authentication;
+using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 
 namespace MonopHelper.Controllers;
@@ -6,10 +8,12 @@ namespace MonopHelper.Controllers;
 public class CardController : Controller
 {
     private readonly CardService _cardService;
+    private readonly UserInfo _userInfo;
 
-    public CardController(CardService cardService)
+    public CardController(CardService cardService, UserInfo userInfo)
     {
         _cardService = cardService;
+        _userInfo = userInfo;
     }
 
     public IActionResult Index()
@@ -19,7 +23,7 @@ public class CardController : Controller
     
     public async Task<IActionResult> CardsTablePartial(int id)
     {
-        var model = await _cardService.GetCardsFromDeck(id);
+        var model = await _cardService.GetCardsFromDeck(id, true);
         return PartialView("Cards/_CardsTable", model);
     }
 
@@ -34,10 +38,33 @@ public class CardController : Controller
         return true;
     }
 
+    public async Task<IActionResult> AddCardsPartial()
+    {
+        var model = await _cardService.GetCardTypes();
+        return PartialView("Cards/_AddCardTypes", model);
+    }
+    
     public async Task<IActionResult> CardTypesPartial()
     {
         var model = await _cardService.GetCardTypes();
         return PartialView("Cards/_CardTypesTable", model);
+    }
+
+    [HttpPost]
+    public async Task<bool> AddCardType(string name)
+    {
+        var valid = await _cardService.ValidateCardType(name);
+        if (!valid) return valid;
+
+        var cardType = new CardType
+        {
+            TenantId = _userInfo.TenantId,
+            Name = name,
+            IsDeleted = false
+        };
+
+        await _cardService.AddCardType(cardType);
+        return true;
     }
 
     [HttpPost]
@@ -54,13 +81,45 @@ public class CardController : Controller
     [HttpPost]
     public async Task<bool> RemoveCardType(int id)
     {
-        await _cardService.Test();
-        
         var cardType = await _cardService.FindCardType(id);
         if (cardType == null) return false;
 
+        //Sets cards to undefined that have the type being deleted:
+        var cardsWithType = await _cardService.GetCardsFromType(id);
+        foreach (var card in cardsWithType)
+        {
+            card.CardTypeId = await _cardService.GetUndefinedTypeId();
+        }
+        await _cardService.UpdateCard(cardsWithType);
+
         cardType.IsDeleted = true;
         await _cardService.UpdateCardType(cardType);
+        return true;
+    }
+    
+    
+    public async Task<IActionResult> CardDecksPartial()
+    {
+        var model = await _cardService.GetCardDecks();
+        return PartialView("Cards/_CardDecksTable", model);
+    }
+
+    [HttpPost]
+    public async Task<bool> RemoveCardDeck(int id)
+    {
+        var cardDeck = await _cardService.FindCardDeck(id);
+        if (cardDeck == null) return false;
+
+        //Sets cards to undefined that have the type being deleted:
+        var cardsInDeck = await _cardService.GetCardsFromDeck(id);
+        foreach (var card in cardsInDeck)
+        {
+            card.CardTypeId = await _cardService.GetUndefinedTypeId();
+        }
+        await _cardService.UpdateCard(cardsInDeck);
+
+        cardDeck.IsDeleted = true;
+        await _cardService.UpdateCardDeck(cardDeck);
         return true;
     }
 }

@@ -113,15 +113,9 @@
                             
                             <div class="h-line"></div>
                             
-                            @{
-                                foreach (var type in Model.CardTypes)
-                                {
-                                    <button class="btn btn-warning mt" style="width: 100%; word-break: break-word; word-wrap: break-word" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#uploadCards" onclick="SetUploadType('@(type.Id)', '@(type.Name)')">
-                                        Upload @type.Name Cards
-                                    </button>
-                                }
-                            }
+                            <div id="AddCardsBtns">
+                                <partial name="Cards/_AddCardTypes" model="Model.CardTypes.Where(t => t.TenantId != 0).ToList()"/>
+                            </div>
 
                             <div class="h-line mt-3"></div>
                         </div>
@@ -136,40 +130,35 @@
         </div>
         
         <div class="tab-pane fade" id="types" role="tabpanel" aria-labelledby="cardTypes-tab">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    Actions
-                </div>
-                <div class="card-body bg-light">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <button class="btn btn-info text-white mt mb" style="width: 100%"
-                                    onclick="">
-                                Add Card Type
-                            </button>
-                        </div>
-                        <div class="col-sm-6">
-                            <button class="btn btn-warning mt mb" style="width: 100%"
-                                    onclick="">
-                                Import Defaults
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <div class="card">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-warning">
                     Card Types
                 </div>
-                <div class="card-body bg-light" id="CardTypeTable">
-                    <partial name="Cards/_CardTypesTable" model="Model.CardTypes"/>
+                <div class="card-body bg-light">
+                    <button class="btn btn-info text-white mt mb" onclick="EditCardType(0, false)">
+                        Add Card Type
+                    </button>
+                    <div id="CardTypeTable">
+                        <partial name="Cards/_CardTypesTable" model="Model.CardTypes.Where(t => t.TenantId != 0).ToList()"/>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="tab-pane fade" id="decks" role="tabpanel" aria-labelledby="cardDecks-tab">
-            
+            <div class="card">
+                <div class="card-header bg-warning">
+                    Card Decks
+                </div>
+                <div class="card-body bg-light">
+                    <button class="btn btn-info text-white mt mb" onclick="location.assign('/Cards/Deck/0')">
+                        Add Card Deck
+                    </button>
+                    <div id="CardDeckTable">
+                        <partial name="Cards/_CardDecksTable" model="Model.CardDecks.Where(t => t.TenantId != 0).ToList()"/>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

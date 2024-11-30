@@ -1,0 +1,11 @@
+@model List<MonopHelper.Models.GameDb.Cards.CardType>
+
+@{
+    foreach (var type in Model)
+    {
+        <button class="btn btn-warning mt" style="width: 100%; word-break: break-word; word-wrap: break-word" type="button"
+                data-bs-toggle="modal" data-bs-target="#uploadCards" onclick="SetUploadType('@(type.Id)', '@(type.Name)')">
+            Upload @type.Name Cards
+        </button>
+    }
+}

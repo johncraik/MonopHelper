@@ -1,3 +1,4 @@
+let BaseUrl = "../../Card/";
 function ShowCards(decks){
     let selectedIndex = decks.options.selectedIndex;
     let deck = decks.options[selectedIndex].value;
@@ -7,7 +8,7 @@ function ShowCards(decks){
 }
 
 function FetchCards(deckId){
-    let url = "../../Card/CardsTablePartial?id=" + deckId;
+    let url = BaseUrl + "CardsTablePartial?id=" + deckId;
     let model = document.getElementById("CardsTable");
     FetchPartial(url, model);
 }
@@ -27,7 +28,7 @@ function DeleteCard(id){
         if(result.isConfirmed){
             $.ajax({
                 type: 'POST',
-                url: '../../Card/RemoveCard?id=' + id,
+                url: BaseUrl + 'RemoveCard?id=' + id,
                 success: function (res){
                     Swal.fire("Card Deleted", "", "success").then((r) => {
                         let deck = document.getElementById("DeckId").value;
@@ -40,23 +41,43 @@ function DeleteCard(id){
     })
 }
 
-function EditCardType(id, name){
+function EditCardType(id, edit){
+    let params = "?";
+    let action = "Add";
+    let successMsg = "Created"
+    
+    if(edit === true){
+        action = "Edit";
+        successMsg = "Renamed";
+        params = '?id=' + id;
+    }
+    
+    let url = BaseUrl + action;
+    
     Swal.fire({
-        title: "Rename Card Type",
+        title: action + " Card Type",
         icon: "info",
         input: "text",
-        name,
         showCancelButton: true,
-        confirmButtonText: "Yes"
+        confirmButtonText: "Save"
     }).then((result) => {
         if(result.isConfirmed){
+            if(edit === true){
+                params += '&';
+            }
+            params += 'name=' + result.value
+            
             $.ajax({
                 type: 'POST',
-                url: '../../Card/EditCardType?id=' + id + '&name=' + result.value,
+                url: url + 'CardType' + params,
                 success: function (res){
-                    Swal.fire("Card Type Renamed", "", "success").then((r) => {
-                        let url = "../../Card/CardTypesPartial";
+                    Swal.fire("Card Type " + successMsg, "", "success").then((r) => {
+                        let url = BaseUrl + "CardTypesPartial";
                         let model = document.getElementById("CardTypeTable");
+                        FetchPartial(url, model);
+                        
+                        url = BaseUrl + "AddCardsPartial";
+                        model = document.getElementById("AddCardsBtns");
                         FetchPartial(url, model);
                     });
                 }
@@ -66,9 +87,10 @@ function EditCardType(id, name){
     })
 }
 
-function DeleteCardType(id){
+function DeleteCardType(id, name){
     Swal.fire({
-        title: "Delete Card Type?",
+        title: "Delete " + name + " Cards?",
+        html: '<p>Cards with this card type will now have an undefined card type.<br/> These will need a card type set to be playable.</p>',
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Yes"
@@ -76,12 +98,43 @@ function DeleteCardType(id){
         if(result.isConfirmed){
             $.ajax({
                 type: 'POST',
-                url: '../../Card/RemoveCardType?id=' + id,
+                url: BaseUrl + 'RemoveCardType?id=' + id,
                 success: function (res){
                     Swal.fire("Card Type Deleted", "", "success").then((r) => {
-                        let url = "../../Card/CardTypesPartial";
+                        let url = BaseUrl + "CardTypesPartial";
                         let model = document.getElementById("CardTypeTable");
                         FetchPartial(url, model);
+
+                        url = BaseUrl + "AddCardsPartial";
+                        model = document.getElementById("AddCardsBtns");
+                        FetchPartial(url, model);
+                    });
+                }
+            })
+
+        }
+    })
+}
+
+function DeleteCardDeck(id, name){
+    Swal.fire({
+        title: "Delete " + name + " Card Deck?",
+        html: '<p>Cards within this deck will now have an undefined card deck.<br/> These will need to be in a card deck to be playable.</p>',
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: BaseUrl + 'RemoveCardDeck?id=' + id,
+                success: function (res){
+                    Swal.fire("Card Type Deleted", "", "success").then((r) => {
+                        let url = BaseUrl + "CardDecksPartial";
+                        let model = document.getElementById("CardDeckTable");
+                        FetchPartial(url, model);
+
+                        document.getElementById("DeckId").value = "0";
                     });
                 }
             })

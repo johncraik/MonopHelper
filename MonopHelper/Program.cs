@@ -4,6 +4,7 @@ using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
+using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Middleware;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services;
@@ -167,4 +168,11 @@ async Task Defaults(IApplicationBuilder a)
         Console.WriteLine("-----------------------------");
         Console.WriteLine("=============================");
     }
+    
+    
+    /*
+     * Game Defaults:
+     */
+    var cardDefaults = new CardDefaults(gameContext);
+    await cardDefaults.EnsureDefaults();
 }

@@ -52,7 +52,7 @@ public class Manage : PageModel
         var idIsDeck = await _cardService.FindCardDeck(id);
         if (idIsDeck != null) deckId = idIsDeck.Id;
         
-        var decks = await _cardService.GetCardDecks();
+        var decks = await _cardService.GetCardDecks(true);
         CardDecks = decks;
         CardDeckDropdown = decks.Select(d => new SelectListItem
         {
@@ -67,7 +67,7 @@ public class Manage : PageModel
             Value = "-1"
         });
 
-        CardTypes = await _cardService.GetCardTypes();
+        CardTypes = await _cardService.GetCardTypes(true);
 
         var selectedDeckId = 0;
         if (decks.Count > 0 && deckId == 0)
@@ -79,7 +79,7 @@ public class Manage : PageModel
             selectedDeckId = deckId;
         }
         
-        Cards = await _cardService.GetCardsFromDeck(selectedDeckId);
+        Cards = await _cardService.GetCardsFromDeck(selectedDeckId, true);
     }
     
     public async Task<IActionResult> OnGet(int id)

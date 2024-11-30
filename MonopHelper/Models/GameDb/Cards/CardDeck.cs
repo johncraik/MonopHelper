@@ -6,6 +6,6 @@ public class CardDeck : TenantedModel
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    public int DiffRating { get; set; }
+    public double DiffRating { get; set; }
     public bool IsDeleted { get; set; }
 }
