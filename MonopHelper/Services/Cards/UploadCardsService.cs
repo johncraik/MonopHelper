@@ -3,6 +3,7 @@ using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models.GameDb.Cards;
 using CsvHelper;
+using MonopHelper.Models.GameDb.Cards.ViewModels;
 
 namespace MonopHelper.Services.Cards;
 

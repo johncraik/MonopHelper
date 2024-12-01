@@ -1,6 +1,7 @@
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
-using SQLitePCL;
 
 
 namespace MonopHelper.Data;
@@ -9,29 +10,58 @@ public class GameDbSet<T>
     where T : class
 {
     private readonly GameDbContext _context;
+    private readonly UserInfo _userInfo;
     private readonly ILogger<GameDbSet<T>> _logger;
+    
     private DbSet<T> _set;
-    public readonly IQueryable<T> Qry;
+    private string _tenantQry;
+    private IQueryable<T> _qry;
 
     public GameDbSet(GameDbContext context, UserInfo userInfo, ILogger<GameDbSet<T>> logger)
     {
         _context = context;
+        _userInfo = userInfo;
         _logger = logger;
 
         _set = context.Set<T>();
-        
+        FilterDbSet();
+    }
+
+    private void FilterDbSet()
+    {
         try
         {
             var tableName = _context.Model.FindEntityType(typeof(T))?.GetTableName() ?? "";
-            var columnName = TenantId.TenantIdName;
-            var tenantId = userInfo.TenantId.ToString();
-            
-            Qry = _set.FromSqlRaw($"SELECT * FROM [{tableName}] WHERE {columnName} = {tenantId} OR {columnName} = 0", tableName, columnName, tenantId);
+            var tenantIdName = TenantId.TenantIdName;
+            var tenant = _userInfo.TenantId.ToString();
+
+            _tenantQry = $"SELECT * FROM [{tableName}] WHERE {tenantIdName} = {tenant} OR {tenantIdName} = 0";
         }
         catch (Exception ex)
         {
-            _logger.LogCritical($"Error filtering db set based on tenant ID!\n{ex}");
-            Qry = _set;
+            _logger.LogCritical($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
+            _qry = _set;
+        }
+    }
+
+    public IQueryable<T> Query(bool rtnDeleted = false)
+    {
+        try
+        {
+            switch (rtnDeleted)
+            {
+                case true:
+                    return _set.FromSqlRaw(_tenantQry);
+                    break;
+                case false:
+                    return _set.FromSqlRaw($"{_tenantQry} AND IsDeleted = False");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical($"Cannot filter query (type: {typeof(T)}) based on tenant ID and deleted entities!\n{ex}");
+            return _qry;
         }
     }
 
@@ -40,6 +70,7 @@ public class GameDbSet<T>
         await _set.AddAsync(model);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Added single object of type: {typeof(T)}");
     }
@@ -49,6 +80,7 @@ public class GameDbSet<T>
         await _set.AddRangeAsync(models);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Added multiple objects of type: {typeof(T)}");
     }
@@ -58,6 +90,7 @@ public class GameDbSet<T>
         _set.Update(model);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Updated single object of type: {typeof(T)}");
     }
@@ -67,6 +100,7 @@ public class GameDbSet<T>
         _set.UpdateRange(models);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Updated multiple objects of type: {typeof(T)}");
     }
@@ -76,6 +110,7 @@ public class GameDbSet<T>
         _set.Remove(model);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Removed single object of type: {typeof(T)}");
     }
@@ -85,6 +120,7 @@ public class GameDbSet<T>
         _set.RemoveRange(models);
         await _context.SaveChangesAsync();
         _set = _context.Set<T>();
+        FilterDbSet();
         
         _logger.LogDebug($"Removed multiple objects of type: {typeof(T)}");
     }

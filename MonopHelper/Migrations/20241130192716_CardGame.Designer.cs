@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
 
@@ -10,9 +11,11 @@ using MonopHelper.Data;
 namespace MonopHelper.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241130192716_CardGame")]
+    partial class CardGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -84,9 +87,6 @@ namespace MonopHelper.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DeckId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -101,8 +101,6 @@ namespace MonopHelper.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeckId");
 
                     b.ToTable("CardGames");
                 });
@@ -187,17 +185,6 @@ namespace MonopHelper.Migrations
                     b.Navigation("CardDeck");
 
                     b.Navigation("CardType");
-                });
-
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardGame", b =>
-                {
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardDeck", "Deck")
-                        .WithMany()
-                        .HasForeignKey("DeckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Deck");
                 });
 
             modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardToGame", b =>

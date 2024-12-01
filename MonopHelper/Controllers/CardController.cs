@@ -114,7 +114,7 @@ public class CardController : Controller
         var cardsInDeck = await _cardService.GetCardsFromDeck(id);
         foreach (var card in cardsInDeck)
         {
-            card.CardTypeId = await _cardService.GetUndefinedTypeId();
+            card.CardTypeId = await _cardService.GetUndefinedDeckId();
         }
         await _cardService.UpdateCard(cardsInDeck);
 

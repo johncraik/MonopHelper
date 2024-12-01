@@ -4,6 +4,7 @@ using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
+using MonopHelper.Helpers;
 using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Middleware;
 using MonopHelper.Models.GameDb.Cards;
@@ -24,10 +25,18 @@ builder.Services.AddTransient<PlayerService>();
 builder.Services.AddTransient<PropertyService>();
 builder.Services.AddTransient<LoanService>();
 
+builder.Services.AddTransient<ShuffleList<Card>>();
+
 builder.Services.AddTransient<CardService>();
+builder.Services.AddTransient<CardGameService>();
+
 builder.Services.AddScoped<GameDbSet<Card>>();
 builder.Services.AddScoped<GameDbSet<CardType>>();
 builder.Services.AddScoped<GameDbSet<CardDeck>>();
+builder.Services.AddScoped<GameDbSet<CardGame>>();
+builder.Services.AddScoped<GameDbSet<CardToGame>>();
+builder.Services.AddScoped<GameDbSet<TypeToGame>>();
+
 builder.Services.AddScoped<UploadCardsService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
