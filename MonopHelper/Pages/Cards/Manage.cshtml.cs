@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
+using MonopHelper.Authentication;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 
 namespace MonopHelper.Pages.Cards;
 
-[Authorize]
+[Authorize(Roles = $"{GameRoles.ManageCards}, {GameRoles.Admin}")]
 public class Manage : PageModel
 {
     private readonly CardService _cardService;

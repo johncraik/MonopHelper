@@ -31,6 +31,7 @@ public class GameService
         var game = new Game
         {
             UserId = _userInfo.UserId,
+            TenantId = _userInfo.TenantId,
             GameName = name,
             DateCreated = DateTime.UtcNow
         };

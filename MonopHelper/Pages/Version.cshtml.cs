@@ -4,7 +4,7 @@ using MonopHelper.Authentication;
 
 namespace MonopHelper.Pages;
 
-[Authorize(Roles = GameRoles.AccessVh)]
+[Authorize(Roles = $"{GameRoles.AccessVh}, {GameRoles.Admin}")]
 public class Version : PageModel
 {
     public void OnGet()

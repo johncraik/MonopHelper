@@ -1,0 +1,55 @@
+@page "{id}"
+@model MonopHelper.Pages.Cards.Move
+
+@{
+    ViewData["Title"] = "Move Cards";
+}
+
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+        @(Model.Copy ? "Copy" : "Move") Cards in @Model.DeckName Deck
+    </div>
+    <div class="card-body bg-light">
+        <form method="post">
+            <div class="mb-4">
+                <label asp-for="SelectedDeck"></label>
+                <select asp-for="SelectedDeck" asp-items="Model.CardDecks" class="form-control"></select>
+                <span class="text-danger" asp-validation-for="SelectedDeck"></span>
+            </div>
+            <div class="mt mb">
+                <input type="hidden" asp-for="CurrentDeck" value="@Model.CurrentDeck"/>
+                <input type="hidden" asp-for="Copy" value="@Model.Copy"/>
+                <input type="submit" class="btn btn-warning" value="@(Model.Copy ? "Copy" : "Move") Cards"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-warning">
+        Cards in @(Model.Copy ? "Copy" : "Move")
+    </div>
+    <div class="card-body bg-light">
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <tr class="table-dark">
+                <th>Card Type</th>
+                <th>Card Text</th>
+                <th>Cost</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                foreach (var c in Model.Cards)
+                {
+                    <tr>
+                        <td>@c.CardType.Name</td>
+                        <td>@c.Text</td>
+                        <td>@c.Cost</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

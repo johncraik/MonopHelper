@@ -124,7 +124,7 @@ public class Edit : PageModel
             Input.Fill(card);
             card.TenantId = _userInfo.TenantId;
 
-            var valid = await _cardService.ValidateCard(card.Text);
+            var valid = await _cardService.ValidateCard(card);
             if (!valid) return Page();
             await _cardService.AddCard(card);
         }

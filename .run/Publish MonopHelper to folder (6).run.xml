@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish MonopHelper to folder (6)" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" runtime="Portable" target_folder="$PROJECT_DIR$/../MonopReleases/v1.1.2" target_framework="net8.0" uuid_high="-6191570092708182133" uuid_low="-9188984230194853574" />
+    <method v="2" />
+  </configuration>
+</component>

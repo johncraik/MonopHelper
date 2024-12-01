@@ -13,6 +13,17 @@ function FetchCards(deckId){
     FetchPartial(url, model);
 }
 
+function MoveCards(copy){
+    let id = document.getElementById("DeckId").value;
+    let url = '/Cards/Move/' + id;
+    
+    if(copy === true){
+        url += '?copy=' + copy;
+    }
+    
+    location.assign(url);
+}
+
 function SetUploadType(id, name){
     document.getElementById("TypeId").value = id;
     document.getElementById("CardTypeName").innerText = name;

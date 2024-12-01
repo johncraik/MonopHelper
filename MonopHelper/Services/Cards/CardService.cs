@@ -36,6 +36,46 @@ public class CardService
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
     }
 
+    public async Task<bool> MoveCardsInDeck(int deckId, int newDeckId)
+    {
+        var deck = await FindCardDeck(newDeckId);
+        if (deck == null) return false;
+        
+        var cards = await GetCardsFromDeck(deckId, true);
+        foreach (var card in cards)
+        {
+            card.DeckId = newDeckId;
+        }
+
+        await UpdateCard(cards);
+        return true;
+    }
+    
+    public async Task<bool> CopyCardsInDeck(int deckId, int newDeckId)
+    {
+        var deck = await FindCardDeck(newDeckId);
+        if (deck == null) return false;
+        
+        var cards = await GetCardsFromDeck(deckId, true);
+        var newCards = new List<Card>();
+        foreach (var newCard in cards.Select(card => new Card
+                 {
+                     TenantId = card.TenantId,
+                     CardTypeId = card.CardTypeId,
+                     Text = card.Text,
+                     Cost = card.Cost,
+                     IsDeleted = card.IsDeleted,
+                     DeckId = newDeckId
+                 }))
+        {
+            var valid = await ValidateCard(newCard);
+            if(valid) newCards.Add(newCard);
+        }
+
+        await AddCard(newCards);
+        return true;
+    }
+
     public async Task<List<Card>> GetCardsFromType(int typeId, bool undefined = false)
     {
         if (!_cardSet.Query().Any()) return new List<Card>();
@@ -66,7 +106,8 @@ public class CardService
         await _cardSet.Query().Include(c => c.CardType).Include(c => c.CardDeck)
             .FirstOrDefaultAsync(c => c.Id == id && (undefined ? c.CardType.TenantId >= 0 : c.CardType.TenantId != 0) 
                                                  && (undefined ? c.CardDeck.TenantId >= 0 : c.CardDeck.TenantId != 0));
-    public async Task<bool> ValidateCard(string txt) => !await _cardSet.Query().AnyAsync(c => c.Text == txt);
+    public async Task<bool> ValidateCard(Card card) => !await _cardSet.Query().AnyAsync(c => 
+        c.DeckId == card.DeckId && c.Text == card.Text);
     
     public async Task<CardType?> FindCardType(int id) => 
         await _typeSet.Query().FirstOrDefaultAsync(t => t.Id == id);
@@ -93,6 +134,7 @@ public class CardService
     
     
     public async Task AddCard(Card card) => await _cardSet.AddAsync(card);
+    public async Task AddCard(List<Card> cards) => await _cardSet.AddAsync(cards);
     public async Task UpdateCard(Card card) => await _cardSet.UpdateAsync(card);
     public async Task UpdateCard(List<Card> cards) => await _cardSet.UpdateAsync(cards);
 

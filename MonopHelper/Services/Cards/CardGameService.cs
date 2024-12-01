@@ -51,7 +51,7 @@ public class CardGameService
         await _gameSet.AddAsync(game);
         
         //Get cards and shuffle:
-        var cardsInDeck = await _cardService.GetCardsFromDeck(deckId);
+        var cardsInDeck = await _cardService.GetCardsFromDeck(deckId, true);
         var shuffle = new ShuffleList<Card>();
         var shuffledCards = shuffle.Shuffle(cardsInDeck);
         
@@ -135,7 +135,7 @@ public class CardGameService
         foreach (var cardIndex in cardIds)
         {
             //Find card:
-            var card = await _cardService.FindCard(cardIndex.CardId, false);
+            var card = await _cardService.FindCard(cardIndex.CardId);
             if (card != null)
             {
                 //Add card and index to view model:
@@ -192,7 +192,7 @@ public class CardGameService
 
         //Get Card:
         var cardId = cards.FirstOrDefault(c => c.Index == newIndex).Card?.Id ?? 0;
-        var card = await _cardService.FindCard(cardId, false);
+        var card = await _cardService.FindCard(cardId);
         if (card == null) return null;
         
         
