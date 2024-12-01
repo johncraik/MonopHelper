@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
 using MonopHelper.Models.GameDb.Cards;
@@ -112,5 +113,25 @@ public class CardDefaults
         };
         await _context.CardDecks.AddAsync(deck);
         await _context.SaveChangesAsync();
+    }
+
+
+    public async Task<(FileStream? file, CardType? type, CardDeck? deck)> OpenCardsFile(string name)
+    {
+        var type = await _context.CardTypes.FirstOrDefaultAsync(t => t.Name == name && t.TenantId == TenantId);
+        if (type == null) return (null, null, null);
+
+        var deck = await _context.CardDecks.FirstOrDefaultAsync(d => d.TenantId == TenantId && d.Name == DefaultName);
+        if (deck == null) return (null, null, null);
+
+        try
+        {
+            var file = File.OpenRead($"{Environment.CurrentDirectory}/Helpers/GameDefaults/CSVs/{name}.csv");
+            return (file, type, deck);;
+        }
+        catch (Exception ex)
+        {
+            return (null, null, null);
+        }
     }
 }

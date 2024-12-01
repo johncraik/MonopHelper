@@ -188,4 +188,16 @@ async Task Defaults(IApplicationBuilder a)
      */
     var cardDefaults = new CardDefaults(gameContext);
     await cardDefaults.EnsureDefaults();
+
+    var uploadService = sp.GetRequiredService<UploadCardsService>();
+    var chanceCards = await cardDefaults.OpenCardsFile("Chance");
+    if (chanceCards.file != null)
+    {
+        await uploadService.UploadFile(chanceCards.file, chanceCards.type, chanceCards.deck);
+    }
+    var comCards = await cardDefaults.OpenCardsFile("Community Chest");
+    if (comCards.file != null)
+    {
+        await uploadService.UploadFile(comCards.file, comCards.type, comCards.deck);
+    }
 }

@@ -71,7 +71,7 @@ public class Edit : PageModel
                 Text = d.Name,
                 Value = d.Id.ToString()
             }).ToList();
-        CardTypes = (await _cardService.GetCardTypes())
+        CardTypes = (await _cardService.GetCardTypes(true))
             .Select(t => new SelectListItem
             {
                 Text = t.Name,
