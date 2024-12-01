@@ -1,0 +1,28 @@
+@page "{id}"
+@model MonopHelper.Pages.Cards.Play.CardGame
+
+@{
+    ViewData["Title"] = "Card Game";
+}
+
+<div class="card text-center">
+    <div class="card-header bg-info text-white">
+        Choose a Card
+    </div>
+    <div class="card-body bg-light">
+        <div class="row">
+            @{
+                foreach (var type in Model.CardGameView?.Types ?? [])
+                {
+                    <div class="col-sm-4 mt mb-3">
+                        <form method="post" asp-page-handler="Card">
+                            <input type="hidden" asp-for="TypeId" value="@type.Type.Id"/>
+                            <input type="hidden" asp-for="GameId" value="@Model.CardGameView?.Game.Id"/>
+                            <input type="submit" class="btn btn-success" value="Take @type.Type.Name Card"/>
+                        </form>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

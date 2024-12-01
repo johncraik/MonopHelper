@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopHelper.Helpers;
 using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Models.GameDb.Cards;
 
@@ -26,10 +27,10 @@ public class CardService
 
     public async Task<List<Card>> GetCardsFromDeck(int deckId, bool undefined = false)
     {
-        if (!_cardSet.Qry.Any()) return new List<Card>();
-        return await _cardSet.Qry.Include(c => c.CardType)
+        if (!_cardSet.Query().Any()) return new List<Card>();
+        return await _cardSet.Query().Include(c => c.CardType)
             .Include(c => c.CardDeck)
-            .Where(c => !c.IsDeleted && c.DeckId == deckId 
+            .Where(c => c.DeckId == deckId 
                          && (undefined ? c.CardType.TenantId >= 0 : c.CardType.TenantId != 0)
                          && (undefined ? c.CardDeck.TenantId >= 0 : c.CardDeck.TenantId != 0))
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
@@ -37,10 +38,10 @@ public class CardService
 
     public async Task<List<Card>> GetCardsFromType(int typeId, bool undefined = false)
     {
-        if (!_cardSet.Qry.Any()) return new List<Card>();
-        return await _cardSet.Qry.Include(c => c.CardType)
+        if (!_cardSet.Query().Any()) return new List<Card>();
+        return await _cardSet.Query().Include(c => c.CardType)
             .Include(c => c.CardDeck)
-            .Where(c => !c.IsDeleted && c.CardTypeId == typeId 
+            .Where(c => c.CardTypeId == typeId 
                         && (undefined ? c.CardType.TenantId >= 0 : c.CardType.TenantId != 0)
                         && (undefined ? c.CardDeck.TenantId >= 0 : c.CardDeck.TenantId != 0))
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
@@ -48,34 +49,37 @@ public class CardService
 
     public async Task<List<CardDeck>> GetCardDecks(bool undefined = false)
     {
-        if (!_deckSet.Qry.Any()) return new List<CardDeck>();
-        return await _deckSet.Qry.Where(d => !d.IsDeleted && (undefined ? d.TenantId >= 0 : d.TenantId != 0))
+        if (!_deckSet.Query().Any()) return new List<CardDeck>();
+        return await _deckSet.Query().Where(d => (undefined ? d.TenantId >= 0 : d.TenantId != 0))
             .OrderByDescending(t => t.TenantId).ThenBy(d => d.DiffRating).ToListAsync();
     }
 
     public async Task<List<CardType>> GetCardTypes(bool undefined = false)
     {
-        if (!_typeSet.Qry.Any()) return new List<CardType>();
-        return await _typeSet.Qry.Where(t => !t.IsDeleted && (undefined ? t.TenantId >= 0 : t.TenantId != 0))
+        if (!_typeSet.Query().Any()) return new List<CardType>();
+        return await _typeSet.Query().Where(t => (undefined ? t.TenantId >= 0 : t.TenantId != 0))
             .OrderByDescending(t => t.TenantId).ThenBy(t => t.Name).ToListAsync();
     }
 
     
-    public async Task<Card?> FindCard(int id) => await _cardSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
-    public async Task<bool> ValidateCard(string txt) => !await _cardSet.Qry.AnyAsync(c => c.Text == txt);
+    public async Task<Card?> FindCard(int id, bool undefined = true) => 
+        await _cardSet.Query().Include(c => c.CardType).Include(c => c.CardDeck)
+            .FirstOrDefaultAsync(c => c.Id == id && (undefined ? c.CardType.TenantId >= 0 : c.CardType.TenantId != 0) 
+                                                 && (undefined ? c.CardDeck.TenantId >= 0 : c.CardDeck.TenantId != 0));
+    public async Task<bool> ValidateCard(string txt) => !await _cardSet.Query().AnyAsync(c => c.Text == txt);
     
     public async Task<CardType?> FindCardType(int id) => 
-        await _typeSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
-    public async Task<bool> ValidateCardType(string txt) => !await _typeSet.Qry.AnyAsync(t => t.Name == txt);
+        await _typeSet.Query().FirstOrDefaultAsync(t => t.Id == id);
+    public async Task<bool> ValidateCardType(string txt) => !await _typeSet.Query().AnyAsync(t => t.Name == txt);
     public async Task<int> GetUndefinedTypeId() =>
-        (await _typeSet.Qry.FirstOrDefaultAsync(t => t.TenantId == CardDefaults.TenantId))?.Id ?? 0;
+        (await _typeSet.Query().FirstOrDefaultAsync(t => t.TenantId == CardDefaults.TenantId))?.Id ?? 0;
     
     
     public async Task<CardDeck?> FindCardDeck(int id) =>
-        await _deckSet.Qry.FirstOrDefaultAsync(t => t.Id == id);
+        await _deckSet.Query().FirstOrDefaultAsync(t => t.Id == id);
     public async Task<double> ValidateCardDeck(double dr)
     {
-        var existingRating = await _deckSet.Qry.FirstOrDefaultAsync(d => Math.Abs(d.DiffRating - dr) < 0.1);
+        var existingRating = await _deckSet.Query().FirstOrDefaultAsync(d => Math.Abs(d.DiffRating - dr) < 0.1);
         if (existingRating == null) return dr;
 
         var newDr = dr - 0.1;
@@ -85,8 +89,8 @@ public class CardService
         return newDr;
     }
     public async Task<int> GetUndefinedDeckId() =>
-        (await _deckSet.Qry.FirstOrDefaultAsync(d => d.TenantId == CardDefaults.TenantId))?.Id ?? 0;
-
+        (await _deckSet.Query().FirstOrDefaultAsync(d => d.TenantId == CardDefaults.TenantId))?.Id ?? 0;
+    
     
     public async Task AddCard(Card card) => await _cardSet.AddAsync(card);
     public async Task UpdateCard(Card card) => await _cardSet.UpdateAsync(card);

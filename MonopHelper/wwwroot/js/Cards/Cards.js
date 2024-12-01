@@ -142,3 +142,32 @@ function DeleteCardDeck(id, name){
         }
     })
 }
+
+function SetSelectedDeck(decks){
+    let selectedIndex = decks.options.selectedIndex;
+    document.getElementById("SelectedDeck").value = decks.options[selectedIndex].value;
+}
+
+function DeleteCardGame(id){
+    Swal.fire({
+        title: "Delete Card Game?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: BaseUrl + 'RemoveCardGame?id=' + id,
+                success: function (res){
+                    Swal.fire("Card Game Deleted", "", "success").then((r) => {
+                        let url = BaseUrl + "CardGamesPartial";
+                        let model = document.getElementById("CardGameTable");
+                        FetchPartial(url, model);
+                    });
+                }
+            })
+
+        }
+    })
+}

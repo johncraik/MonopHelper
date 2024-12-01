@@ -52,14 +52,17 @@ public class CardGameService
         
         //Get cards and shuffle:
         var cardsInDeck = await _cardService.GetCardsFromDeck(deckId);
-        var shuffledCards = ShuffleList<Card>.Shuffle(cardsInDeck);
+        var shuffle = new ShuffleList<Card>();
+        var shuffledCards = shuffle.Shuffle(cardsInDeck);
         
         //Create view model:
         var cgvm = new CardGameViewModel
         {
             Game = game
         };
-        
+
+        cgvm.Cards = [];
+        cgvm.Types = [];
         var addCardToGame = new List<CardToGame>();
         var addTypeToGame = new List<TypeToGame>();
         uint index = 1;
@@ -112,7 +115,7 @@ public class CardGameService
         if (game == null) return null;
         
         //Get card IDs in game:
-        var cardIds = _cardToGameSet.Query().Where(ctg => ctg.GameId == game.Id)
+        var cardIds = _cardToGameSet.Query(true).Where(ctg => ctg.GameId == game.Id)
             .Select(ctg => new
             {
                 ctg.CardId,
@@ -122,7 +125,12 @@ public class CardGameService
         /*
          * Build view model:
          */
-        var cgvm = new CardGameViewModel();
+        var cgvm = new CardGameViewModel
+        {
+            Game = game,
+            Cards = [],
+            Types = []
+        };
         //Get cards for view model:
         foreach (var cardIndex in cardIds)
         {
@@ -136,7 +144,7 @@ public class CardGameService
         }
 
         //Get types for view model:
-        var typeIds = _typeToGameSet.Query().Where(ttg => ttg.GameId == game.Id)
+        var typeIds = _typeToGameSet.Query(true).Where(ttg => ttg.GameId == game.Id)
             .Select(ttg => new
             {
                 ttg.TypeId,
@@ -152,6 +160,10 @@ public class CardGameService
                 cgvm.Types.Add((type, typeCurIndex.CurrentIndex));
             }
         }
+
+        //Set last played:
+        game.LastPlayed = DateTime.Now;
+        await _gameSet.UpdateAsync(game);
 
         return cgvm;
     }
@@ -185,7 +197,8 @@ public class CardGameService
         
         
         //Update current index:
-        var type = await _typeToGameSet.Query().FirstOrDefaultAsync(t => t.TypeId == typeVm.Type.Id);
+        var type = await _typeToGameSet.Query(true)
+            .FirstOrDefaultAsync(t => t.GameId == gameId && t.TypeId == typeVm.Type.Id);
         if (type == null) return null;
 
         type.CurrentIndex = newIndex + 1;
@@ -199,13 +212,29 @@ public class CardGameService
         var cgvm = await FetchGame(id);
         if (cgvm == null) return false;
 
-        var cardsInGame = _cardToGameSet.Query().Where(c => c.GameId == id).ToList();
-        var typesInGame = _typeToGameSet.Query().Where(t => t.GameId == id).ToList();
+        //Remove many-many records:
+        var cardsInGame = _cardToGameSet.Query(true).Where(c => c.GameId == id).ToList();
+        var typesInGame = _typeToGameSet.Query(true).Where(t => t.GameId == id).ToList();
 
         await _cardToGameSet.RemoveAsync(cardsInGame);
         await _typeToGameSet.RemoveAsync(typesInGame);
-        await _gameSet.RemoveAsync(cgvm.Game);
+        
+        //Update game to is deleted:
+        cgvm.Game.IsDeleted = true;
+        await _gameSet.UpdateAsync(cgvm.Game);
 
         return true;
+    }
+
+    public async Task<List<CardGame>> GetCardGames() => await _gameSet.Query().Include(g => g.Deck)
+            .Where(g => g.UserId == _userInfo.UserId).ToListAsync();
+
+    public async Task RemoveGamesWithDeck(int deckId)
+    {
+        var games = await _gameSet.Query().Where(g => g.DeckId == deckId).ToListAsync();
+        foreach (var g in games)
+        {
+            await DeleteCardGame(g.Id);
+        }
     }
 }

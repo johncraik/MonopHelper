@@ -1,0 +1,16 @@
+@page "{id}"
+@model MonopHelper.Pages.Cards.Play.View
+
+@{
+    ViewData["Title"] = "View Card";
+}
+
+<div class="card text-center">
+    <div class="card-header bg-danger text-white">
+        @Model.Card.CardType.Name Card
+    </div>
+    <div class="card-body bg-light">
+        <p>@Model.Card.Text</p>
+        <button class="btn btn-primary mt" onclick="location.assign('/Cards/Play/CardGame/@(Model.GameId)')">Continue</button>
+    </div>
+</div>

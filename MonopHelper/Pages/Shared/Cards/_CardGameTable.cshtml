@@ -1,0 +1,38 @@
+@model List<MonopHelper.Models.GameDb.Cards.CardGame>
+
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+    <tr class="table-dark">
+        <th style="width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">ID</th>
+        <td>Deck</td>
+        <th>Date Created</th>
+        <th>Last Played</th>
+        <th>Open</th>
+        <th style="width: 40px"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        foreach (var cg in Model)
+        {
+            <tr>
+                <td>@cg.Id</td>
+                <td>@cg.Deck.Name</td>
+                <td>@cg.DateCreated.ToString("g")</td>
+                <td>@cg.LastPlayed.ToString("g")</td>
+                <td>
+                    <button class="btn btn-sm btn-success" onclick="location.assign('/Cards/Play/CardGame/@(cg.Id)')">
+                        Open Game
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-link" onclick="DeleteCardGame('@(cg.Id)')"
+                            title="Delete Card Type">
+                        <span class="fa-solid fa-x text-danger"></span>
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

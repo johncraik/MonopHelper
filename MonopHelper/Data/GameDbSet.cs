@@ -31,11 +31,10 @@ public class GameDbSet<T>
     {
         try
         {
-            var tableName = _context.Model.FindEntityType(typeof(T))?.GetTableName() ?? "";
-            var tenantIdName = TenantId.TenantIdName;
-            var tenant = _userInfo.TenantId.ToString();
+            var tfp = TenantParams();
 
-            _tenantQry = $"SELECT * FROM [{tableName}] WHERE {tenantIdName} = {tenant} OR {tenantIdName} = 0";
+            _tenantQry = $"SELECT * FROM [{tfp[0]}] WHERE ({tfp[1]} = {tfp[2]} OR {tfp[1]} = 0)";
+            _qry = _set.FromSqlRaw(_tenantQry, tfp[0], tfp[1], tfp[2]);
         }
         catch (Exception ex)
         {
@@ -44,19 +43,31 @@ public class GameDbSet<T>
         }
     }
 
-    public IQueryable<T> Query(bool rtnDeleted = false)
+    private string[] TenantParams()
     {
         try
         {
-            switch (rtnDeleted)
-            {
-                case true:
-                    return _set.FromSqlRaw(_tenantQry);
-                    break;
-                case false:
-                    return _set.FromSqlRaw($"{_tenantQry} AND IsDeleted = False");
-                    break;
-            }
+            var tableName = _context.Model.FindEntityType(typeof(T))?.GetTableName() ?? "";
+            var tenantIdName = TenantId.TenantIdName;
+            var tenant = _userInfo.TenantId.ToString();
+
+            return [tableName, tenantIdName, tenant];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
+            return [];
+        }
+    }
+
+    public IQueryable<T> Query(bool rtnDeleted = false)
+    {
+        if (rtnDeleted) return _qry;
+        
+        try
+        {
+            var tfp = TenantParams();
+            return _set.FromSqlRaw($"{_tenantQry} AND IsDeleted = False", tfp[0], tfp[1], tfp[2]);
         }
         catch (Exception ex)
         {

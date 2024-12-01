@@ -9,11 +9,13 @@ public class CardController : Controller
 {
     private readonly CardService _cardService;
     private readonly UserInfo _userInfo;
+    private readonly CardGameService _cardGameService;
 
-    public CardController(CardService cardService, UserInfo userInfo)
+    public CardController(CardService cardService, UserInfo userInfo, CardGameService cardGameService)
     {
         _cardService = cardService;
         _userInfo = userInfo;
+        _cardGameService = cardGameService;
     }
 
     public IActionResult Index()
@@ -114,12 +116,28 @@ public class CardController : Controller
         var cardsInDeck = await _cardService.GetCardsFromDeck(id);
         foreach (var card in cardsInDeck)
         {
-            card.CardTypeId = await _cardService.GetUndefinedDeckId();
+            card.DeckId = await _cardService.GetUndefinedDeckId();
         }
         await _cardService.UpdateCard(cardsInDeck);
+        
+        //Deletes games that have that deck:
+        
 
         cardDeck.IsDeleted = true;
         await _cardService.UpdateCardDeck(cardDeck);
         return true;
+    }
+
+
+    public async Task<IActionResult> CardGamesPartial()
+    {
+        var model = await _cardGameService.GetCardGames();
+        return PartialView("Cards/_CardGameTable", model);
+    }
+    
+    [HttpPost]
+    public async Task<bool> RemoveCardGame(int id)
+    {
+        return await _cardGameService.DeleteCardGame(id);
     }
 }

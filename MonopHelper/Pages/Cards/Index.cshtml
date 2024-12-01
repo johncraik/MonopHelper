@@ -4,3 +4,51 @@
 @{
     ViewData["Title"] = "Play Cards";
 }
+
+<div class="card">
+    @* Card Deck Selection *@
+    <div class="card-header bg-primary text-white">
+        Choose a Card Deck
+    </div>
+    <div class="card-body bg-light">
+        @{
+            if (Model.CardDecks.Count > 0)
+            {
+                <form method="post">
+                    <div class="mb">
+                        <label asp-for="CardDecks"></label>
+                        <select asp-items="Model.CardDecks" class="form-control" onchange="SetSelectedDeck(this)"></select>
+                        <input type="hidden" id="SelectedDeck" asp-for="SelectedDeck" value="@Model.CardDecks.First().Value"/>
+                    </div>
+                    <div class="mt">
+                        <input class="btn btn-warning" type="submit" value="Play"/>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <p>You do not have any card decks. Please create one <a href="~/Cards/Manage">here.</a></p>
+            }
+        }
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        Manage Games
+    </div>
+    <div class="card-body bg-light">
+        @{
+            if (Model.CardGames.Count > 0)
+            {
+                <div id="CardGameTable">
+                    <partial name="Cards/_CardGameTable" model="Model.CardGames"/>
+                </div>
+            }
+            else
+            {
+                <p>You have no games saved!</p>
+            }
+        }
+    </div>
+</div>
