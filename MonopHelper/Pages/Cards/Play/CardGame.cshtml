@@ -18,7 +18,7 @@
                         <form method="post" asp-page-handler="Card">
                             <input type="hidden" asp-for="TypeId" value="@type.Type.Id"/>
                             <input type="hidden" asp-for="GameId" value="@Model.CardGameView?.Game.Id"/>
-                            <input type="submit" class="btn btn-success" value="Take @type.Type.Name Card"/>
+                            <input type="submit" class="btn btn-success" style="width: 100%; height: 60px;" value="Take @type.Type.Name Card"/>
                         </form>
                     </div>
                 }

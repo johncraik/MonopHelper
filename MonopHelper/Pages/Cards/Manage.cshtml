@@ -1,4 +1,5 @@
 @page "{id?}"
+@using MonopHelper.Helpers.GameDefaults
 @model MonopHelper.Pages.Cards.Manage
 
 @{
@@ -114,7 +115,7 @@
                             <div class="h-line"></div>
                             
                             <div id="AddCardsBtns">
-                                <partial name="Cards/_AddCardTypes" model="Model.CardTypes.Where(t => t.TenantId != 0).ToList()"/>
+                                <partial name="Cards/_AddCardTypes" model="Model.CardTypes.Where(t => t.Name != CardDefaults.DefaultName).ToList()"/>
                             </div>
 
                             <div class="h-line mt-3"></div>

@@ -7,7 +7,7 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        @if (UserInfo.ClaimsPrincipal.IsInRole("Admin"))
+        @if (UserInfo.ClaimsPrincipal.IsInRole(GameRoles.Admin))
         {
             <li class="nav-item">
                 <a class="nav-link text-dark" asp-area="Admin" asp-page="/Index" title="Admin Centre">Admin Centre</a>

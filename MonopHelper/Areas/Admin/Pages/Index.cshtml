@@ -10,15 +10,15 @@
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs" role="tablist">
             <li class="nav-item">
-                <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#Users" type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
+                <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="cardTypes-tab" data-bs-toggle="tab" data-bs-target="#Tenants" type="button" role="tab" aria-controls="tenants" aria-selected="false">Tenants</button>
+                <button class="nav-link" id="tenants-tab" data-bs-toggle="tab" data-bs-target="#tenants" type="button" role="tab" aria-controls="tenants" aria-selected="false">Tenants</button>
             </li>
         </ul>
     </div>
     <div class="card-body bg-light tab-content">
-        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="cards-tab">
+        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     Users and Roles
@@ -29,6 +29,7 @@
                         <tr class="table-dark">
                             <th>Tenant</th>
                             <th>Users</th>
+                            <th style="width: 45px"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -36,7 +37,10 @@
                             foreach (var tenant in Model.Tenants)
                             {
                                 <tr>
-                                    <td><b>@tenant.TenantName</b></td>
+                                    <td>
+                                        <p><b>@tenant.TenantName</b></p>
+                                        <p>@tenant.DateCreated.ToString("g")</p>
+                                    </td>
                                     <td>
                                         @{
                                             var tenantUsers = Model.UsersAndRoles.Where(u => u.User.TenantId == tenant.Id).ToList();
@@ -52,7 +56,7 @@
                                                         <th>Username</th>
                                                         <th>Email</th>
                                                         <th>Roles</th>
-                                                        <th style="width: 130px">Actions</th>
+                                                        <th style="width: 95px">Actions</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -89,9 +93,6 @@
                                                                             onclick="location.assign('/Admin/Manage/@(user.User.Id)')">
                                                                         <span class="fa-solid fa-user-pen"></span>
                                                                     </button>
-                                                                    <button class="btn btn-sm btn-link text-danger" title="Remove User">
-                                                                        <span class="fa-solid fa-x"></span>
-                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         }
@@ -100,6 +101,13 @@
                                                 </table>
                                             }
                                         }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-link text-@(tenant.IsDeleted ? "success" : "danger")" 
+                                                title="@(tenant.IsDeleted ? "Restore" : "Remove") Tenant"
+                                                onclick="RemoveTenant('@tenant.Id', '@tenant.TenantName', '@(!tenant.IsDeleted)')">
+                                            <span class="fa-solid fa-@(tenant.IsDeleted ? "rotate-left" : "x")"></span>
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -110,13 +118,18 @@
             </div>
         </div>
 
-        <div class="tab-pane fade" id="tenants" role="tabpanel" aria-labelledby="cardTypes-tab">
+        <div class="tab-pane fade" id="tenants" role="tabpanel" aria-labelledby="tenants-tab">
             <div class="row">
-                <div class="col-sm-8">
-                </div>
-                <div class="col-sm-4">
-                    <button>Add New Tenant</button>
-                </div>
+                <form method="post" asp-page-handler="NewTenant">
+                    <div class="mb-3">
+                        <label asp-for="NewTenantName"></label>
+                        <input asp-for="NewTenantName" class="form-control"/>
+                        <span class="text-danger" asp-validation-for="NewTenantName"></span>
+                    </div>
+                    <div class="mt mb">
+                        <input type="submit" class="btn btn-success" value="Create Tenant"/>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -7,7 +7,6 @@
         <td>Deck</td>
         <th>Date Created</th>
         <th>Last Played</th>
-        <th>Open</th>
         <th style="width: 40px"></th>
     </tr>
     </thead>
@@ -16,14 +15,15 @@
         foreach (var cg in Model)
         {
             <tr>
-                <td>@cg.Id</td>
-                <td>@cg.Deck.Name</td>
-                <td>@cg.DateCreated.ToString("g")</td>
-                <td>@cg.LastPlayed.ToString("g")</td>
-                <td>
-                    <button class="btn btn-sm btn-success" onclick="location.assign('/Cards/Play/CardGame/@(cg.Id)')">
-                        Open Game
-                    </button>
+                <td><a href="/Cards/Play/CardGame/@(cg.Id)">@cg.Id</a></td>
+                <td style="cursor: pointer" onclick="location.assign('/Cards/Play/CardGame/@(cg.Id)')">
+                    @cg.Deck.Name
+                </td>
+                <td style="cursor: pointer" onclick="location.assign('/Cards/Play/CardGame/@(cg.Id)')">
+                    @cg.DateCreated.ToString("g")
+                </td>
+                <td style="cursor: pointer" onclick="location.assign('/Cards/Play/CardGame/@(cg.Id)')">
+                    @cg.LastPlayed.ToString("g")
                 </td>
                 <td>
                     <button class="btn btn-sm btn-link" onclick="DeleteCardGame('@(cg.Id)')"

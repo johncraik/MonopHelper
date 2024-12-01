@@ -25,24 +25,40 @@ public class CardDefaults
         if (typeExists.Count > 0)
         {
             //Update name and deleted:
-            var type = typeExists.FirstOrDefault();
-            if (type != null)
+            var unDefinedTypes = typeExists.Where(t => t.Name == DefaultName).ToList();
+            if (unDefinedTypes.Count > 0)
             {
-                type.Name = DefaultName;
-                type.IsDeleted = false;
+                var type = unDefinedTypes.FirstOrDefault();
+                if (type != null)
+                {
+                    type.Name = DefaultName;
+                    type.IsDeleted = false;
 
-                _context.CardTypes.Update(type);
-                _context.CardTypes.RemoveRange(typeExists.Where(t => t.Id != type.Id).ToList());
-                await _context.SaveChangesAsync();
+                    _context.CardTypes.Update(type);
+                    _context.CardTypes.RemoveRange(unDefinedTypes.Where(t => t.Id != type.Id).ToList());
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    await CreateTypeDefault(DefaultName);
+                }
             }
             else
             {
-                await CreateTypeDefault();
+                await CreateTypeDefault(DefaultName);
             }
+
+            var chance = typeExists.FirstOrDefault(t => t.Name == "Chance");
+            if (chance == null) await CreateTypeDefault("Chance");
+
+            var comChest = typeExists.FirstOrDefault(t => t.Name == "Community Chest");
+            if (comChest == null) await CreateTypeDefault("Community Chest");
         }
         else
         {
-            await CreateTypeDefault();
+            await CreateTypeDefault(DefaultName);
+            await CreateTypeDefault("Chance");
+            await CreateTypeDefault("Community Chest");
         }
         
         /*
@@ -74,12 +90,12 @@ public class CardDefaults
         }
     }
 
-    private async Task CreateTypeDefault()
+    private async Task CreateTypeDefault(string name)
     {
         var type = new CardType
         {
             TenantId = TenantId,
-            Name = DefaultName,
+            Name = name,
             IsDeleted = false
         };
         await _context.CardTypes.AddAsync(type);

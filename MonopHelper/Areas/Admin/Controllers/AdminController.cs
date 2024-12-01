@@ -32,4 +32,14 @@ public class AdminController : Controller
         if (string.IsNullOrEmpty(userId)) return false;
         return await _adminService.ChangeUserTenant(userId, tenantId);
     }
+
+    [HttpPost]
+    public async Task<bool> SetTenantIsDeleted(int id, bool isDeleted)
+    {
+        var tenant = await _adminService.FindTenant(id);
+        if (tenant == null) return false;
+
+        await _adminService.SetTenantDeleted(tenant, isDeleted);
+        return true;
+    }
 }

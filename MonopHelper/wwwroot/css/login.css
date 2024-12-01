@@ -1,0 +1,33 @@
+.loginContainer{
+    position: absolute;
+    left: 35%;
+    width: 30%;
+}
+
+@media only screen and (max-width: 700px) {
+    .loginContainer{
+        left: 5%;
+        width: 90%;
+    }
+}
+
+@media only screen and (min-width: 701px) {
+    .loginContainer{
+        left: 25%;
+        width: 50%;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .loginContainer{
+        left: 35%;
+        width: 30%;
+    }
+}
+
+@media only screen and (min-width: 2000px) {
+    .loginContainer{
+        left: 40%;
+        width: 20%;
+    }
+}

@@ -29,3 +29,32 @@ function ChangeTenant(id, curTenant, name){
         }
     })
 }
+
+function RemoveTenant(id, name, isDeleted){
+    let title = "Delete " + name;
+    let success = "Deleted";
+    if(isDeleted === "False"){
+        title = "Restore " + name;
+        success = "Restored"
+    }
+    
+    Swal.fire({
+        title: title + " Tenant?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/SetTenantIsDeleted?id=' + id + '&isDeleted=' + isDeleted,
+                success: function (res){
+                    Swal.fire("Tenant " + success, "", "success").then((r) => {
+                        location.reload();
+                    });
+                }
+            })
+
+        }
+    })
+}

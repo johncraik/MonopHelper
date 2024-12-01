@@ -147,8 +147,10 @@ async Task Defaults(IApplicationBuilder a)
         await context.SaveChangesAsync();
     }
 
-    //Create role:
-    await ConfirmRoleSetup("Admin");
+    //Create roles:
+    await ConfirmRoleSetup(GameRoles.Admin);
+    await ConfirmRoleSetup(GameRoles.AccessVh);
+    await ConfirmRoleSetup(GameRoles.ManageCards);
     
     //Create admin user:
     var adminUser = await userManager.FindByNameAsync("serveradmin");
@@ -164,7 +166,9 @@ async Task Defaults(IApplicationBuilder a)
             TenantId = 1
         };
         await userManager.CreateAsync(adminUser);
-        await userManager.AddToRoleAsync(adminUser, "Admin");
+        await userManager.AddToRoleAsync(adminUser, GameRoles.Admin);
+        await userManager.AddToRoleAsync(adminUser, GameRoles.AccessVh);
+        await userManager.AddToRoleAsync(adminUser, GameRoles.ManageCards);
         var p = "TempPassword23@Helperv1.2";
         await userManager.AddPasswordAsync(adminUser, p);
         Console.WriteLine("=============================");

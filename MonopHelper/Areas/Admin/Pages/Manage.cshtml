@@ -5,3 +5,152 @@
     Layout = "_Layout";
     ViewData["Title"] = "Manage User";
 }
+
+<button class="btn btn-sm btn-warning mb-3" onclick="location.assign('/Admin')">Go Back</button>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                User Information
+            </div>
+            <div class="card-body bg-light">
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Username</b></label><br/>
+                            <label>@Model.UserWithRoles.User.UserName</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-sm btn-link" onclick="" title="Edit Username">
+                            <span class="fa-solid fa-pencil"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Email</b></label><br/>
+                            <label>@Model.UserWithRoles.User.Email</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-sm btn-link" onclick="" title="Edit Email">
+                            <span class="fa-solid fa-pencil"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Email Confirmed?</b></label><br/>
+                            <label>@(Model.UserWithRoles.User.EmailConfirmed ? "Yes" : "No")</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Phone</b></label><br/>
+                            <label>@Model.UserWithRoles.User.PhoneNumber</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-sm btn-link" onclick="" title="Edit Phone Number">
+                            <span class="fa-solid fa-pencil"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Lockout Enabled?</b></label><br/>
+                            <label>@(Model.UserWithRoles.User.LockoutEnabled ? "Yes" : "No")</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>Two-Factor Enabled?</b></label><br/>
+                            <label>@(Model.UserWithRoles.User.TwoFactorEnabled ? "Yes" : "No")</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+                
+                <div class="h-line"></div>
+
+                <div class="row mt mb">
+                    <div class="col-sm-10">
+                        <div>
+                            <label><b>User Roles</b></label><br/>
+                            @{
+                                if (Model.UserWithRoles.Roles.Count == 0)
+                                {
+                                    <label>No Roles</label>
+                                }
+                                else
+                                {
+                                    <ul>
+                                        @foreach (var role in Model.UserWithRoles.Roles)
+                                        {
+                                            <li>@role.Name</li>
+                                        }
+                                    </ul>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                Actions
+            </div>
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <button class="btn btn-warning" style="width: 100%">Reset Password</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-warning" style="width: 100%">Lockout User</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-danger" style="width: 100%">Delete User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                Add User to Role
+            </div>
+            <div class="card-body bg-light">
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="SelectedRole"></label>
+                        <select asp-items="Model.Roles" asp-for="SelectedRole" class="form-control"></select>
+                        <span class="text-danger" asp-validation-for="SelectedRole"></span>
+                    </div>
+                    <div class="mt mb">
+                        <input type="hidden" asp-for="UserId" value="@Model.UserWithRoles.User.Id"/>
+                        <input type="submit" class="btn btn-success" value="Add Role to User"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Authentication;
+using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 
@@ -42,8 +43,8 @@ public class CardController : Controller
 
     public async Task<IActionResult> AddCardsPartial()
     {
-        var model = await _cardService.GetCardTypes();
-        return PartialView("Cards/_AddCardTypes", model);
+        var model = await _cardService.GetCardTypes(true);
+        return PartialView("Cards/_AddCardTypes", model.Where(t => t.Name != CardDefaults.DefaultName).ToList());
     }
     
     public async Task<IActionResult> CardTypesPartial()

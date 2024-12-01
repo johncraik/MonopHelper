@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
@@ -9,11 +10,16 @@ public class AdminService
 {
     private readonly ApplicationDbContext _appContext;
     private readonly GameDbContext _gameContext;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AdminService(ApplicationDbContext appContext, GameDbContext gameContext)
+    public AdminService(ApplicationDbContext appContext, GameDbContext gameContext,
+        UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         _appContext = appContext;
         _gameContext = gameContext;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<List<UserWithRoles>> GetAllUsers()
@@ -63,12 +69,25 @@ public class AdminService
     public async Task<List<Tenant>> GetTenants()
     {
         //Get all tenants, with NO_TENANT at bottom:
-        return await _appContext.Tenants.OrderBy(t => t.Id == 1).ThenBy(t => t.Id).ToListAsync();
+        return await _appContext.Tenants.OrderBy(t => t.IsDeleted)
+            .ThenBy(t => t.Id == 1).ThenBy(t => t.Id).ToListAsync();
     }
 
-    public async Task<ApplicationUser?> GetUser(string id)
+    public async Task<UserWithRoles?> GetUser(string id)
     {
-        return await _appContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var roles = await _appContext.Roles.ToListAsync();
+        var user = await _appContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null) return null;
+
+        var userRole = await _appContext.UserRoles.Where(ur => ur.UserId == user.Id)
+            .ToListAsync();
+
+
+        return new UserWithRoles
+        {
+            User = user,
+            Roles = roles.Where(r => userRole.Select(ur => ur.RoleId).Contains(r.Id)).ToList()
+        };
     }
 
     public async Task<bool> ChangeUserTenant(string userId, int tenantId)
@@ -76,11 +95,44 @@ public class AdminService
         var user = await GetUser(userId);
         if (user == null) return false;
 
-        user.TenantId = tenantId;
-        _appContext.Users.Update(user);
+        user.User.TenantId = tenantId;
+        _appContext.Users.Update(user.User);
         await _appContext.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<Tenant?> FindTenant(int id) => await _appContext.Tenants.FirstOrDefaultAsync(t => t.Id == id);
+    public async Task<bool> ValidateNewTenant(string name) => !await _appContext.Tenants.AnyAsync(t => t.TenantName == name);
+
+    public async Task CreateTenant(string name)
+    {
+        var tenant = new Tenant
+        {
+            TenantName = name,
+            DateCreated = DateTime.Now,
+            IsDeleted = false
+        };
+        await _appContext.Tenants.AddAsync(tenant);
+        await _appContext.SaveChangesAsync();
+    }
+
+    public async Task SetTenantDeleted(Tenant tenant, bool delete = true)
+    {
+        tenant.IsDeleted = delete;
+        _appContext.Tenants.Update(tenant);
+        await _appContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> RoleExists(string role) => await _roleManager.RoleExistsAsync(role);
+
+    public async Task AddRoleToUser(string userId, string role)
+    {
+        var user = await GetUser(userId);
+        if (user != null)
+        {
+            await _userManager.AddToRoleAsync(user.User, role);
+        }
     }
 }
             
