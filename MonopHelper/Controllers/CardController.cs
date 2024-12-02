@@ -34,7 +34,7 @@ public class CardController : Controller
     [HttpPost]
     public async Task<bool> RemoveCard(int id)
     {
-        var card = await _cardService.FindCard(id);
+        var card = await _cardService.FindCard(id, monop: false);
         if (card == null) return false;
 
         card.IsDeleted = true;

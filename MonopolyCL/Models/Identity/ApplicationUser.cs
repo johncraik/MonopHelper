@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using MonopHelper.Authentication;
 
-namespace MonopHelper.Authentication;
+namespace MonopolyCL.Models.Identity;
 
 public class ApplicationUser : IdentityUser
 {

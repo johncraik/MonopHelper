@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Models;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Data;
 

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopolyCL.Models.Cards;
 

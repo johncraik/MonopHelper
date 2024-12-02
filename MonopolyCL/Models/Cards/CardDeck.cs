@@ -1,4 +1,4 @@
-using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopolyCL.Models.Cards;
 

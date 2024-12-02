@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Areas.Identity.Pages.Account.Manage
 {

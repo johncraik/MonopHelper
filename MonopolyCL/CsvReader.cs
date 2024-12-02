@@ -10,6 +10,8 @@ public class CsvReader<T> : ICsvReader<T>
 {
     private readonly ILogger<CsvReader<T>> _logger;
 
+    public CsvReader() { }
+    
     public CsvReader(ILogger<CsvReader<T>> logger)
     {
         _logger = logger;
@@ -33,17 +35,9 @@ public class CsvReader<T> : ICsvReader<T>
 
     public IEnumerable<T>? UploadFile(FileStream file)
     {
-        try
-        {
-            using var reader = new StreamReader(file);
-            using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+        using var reader = new StreamReader(file);
+        using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-            return csvReader.GetRecords<T>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Unable to read CSV and extract records. File name: {file.Name}, Record Type: {typeof(T)}.\n{ex}");
-            return null;
-        }
+        return csvReader.GetRecords<T>();
     }
 }

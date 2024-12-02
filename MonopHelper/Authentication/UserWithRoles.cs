@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Authentication;
 

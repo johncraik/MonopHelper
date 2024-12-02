@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Authentication;
 

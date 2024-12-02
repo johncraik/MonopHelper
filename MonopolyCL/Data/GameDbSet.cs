@@ -1,7 +1,7 @@
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MonopHelper.Authentication;
+using MonopolyCL.Models.Identity;
 
 
 namespace MonopHelper.Data;
@@ -29,11 +29,14 @@ public class GameDbSet<T>
 
     private void FilterDbSet()
     {
+        //Do not filter if not tenanted model:
+        if (!typeof(T).IsSubclassOf(typeof(TenantedModel))) return;
+        
         try
         {
             var tfp = TenantParams();
 
-            _tenantQry = $"SELECT * FROM [{tfp[0]}] WHERE ({tfp[1]} = {tfp[2]} OR {tfp[1]} = 0)";
+            _tenantQry = $"SELECT * FROM [{tfp[0]}] WHERE ({tfp[1]} = {tfp[2]} OR {tfp[1]} <= 0)";
             _qry = _set.FromSqlRaw(_tenantQry, tfp[0], tfp[1], tfp[2]);
         }
         catch (Exception ex)
@@ -48,7 +51,7 @@ public class GameDbSet<T>
         try
         {
             var tableName = _context.Model.FindEntityType(typeof(T))?.GetTableName() ?? "";
-            var tenantIdName = TenantId.TenantIdName;
+            var tenantIdName = nameof(TenantedModel.TenantId);
             var tenant = _userInfo.TenantId.ToString();
 
             return [tableName, tenantIdName, tenant];
@@ -62,12 +65,14 @@ public class GameDbSet<T>
 
     public IQueryable<T> Query(bool rtnDeleted = false)
     {
-        if (rtnDeleted) return _qry;
+        if (rtnDeleted || !typeof(T).IsSubclassOf(typeof(TenantedModel))) return _qry;
         
         try
         {
             var tfp = TenantParams();
-            return _set.FromSqlRaw($"{_tenantQry} AND IsDeleted = False", tfp[0], tfp[1], tfp[2]);
+            var isDeletedName = nameof(TenantedModel.IsDeleted);
+            
+            return _set.FromSqlRaw($"{_tenantQry} AND {isDeletedName} = False", tfp[0], tfp[1], tfp[2], isDeletedName);
         }
         catch (Exception ex)
         {

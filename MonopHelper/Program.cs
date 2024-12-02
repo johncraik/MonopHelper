@@ -15,6 +15,7 @@ using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 using MonopolyCL;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,11 +121,11 @@ app.MapControllerRoute(name: "default", pattern: "{controller=Game}/{action=Inde
 app.MapControllerRoute(name: "admin", pattern: "{controller=Admin}/{action=Index}");
 app.MapControllerRoute(name: "card", pattern: "{controller=Card}/{action=Index}");
 
-Defaults(app).Wait();
+Defaults().Wait();
 
 app.Run();
 
-async Task Defaults(IApplicationBuilder a)
+async Task Defaults()
 {
     using var scope = app.Services.CreateScope();
     var sp = scope.ServiceProvider;
@@ -180,8 +181,6 @@ async Task Defaults(IApplicationBuilder a)
         };
         await userManager.CreateAsync(adminUser);
         await userManager.AddToRoleAsync(adminUser, GameRoles.Admin);
-        await userManager.AddToRoleAsync(adminUser, GameRoles.AccessVh);
-        await userManager.AddToRoleAsync(adminUser, GameRoles.ManageCards);
         var p = "TempPassword23@Helperv1.2";
         await userManager.AddPasswordAsync(adminUser, p);
         Console.WriteLine("=============================");
@@ -203,18 +202,6 @@ async Task Defaults(IApplicationBuilder a)
     /*
      * Game Defaults:
      */
-    var cardDefaults = new CardDefaults(gameContext);
+    var cardDefaults = new MonopolyCL.Services.Defaults.Cards.CardDefaults(gameContext, new CsvReader<CardUpload>());
     await cardDefaults.EnsureDefaults();
-
-    var uploadService = sp.GetRequiredService<UploadCardsService>();
-    var chanceCards = await cardDefaults.OpenCardsFile("Chance");
-    if (chanceCards.file != null)
-    {
-        await uploadService.UploadFile(chanceCards.file, chanceCards.type, chanceCards.deck);
-    }
-    var comCards = await cardDefaults.OpenCardsFile("Community Chest");
-    if (comCards.file != null)
-    {
-        await uploadService.UploadFile(comCards.file, comCards.type, comCards.deck);
-    }
 }

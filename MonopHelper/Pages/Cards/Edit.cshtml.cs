@@ -94,7 +94,7 @@ public class Edit : PageModel
         await SetupPage();
 
         if (Adding) return Page();
-        var card = await _cardService.FindCard(id);
+        var card = await _cardService.FindCard(id, monop: false);
         if (card == null)
         {
             return RedirectToPage(nameof(Manage));
@@ -118,7 +118,7 @@ public class Edit : PageModel
             return Page();
         }
 
-        var card = await _cardService.FindCard(id);
+        var card = await _cardService.FindCard(id, monop: false);
         if (Adding || card == null)
         {
             card = new Card { Text = "" };

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Areas.Admin.Services;
 
@@ -12,18 +13,16 @@ public class AdminService
     private readonly GameDbContext _gameContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _config;
 
     public AdminService(ApplicationDbContext appContext, GameDbContext gameContext,
         UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-        SignInManager<ApplicationUser> signInManager, IConfiguration config)
+        IConfiguration config)
     {
         _appContext = appContext;
         _gameContext = gameContext;
         _userManager = userManager;
         _roleManager = roleManager;
-        _signInManager = signInManager;
         _config = config;
     }
 

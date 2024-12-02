@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopHelper.Areas.Identity.Pages.Account
 {

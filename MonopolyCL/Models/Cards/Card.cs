@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using MonopHelper.Data;
+using MonopolyCL.Models.Identity;
 
 namespace MonopolyCL.Models.Cards;
 
@@ -17,4 +17,10 @@ public class Card : TenantedModel
     public int DeckId { get; set; }
     [ForeignKey(nameof(DeckId))]
     public virtual CardDeck CardDeck { get; set; }
+}
+
+public class CardUpload
+{
+    public string Text { get; set; }
+    public string Cost { get; set; }
 }
