@@ -58,3 +58,31 @@ function RemoveTenant(id, name, isDeleted){
         }
     })
 }
+
+function ResetPassword(id, name){
+    Swal.fire({
+        title: "Reset " + name + "'s Password?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/ResetPassword?id=' + id,
+                success: function (res){
+                    Swal.fire({
+                        title: "Password Reset!",
+                        html: '<p>Please prompt the user to sign with the following password and then change their password:</p><p class="text-danger"><b>' + res + '</b></p>',
+                        icon: "info",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    }).then((result) => {
+                        location.reload();
+                    })
+                }
+            })
+
+        }
+    })
+}

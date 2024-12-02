@@ -122,13 +122,22 @@
             <div class="card-body bg-light">
                 <div class="row">
                     <div class="col-sm-4">
-                        <button class="btn btn-warning" style="width: 100%">Reset Password</button>
+                        <button class="btn btn-warning" style="width: 100%"
+                                onclick="ResetPassword('@(Model.UserWithRoles.User.Id)', '@(Model.UserWithRoles.User.UserName)')">
+                            Reset Password
+                        </button>
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-warning" style="width: 100%">Lockout User</button>
+                        <button class="btn btn-warning" style="width: 100%"
+                                onclick="">
+                            Lockout User
+                        </button>
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-danger" style="width: 100%">Delete User</button>
+                        <button class="btn btn-danger" style="width: 100%"
+                                onclick="">
+                            Delete User
+                        </button>
                     </div>
                 </div>
             </div>
@@ -136,18 +145,39 @@
         
         <div class="card mb-4">
             <div class="card-header bg-info text-white">
-                Add User to Role
+                Add Role to User
             </div>
             <div class="card-body bg-light">
-                <form method="post">
+                <form method="post" asp-page-handler="Role">
                     <div class="mb-3">
                         <label asp-for="SelectedRole"></label>
-                        <select asp-items="Model.Roles" asp-for="SelectedRole" class="form-control"></select>
+                        <select asp-items="Model.AddRoles" asp-for="SelectedRole" class="form-control"></select>
                         <span class="text-danger" asp-validation-for="SelectedRole"></span>
                     </div>
                     <div class="mt mb">
                         <input type="hidden" asp-for="UserId" value="@Model.UserWithRoles.User.Id"/>
+                        <input type="hidden" name="id" value="1"/>
                         <input type="submit" class="btn btn-success" value="Add Role to User"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                Remove Role from User
+            </div>
+            <div class="card-body bg-light">
+                <form method="post" asp-page-handler="Role">
+                    <div class="mb-3">
+                        <label asp-for="SelectedRole"></label>
+                        <select asp-items="Model.RemoveRoles" asp-for="SelectedRole" class="form-control"></select>
+                        <span class="text-danger" asp-validation-for="SelectedRole"></span>
+                    </div>
+                    <div class="mt mb">
+                        <input type="hidden" asp-for="UserId" value="@Model.UserWithRoles.User.Id"/>
+                        <input type="hidden" name="id" value="0"/>
+                        <input type="submit" class="btn btn-success" value="Remove Role from User"/>
                     </div>
                 </form>
             </div>

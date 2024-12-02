@@ -42,4 +42,9 @@ public class AdminController : Controller
         await _adminService.SetTenantDeleted(tenant, isDeleted);
         return true;
     }
+
+    public async Task<string> ResetPassword(string id)
+    {
+        return await _adminService.ResetUserPassword(id);
+    }
 }

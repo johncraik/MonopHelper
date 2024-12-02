@@ -64,6 +64,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
+
 builder.Services.AddScoped<UserInfo>(sp => new UserInfo(sp));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, GameUserClaimsPrincipalFactory>();
 
@@ -180,6 +185,10 @@ async Task Defaults(IApplicationBuilder a)
         Console.WriteLine("-----------------------------");
         Console.WriteLine("-----------------------------");
         Console.WriteLine("=============================");
+    }
+    else if (!await userManager.IsInRoleAsync(adminUser, GameRoles.Admin))
+    {
+        await userManager.AddToRoleAsync(adminUser, GameRoles.Admin);
     }
     
     

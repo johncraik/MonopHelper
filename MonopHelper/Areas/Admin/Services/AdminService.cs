@@ -12,14 +12,19 @@ public class AdminService
     private readonly GameDbContext _gameContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IConfiguration _config;
 
     public AdminService(ApplicationDbContext appContext, GameDbContext gameContext,
-        UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+        SignInManager<ApplicationUser> signInManager, IConfiguration config)
     {
         _appContext = appContext;
         _gameContext = gameContext;
         _userManager = userManager;
         _roleManager = roleManager;
+        _signInManager = signInManager;
+        _config = config;
     }
 
     public async Task<List<UserWithRoles>> GetAllUsers()
@@ -133,6 +138,37 @@ public class AdminService
         {
             await _userManager.AddToRoleAsync(user.User, role);
         }
+    }
+    
+    public async Task RemoveRoleFromUser(string userId, string role)
+    {
+        var user = await GetUser(userId);
+        if (user != null)
+        {
+            await _userManager.RemoveFromRoleAsync(user.User, role);
+            await SignOutUser(user.User);
+        }
+    }
+
+    private async Task SignOutUser(ApplicationUser user)
+    {
+        await _userManager.UpdateSecurityStampAsync(user);
+    }
+
+    public async Task<string> ResetUserPassword(string userId)
+    {
+        var user = await _appContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return "ERROR! Cannot Reset Password!";
+
+        var p = _config["reset_password"];
+        if(p == null) return "ERROR! Cannot Reset Password!";
+
+        user.PasswordHash = null;
+        _appContext.Users.Update(user);
+        await _appContext.SaveChangesAsync();
+        
+        var resetPassword = await _userManager.AddPasswordAsync(user, p);
+        return !resetPassword.Succeeded ? "ERROR! Cannot Reset Password!" : p;
     }
 }
             

@@ -22,7 +22,9 @@ public class Manage : PageModel
     
     public UserWithRoles UserWithRoles { get; set; }
     
-    public List<SelectListItem> Roles { get; set; }
+    public List<SelectListItem> AddRoles { get; set; }
+    public List<SelectListItem> RemoveRoles { get; set; }
+    
     [BindProperty]
     [Required]
     [DisplayName("Select Role")]
@@ -36,9 +38,13 @@ public class Manage : PageModel
         if(user == null) return false;
 
         UserWithRoles = user;
-        Roles = GameRoles.GetRoles()
+        AddRoles = GameRoles.GetRoles()
             .Where(r => !UserWithRoles.Roles.Select(ur => ur.Name).Contains(r.Text))
             .ToList();
+        RemoveRoles = GameRoles.GetRoles()
+            .Where(r => UserWithRoles.Roles.Select(ur => ur.Name).Contains(r.Text))
+            .ToList();
+        
         return true;
     }
     
@@ -52,7 +58,7 @@ public class Manage : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPostRole(int id = 1)
     {
         var setup = await SetupPage(UserId);
         if (!setup) return new UnauthorizedResult();
@@ -60,7 +66,14 @@ public class Manage : PageModel
         var roleExists = await _adminService.RoleExists(SelectedRole);
         if (roleExists)
         {
-            await _adminService.AddRoleToUser(UserId, SelectedRole);
+            if (id == 1)
+            {
+                await _adminService.AddRoleToUser(UserId, SelectedRole);
+            }
+            else
+            {
+                await _adminService.RemoveRoleFromUser(UserId, SelectedRole);
+            }
         }
 
         return RedirectToPage(nameof(Manage), new {id = UserId});
