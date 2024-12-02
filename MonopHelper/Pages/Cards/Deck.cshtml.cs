@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MonopHelper.Authentication;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Pages.Cards;
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
 using MonopHelper.Models.GameDb.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Helpers.GameDefaults;
 

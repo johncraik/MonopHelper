@@ -1,6 +1,6 @@
 using MonopHelper.Data;
 
-namespace MonopHelper.Models.GameDb.Cards;
+namespace MonopolyCL.Models.Cards;
 
 public class CardType : TenantedModel
 {

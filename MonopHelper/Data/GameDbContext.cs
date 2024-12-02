@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Models.GameDb.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Data;
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MonopHelper;
 using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
@@ -8,9 +9,12 @@ using MonopHelper.Helpers;
 using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Middleware;
 using MonopHelper.Models.GameDb.Cards;
+using MonopHelper.Models.GameDb.Cards.ViewModels;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
+using MonopolyCL;
+using MonopolyCL.Models.Cards;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +42,10 @@ builder.Services.AddScoped<GameDbSet<CardToGame>>();
 builder.Services.AddScoped<GameDbSet<TypeToGame>>();
 
 builder.Services.AddScoped<UploadCardsService>();
+
+builder.Services.AddScoped<CsvReader<CardUpload>>();
+
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

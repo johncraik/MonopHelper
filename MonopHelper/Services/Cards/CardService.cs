@@ -4,6 +4,7 @@ using MonopHelper.Data;
 using MonopHelper.Helpers;
 using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Models.GameDb.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Services.Cards;
 

@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
 
-namespace MonopHelper.Models.GameDb.Cards;
+namespace MonopolyCL.Models.Cards;
 
 public class Card : TenantedModel
 {

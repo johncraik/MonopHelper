@@ -3,6 +3,7 @@ using MonopHelper.Authentication;
 using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Controllers;
 

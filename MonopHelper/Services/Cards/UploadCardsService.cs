@@ -5,6 +5,8 @@ using MonopHelper.Models.GameDb.Cards;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Models.GameDb.Cards.ViewModels;
+using MonopolyCL;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Services.Cards;
 
@@ -14,14 +16,16 @@ public class UploadCardsService
     private readonly CardService _cardService;
     private readonly ILogger<UploadCardsService> _logger;
     private readonly UserInfo _userInfo;
+    private readonly CsvReader<CardUpload> _csvReader;
 
     public UploadCardsService(GameDbSet<Card> cardSet, CardService cardService, 
-        ILogger<UploadCardsService> logger, UserInfo userInfo)
+        ILogger<UploadCardsService> logger, UserInfo userInfo, CsvReader<CardUpload> csvReader)
     {
         _cardSet = cardSet;
         _cardService = cardService;
         _logger = logger;
         _userInfo = userInfo;
+        _csvReader = csvReader;
     }
 
     private async Task<bool> ValidateFile(IFormFile file)
@@ -47,13 +51,10 @@ public class UploadCardsService
         try
         {
             //Read file:
-            using var reader = new StreamReader(file.OpenReadStream());
-            using var cvsReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-
-            var records = cvsReader.GetRecords<CardUpload>();
+            var records = _csvReader.UploadFile(file);
             
             var cards = new List<Card>();
-            foreach (var record in records)
+            foreach (var record in records ?? [])
             {
                 //Parse cost:
                 int? cost = null;

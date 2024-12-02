@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MonopHelper.Data;
-using MonopHelper.Helpers;
-using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Pages.Cards;
 

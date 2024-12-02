@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
+using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Pages.Cards.Play;
 
