@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MonopHelper.Authentication;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Identity;
 
 

@@ -38,6 +38,6 @@ public class CsvReader<T> : ICsvReader<T>
         using var reader = new StreamReader(file);
         using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-        return csvReader.GetRecords<T>();
+        return csvReader.GetRecords<T>().ToList();
     }
 }

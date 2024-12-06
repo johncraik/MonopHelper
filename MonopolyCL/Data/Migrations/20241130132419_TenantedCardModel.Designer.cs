@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 
 #nullable disable
 
 namespace MonopHelper.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20241130162715_DiffRatingDouble")]
-    partial class DiffRatingDouble
+    [Migration("20241130132419_TenantedCardModel")]
+    partial class TenantedCardModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +24,9 @@ namespace MonopHelper.Migrations
             modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.Card", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TenantId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CardTypeId")
@@ -38,14 +41,11 @@ namespace MonopHelper.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "TenantId");
 
                     b.HasIndex("CardTypeId");
 
@@ -60,8 +60,8 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("DiffRating")
-                        .HasColumnType("REAL");
+                    b.Property<int>("DiffRating")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");

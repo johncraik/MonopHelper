@@ -39,10 +39,4 @@
       </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\Game\" />
-      <Folder Include="Models\Players\" />
-      <Folder Include="Models\Properties\" />
-    </ItemGroup>
-
 </Project>

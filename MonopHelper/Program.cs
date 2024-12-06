@@ -14,6 +14,7 @@ using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 using MonopolyCL;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Identity;
 

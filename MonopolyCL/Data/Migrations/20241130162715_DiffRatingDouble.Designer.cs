@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 
 #nullable disable
 
 namespace MonopHelper.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20241126202119_CardTenantId")]
-    partial class CardTenantId
+    [Migration("20241130162715_DiffRatingDouble")]
+    partial class DiffRatingDouble
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +39,9 @@ namespace MonopHelper.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -57,8 +61,8 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DiffRating")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("DiffRating")
+                        .HasColumnType("REAL");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");

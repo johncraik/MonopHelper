@@ -1,5 +1,7 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Cards.Defaults;
 
@@ -101,16 +103,16 @@ public class CardDefaults
 
     private async Task EnsureCards(string name)
     {
-        var type = await _context.CardTypes.FirstOrDefaultAsync(t => t.Id == DefaultsDictionary.MonopolyTenant
+        var type = await _context.CardTypes.FirstOrDefaultAsync(t => t.TenantId == DefaultsDictionary.MonopolyTenant
                                                                      && t.Name == name);
-        var deck = await _context.CardDecks.FirstOrDefaultAsync(d => d.Id == DefaultsDictionary.MonopolyTenant
+        var deck = await _context.CardDecks.FirstOrDefaultAsync(d => d.TenantId == DefaultsDictionary.MonopolyTenant
                                                                      && d.Name == CardDefaultsDictionary.StandardDeck);
         if(type == null || deck == null) return;
 
-        var file = File.OpenRead($"{Environment.CurrentDirectory}/Services/Defaults/Cards/{name}.csv");
+        var file = File.OpenRead($"{Environment.CurrentDirectory}/../MonopolyCL/Services/Defaults/Cards/{name}.csv");
         var records = _csvReader.UploadFile(file);
         var cards = new List<Card>();
-        foreach (var r in records!)
+        foreach (var r in records!.ToList())
         {
             //Parse cost:
             int? cost = null;
@@ -132,42 +134,10 @@ public class CardDefaults
         var existingCards = await _context.Cards.Where(c => c.TenantId == DefaultsDictionary.DefaultTenant
                                                             && c.CardTypeId == type.Id
                                                             && c.DeckId == deck.Id).ToListAsync();
-        foreach (var ec in existingCards.Where(c => c.IsDeleted))
-        {
-            //Ensure none are deleted:
-            ec.IsDeleted = false;
-        }
 
-        //Get list of cards to add:
-        var addCards = existingCards.Any(c => !cards.Select(ac => new
-            {
-                ac.TenantId,
-                ac.CardTypeId,
-                ac.DeckId,
-                ac.Text,
-                ac.Cost,
-                ac.IsDeleted
-            }).Contains(new
-                {
-                    c.TenantId,
-                    c.CardTypeId,
-                    c.DeckId,
-                    c.Text,
-                    c.Cost,
-                    c.IsDeleted
-                }));
-
-        if (addCards)
-        {
-            _context.Cards.RemoveRange(existingCards);
-            await _context.Cards.AddRangeAsync(cards);
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            _context.Update(existingCards);
-            await _context.SaveChangesAsync();
-        }
+        _context.Cards.RemoveRange(existingCards);
+        await _context.Cards.AddRangeAsync(cards);
+        await _context.SaveChangesAsync();
     }
 
     private async Task CreateType(int id, string name)

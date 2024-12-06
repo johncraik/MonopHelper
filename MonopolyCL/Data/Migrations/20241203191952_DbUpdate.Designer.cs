@@ -2,22 +2,25 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MonopHelper.Data;
+using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203191952_DbUpdate")]
+    partial class DbUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.Card", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.Card", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +54,7 @@ namespace MonopHelper.Migrations
                     b.ToTable("Cards");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardDeck", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardDeck", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +78,7 @@ namespace MonopHelper.Migrations
                     b.ToTable("CardDecks");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardGame", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +110,7 @@ namespace MonopHelper.Migrations
                     b.ToTable("CardGames");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardToGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardToGame", b =>
                 {
                     b.Property<int>("CardId")
                         .HasColumnType("INTEGER");
@@ -116,6 +119,9 @@ namespace MonopHelper.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("TenantId")
@@ -128,7 +134,7 @@ namespace MonopHelper.Migrations
                     b.ToTable("CardsToGames");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardType", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +155,7 @@ namespace MonopHelper.Migrations
                     b.ToTable("CardTypes");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.TypeToGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.TypeToGame", b =>
                 {
                     b.Property<int>("TypeId")
                         .HasColumnType("INTEGER");
@@ -158,6 +164,9 @@ namespace MonopHelper.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("CurrentIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("TenantId")
@@ -170,15 +179,15 @@ namespace MonopHelper.Migrations
                     b.ToTable("TypesToGames");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.Card", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.Card", b =>
                 {
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardType", "CardType")
+                    b.HasOne("MonopolyCL.Models.Cards.CardType", "CardType")
                         .WithMany()
                         .HasForeignKey("CardTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardDeck", "CardDeck")
+                    b.HasOne("MonopolyCL.Models.Cards.CardDeck", "CardDeck")
                         .WithMany()
                         .HasForeignKey("DeckId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -189,9 +198,9 @@ namespace MonopHelper.Migrations
                     b.Navigation("CardType");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardGame", b =>
                 {
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardDeck", "Deck")
+                    b.HasOne("MonopolyCL.Models.Cards.CardDeck", "Deck")
                         .WithMany()
                         .HasForeignKey("DeckId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -200,15 +209,15 @@ namespace MonopHelper.Migrations
                     b.Navigation("Deck");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.CardToGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.CardToGame", b =>
                 {
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.Card", "Card")
+                    b.HasOne("MonopolyCL.Models.Cards.Card", "Card")
                         .WithMany()
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardGame", "Game")
+                    b.HasOne("MonopolyCL.Models.Cards.CardGame", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -219,15 +228,15 @@ namespace MonopHelper.Migrations
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.TypeToGame", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Cards.TypeToGame", b =>
                 {
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardGame", "Game")
+                    b.HasOne("MonopolyCL.Models.Cards.CardGame", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MonopHelper.Models.GameDb.Cards.CardType", "Type")
+                    b.HasOne("MonopolyCL.Models.Cards.CardType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)

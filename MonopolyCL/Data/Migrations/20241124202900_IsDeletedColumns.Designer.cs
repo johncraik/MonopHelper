@@ -5,20 +5,21 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 
 #nullable disable
 
 namespace MonopHelper.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20241130144055_TenantedModels")]
-    partial class TenantedModels
+    [Migration("20241124202900_IsDeletedColumns")]
+    partial class IsDeletedColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
             modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.Card", b =>
                 {
@@ -36,9 +37,6 @@ namespace MonopHelper.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TenantId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Text")
@@ -60,18 +58,12 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DiffRating")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -90,9 +82,6 @@ namespace MonopHelper.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

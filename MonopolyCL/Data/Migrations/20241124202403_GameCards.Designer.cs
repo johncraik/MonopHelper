@@ -5,27 +5,26 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 
 #nullable disable
 
 namespace MonopHelper.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20241130132419_TenantedCardModel")]
-    partial class TenantedCardModel
+    [Migration("20241124202403_GameCards")]
+    partial class GameCards
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
             modelBuilder.Entity("MonopHelper.Models.GameDb.Cards.Card", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TenantId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CardTypeId")
@@ -37,14 +36,11 @@ namespace MonopHelper.Migrations
                     b.Property<int>("DeckId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id", "TenantId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CardTypeId");
 
@@ -59,18 +55,9 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DiffRating")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -83,15 +70,9 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
