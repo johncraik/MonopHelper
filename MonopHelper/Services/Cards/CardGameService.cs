@@ -36,7 +36,7 @@ public class CardGameService
     public async Task<CardGameViewModel?> CreateGame(int deckId)
     {
         //Check Deck Exists:
-        var deck = await _cardService.FindCardDeck(deckId);
+        var deck = await _cardService.FindCardDeck(deckId, true);
         if (deck == null) return null;
         
         //Create game:
@@ -136,7 +136,7 @@ public class CardGameService
         foreach (var cardIndex in cardIds)
         {
             //Find card:
-            var card = await _cardService.FindCard(cardIndex.CardId);
+            var card = await _cardService.FindCard(cardIndex.CardId, false);
             if (card != null)
             {
                 //Add card and index to view model:
@@ -154,7 +154,7 @@ public class CardGameService
         foreach (var typeCurIndex in typeIds)
         {
             //Find type:
-            var type = await _cardService.FindCardType(typeCurIndex.TypeId);
+            var type = await _cardService.FindCardType(typeCurIndex.TypeId, true);
             if (type != null)
             {
                 //Add type and current index to view model:

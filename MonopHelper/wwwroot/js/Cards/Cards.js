@@ -11,6 +11,10 @@ function FetchCards(deckId){
     let url = BaseUrl + "CardsTablePartial?id=" + deckId;
     let model = document.getElementById("CardsTable");
     FetchPartial(url, model);
+    
+    url = BaseUrl + "AddCardsPartial?deckId=" + deckId;
+    model = document.getElementById("AddCardsBtns");
+    FetchPartial(url, model);
 }
 
 function MoveCards(copy){
@@ -86,8 +90,9 @@ function EditCardType(id, edit){
                         let url = BaseUrl + "CardTypesPartial";
                         let model = document.getElementById("CardTypeTable");
                         FetchPartial(url, model);
-                        
-                        url = BaseUrl + "AddCardsPartial";
+
+                        let deckId = document.getElementById("DeckId").value;
+                        url = BaseUrl + "AddCardsPartial?deckId=" + deckId;
                         model = document.getElementById("AddCardsBtns");
                         FetchPartial(url, model);
                     });
@@ -116,7 +121,8 @@ function DeleteCardType(id, name){
                         let model = document.getElementById("CardTypeTable");
                         FetchPartial(url, model);
 
-                        url = BaseUrl + "AddCardsPartial";
+                        let deckId = document.getElementById("DeckId").value;
+                        url = BaseUrl + "AddCardsPartial?deckId=" + deckId;
                         model = document.getElementById("AddCardsBtns");
                         FetchPartial(url, model);
                     });

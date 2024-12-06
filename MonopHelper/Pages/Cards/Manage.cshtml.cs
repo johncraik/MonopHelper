@@ -8,6 +8,7 @@ using MonopHelper.Authentication;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Cards.Defaults;
 
 namespace MonopHelper.Pages.Cards;
 
@@ -29,9 +30,11 @@ public class Manage : PageModel
     
     //Card Types Tab:
     public List<CardType> CardTypes { get; set; }
+    public List<CardType> EditCardTypes { get; set; }
     
     //Card Decks Tab:
     public List<CardDeck> CardDecks { get; set; }
+    public List<CardDeck> EditCardDecks { get; set; }
 
     
     //Front End Models:
@@ -56,6 +59,8 @@ public class Manage : PageModel
         
         var decks = await _cardService.GetCardDecks(true);
         CardDecks = decks;
+        EditCardDecks = decks.Where(d =>
+            d.TenantId != DefaultsDictionary.DefaultTenant && d.TenantId != DefaultsDictionary.MonopolyTenant).ToList();
         CardDeckDropdown = decks.Select(d => new SelectListItem
         {
             Text = d.Name,
@@ -69,7 +74,9 @@ public class Manage : PageModel
             Value = "-1"
         });
 
-        CardTypes = await _cardService.GetCardTypes(true);
+        CardTypes = await _cardService.GetCardTypes();
+        EditCardTypes = CardTypes.Where(t =>
+            t.TenantId != DefaultsDictionary.DefaultTenant && t.TenantId != DefaultsDictionary.MonopolyTenant).ToList();
 
         var selectedDeckId = 0;
         if (decks.Count > 0 && deckId == 0)

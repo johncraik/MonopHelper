@@ -89,17 +89,19 @@ public class CardService
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
     }
 
-    public async Task<List<CardDeck>> GetCardDecks(bool undefined = false)
+    public async Task<List<CardDeck>> GetCardDecks(bool undefined = false, bool monop = true)
     {
         if (!_deckSet.Query().Any()) return new List<CardDeck>();
-        return await _deckSet.Query().Where(d => (undefined || d.TenantId != DefaultsDictionary.DefaultTenant))
+        return await _deckSet.Query().Where(d => (undefined || d.TenantId != DefaultsDictionary.DefaultTenant) 
+                                                 && (monop || d.TenantId != DefaultsDictionary.MonopolyTenant))
             .OrderByDescending(t => t.TenantId).ThenBy(d => d.DiffRating).ToListAsync();
     }
 
-    public async Task<List<CardType>> GetCardTypes(bool undefined = false)
+    public async Task<List<CardType>> GetCardTypes(bool undefined = false, bool monop = true)
     {
         if (!_typeSet.Query().Any()) return new List<CardType>();
-        return await _typeSet.Query().Where(t => (undefined || t.TenantId != DefaultsDictionary.DefaultTenant))
+        return await _typeSet.Query().Where(t => (undefined || t.TenantId != DefaultsDictionary.DefaultTenant) 
+                                                 && (monop || t.TenantId != DefaultsDictionary.MonopolyTenant))
             .OrderByDescending(t => t.TenantId).ThenBy(t => t.Name).ToListAsync();
     }
 
@@ -108,7 +110,6 @@ public class CardService
         await _cardSet.Query().Include(c => c.CardType).Include(c => c.CardDeck)
             .FirstOrDefaultAsync(c => c.Id == id && (undefined || c.CardType.TenantId != DefaultsDictionary.DefaultTenant)
                                                  && (undefined || c.CardDeck.TenantId != DefaultsDictionary.DefaultTenant)
-                                                 && (monop || c.CardType.TenantId != DefaultsDictionary.MonopolyTenant)
                                                  && (monop || c.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant));
     public async Task<bool> ValidateCard(Card card) => !await _cardSet.Query().AnyAsync(c => 
         c.DeckId == card.DeckId && c.Text == card.Text);

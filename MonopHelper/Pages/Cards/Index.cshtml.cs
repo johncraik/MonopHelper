@@ -46,7 +46,7 @@ public class Index : PageModel
     public async Task<IActionResult> OnPost()
     {
         await SetupPage();
-        var deck = await _cardService.FindCardDeck(SelectedDeck);
+        var deck = await _cardService.FindCardDeck(SelectedDeck, true);
         if (deck != null)
         {
             var game = await _cardGameService.CreateGame(deck.Id);

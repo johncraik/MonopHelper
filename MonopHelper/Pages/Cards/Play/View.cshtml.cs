@@ -29,7 +29,7 @@ public class View : PageModel
         if(game == null) return new UnauthorizedResult();
         
         //Find Type:
-        var type = await _cardService.FindCardType(typeId);
+        var type = await _cardService.FindCardType(typeId, true);
         if (type == null) return new UnauthorizedResult();
 
         //Get card:

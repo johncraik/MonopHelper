@@ -1,5 +1,5 @@
 @page "{id?}"
-@using MonopHelper.Helpers.GameDefaults
+@using MonopolyCL.Models.Cards.Defaults
 @model MonopHelper.Pages.Cards.Manage
 
 @{
@@ -115,15 +115,9 @@
                             <div class="h-line"></div>
                             
                             <div id="AddCardsBtns">
-                                <partial name="Cards/_AddCardTypes" model="Model.CardTypes.Where(t => t.Name != CardDefaults.DefaultName).ToList()"/>
+                                <partial name="Cards/_AddCardTypes" model="@((Model.CardTypes.Where(t => t.TenantId != DefaultsDictionary.DefaultTenant).ToList(), (Model.CardDecks?.First().TenantId != DefaultsDictionary.MonopolyTenant)))"/>
                             </div>
-
-                            <div class="h-line mt-3"></div>
                             
-                            <button class="btn btn-danger text-white mt mb" style="width: 100%; word-break: break-word; word-wrap: break-word"
-                                    onclick="MoveCards(false)">
-                                Move All Cards
-                            </button>
                             <button class="btn btn-success text-white mt mb" style="width: 100%; word-break: break-word; word-wrap: break-word"
                                     onclick="MoveCards(true)">
                                 Copy All Cards
@@ -149,7 +143,7 @@
                         Add Card Type
                     </button>
                     <div id="CardTypeTable">
-                        <partial name="Cards/_CardTypesTable" model="Model.CardTypes.Where(t => t.TenantId != 0).ToList()"/>
+                        <partial name="Cards/_CardTypesTable" model="Model.EditCardTypes"/>
                     </div>
                 </div>
             </div>
@@ -165,7 +159,7 @@
                         Add Card Deck
                     </button>
                     <div id="CardDeckTable">
-                        <partial name="Cards/_CardDecksTable" model="Model.CardDecks.Where(t => t.TenantId != 0).ToList()"/>
+                        <partial name="Cards/_CardDecksTable" model="Model.EditCardDecks"/>
                     </div>
                 </div>
             </div>

@@ -131,13 +131,15 @@ public class CardDefaults
         }
 
         //Get existing cards:
-        var existingCards = await _context.Cards.Where(c => c.TenantId == DefaultsDictionary.DefaultTenant
+        var existingCards = await _context.Cards.Where(c => c.TenantId == DefaultsDictionary.MonopolyTenant
                                                             && c.CardTypeId == type.Id
                                                             && c.DeckId == deck.Id).ToListAsync();
 
-        _context.Cards.RemoveRange(existingCards);
-        await _context.Cards.AddRangeAsync(cards);
-        await _context.SaveChangesAsync();
+        if (existingCards.Count == 0)
+        {
+            await _context.Cards.AddRangeAsync(cards);
+            await _context.SaveChangesAsync();
+        }
     }
 
     private async Task CreateType(int id, string name)

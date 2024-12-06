@@ -33,16 +33,16 @@ public class Move : PageModel
     [BindProperty]
     public bool Copy { get; set; }
 
-    public async Task<bool> SetupPage(int deckId)
+    public async Task<bool> SetupPage(int deckId, bool copy)
     {
-        var deck = await _cardService.FindCardDeck(deckId);
+        var deck = await _cardService.FindCardDeck(deckId, copy);
         if (deck == null) return false;
 
         CurrentDeck = deck.Id;
         DeckName = deck.Name; 
             
         Cards = await _cardService.GetCardsFromDeck(deckId, true);
-        CardDecks = (await _cardService.GetCardDecks()).Where(d => d.Id != deck.Id)
+        CardDecks = (await _cardService.GetCardDecks(monop: false)).Where(d => d.Id != deck.Id)
             .Select(d => new SelectListItem
             {
                 Text = d.Name,
@@ -54,7 +54,7 @@ public class Move : PageModel
     
     public async Task<IActionResult> OnGet(int id, bool copy = false)
     {
-        var success = await SetupPage(id);
+        var success = await SetupPage(id, copy);
         if (!success) return new UnauthorizedResult();
 
         Copy = copy;
@@ -64,7 +64,7 @@ public class Move : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var setup = await SetupPage(CurrentDeck);
+        var setup = await SetupPage(CurrentDeck, Copy);
         if (!setup) return new UnauthorizedResult();
         
         if (!ModelState.IsValid) return Page();

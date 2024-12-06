@@ -66,13 +66,13 @@ public class Edit : PageModel
 
     public async Task SetupPage()
     {
-        CardDecks = (await _cardService.GetCardDecks())
+        CardDecks = (await _cardService.GetCardDecks(monop: false))
             .Select(d => new SelectListItem
             {
                 Text = d.Name,
                 Value = d.Id.ToString()
             }).ToList();
-        CardTypes = (await _cardService.GetCardTypes(true))
+        CardTypes = (await _cardService.GetCardTypes())
             .Select(t => new SelectListItem
             {
                 Text = t.Name,

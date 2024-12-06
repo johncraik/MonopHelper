@@ -1,32 +1,42 @@
 @model List<MonopolyCL.Models.Cards.CardDeck>
 
-<table class="table table-striped table-hover table-bordered">
-    <thead>
-    <tr>
-        <th>Deck Name</th>
-        <th>Difficulty Rating</th>
-        <th style="width: 85px"></th>
-    </tr>
-    </thead>
-    <tbody>
-    @{
-        foreach (var deck in Model)
-        {
+@{
+    if (Model.Count > 0)
+    {
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
             <tr>
-                <td>@deck.Name</td>
-                <td>@deck.DiffRating</td>
-                <td>
-                    <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Deck/@(deck.Id)')"
-                            title="Edit Card Deck">
-                        <span class="fa-solid fa-pencil"></span>
-                    </button>
-                    <button class="btn btn-sm btn-link" onclick="DeleteCardDeck('@(deck.Id)', '@(deck.Name)')"
-                            title="Delete Card Deck">
-                        <span class="fa-solid fa-x text-danger"></span>
-                    </button>
-                </td>
+                <th>Deck Name</th>
+                <th>Difficulty Rating</th>
+                <th style="width: 85px"></th>
             </tr>
-        }
+            </thead>
+            <tbody>
+            @{
+                foreach (var deck in Model)
+                {
+                    <tr>
+                        <td>@deck.Name</td>
+                        <td>@deck.DiffRating</td>
+                        <td>
+                            <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Deck/@(deck.Id)')"
+                                    title="Edit Card Deck">
+                                <span class="fa-solid fa-pencil"></span>
+                            </button>
+                            <button class="btn btn-sm btn-link" onclick="DeleteCardDeck('@(deck.Id)', '@(deck.Name)')"
+                                    title="Delete Card Deck">
+                                <span class="fa-solid fa-x text-danger"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
     }
-    </tbody>
-</table>
+    else
+    {
+        <p>You have not defined any custom card decks yet.</p>
+    }
+}
+

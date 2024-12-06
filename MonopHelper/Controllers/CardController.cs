@@ -4,6 +4,7 @@ using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Cards.Defaults;
 
 namespace MonopHelper.Controllers;
 
@@ -42,10 +43,12 @@ public class CardController : Controller
         return true;
     }
 
-    public async Task<IActionResult> AddCardsPartial()
+    public async Task<IActionResult> AddCardsPartial(int deckId)
     {
-        var model = await _cardService.GetCardTypes(true);
-        return PartialView("Cards/_AddCardTypes", model.Where(t => t.Name != CardDefaults.DefaultName).ToList());
+        var model = await _cardService.GetCardTypes();
+        var deck = await _cardService.FindCardDeck(deckId);
+        
+        return PartialView("Cards/_AddCardTypes", (model, deck != null));
     }
     
     public async Task<IActionResult> CardTypesPartial()
