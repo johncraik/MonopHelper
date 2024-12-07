@@ -53,7 +53,7 @@ public class CardController : Controller
     
     public async Task<IActionResult> CardTypesPartial()
     {
-        var model = await _cardService.GetCardTypes();
+        var model = await _cardService.GetCardTypes(monop: false);
         return PartialView("Cards/_CardTypesTable", model);
     }
 
@@ -107,7 +107,7 @@ public class CardController : Controller
     
     public async Task<IActionResult> CardDecksPartial()
     {
-        var model = await _cardService.GetCardDecks();
+        var model = await _cardService.GetCardDecks(monop: false);
         return PartialView("Cards/_CardDecksTable", model);
     }
 
