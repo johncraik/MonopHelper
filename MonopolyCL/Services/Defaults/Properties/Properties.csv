@@ -1,0 +1,29 @@
+﻿Name,Cost,Index,Type,Set
+Old Kent Road,60,1,0,1
+Whitechapel Road,60,3,0,1
+Kings Cross Station,200,5,1,5
+The Angel Islington,100,6,0,10
+Euston Road,100,8,0,10
+Pentonville Road,120,9,0,10
+Pall Mall,140,11,0,2
+Electric Company,150,12,2,6
+Whitehall,140,13,0,2
+Northumberland Avenue,160,14,0,2
+Marylebone Station,200,15,1,5
+Bow Street,180,16,0,20
+Marlborough Street,180,18,0,20
+Vine Street,200,19,0,20
+The Strand,220,21,0,3
+Fleet Street,220,23,0,3
+Trafalgar Square,240,24,0,3
+Fenchurch Street Station,200,25,1,5
+Leicester Square,260,26,0,30
+Coventry Street,260,27,0,30
+Water Works,150,28,2,6
+Piccadilly,280,29,0,30
+Regent Street,300,31,0,4
+Oxford Street,300,32,0,4
+Bond Street,320,34,0,4
+Liverpool Street Station,200,35,1,5
+Park Lane,350,37,0,40
+Mayfair,400,39,0,40

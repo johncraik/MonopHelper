@@ -13,3 +13,12 @@ public class PropertyDM : TenantedModel
     public int Cost { get; set; }
     public PROP_SET Set { get; set; }
 }
+
+public class PropertyUpload
+{
+    public string Name { get; set; }
+    public int Cost { get; set; }
+    public byte Index { get; set; }
+    public int Type { get; set; }
+    public int Set { get; set; }
+}

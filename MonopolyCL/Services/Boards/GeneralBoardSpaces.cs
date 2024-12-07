@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
+using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Boards;
 using MonopolyCL.Models.Boards.Enums;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Models.Cards.Defaults;
 
 
 namespace MonopolyCL.Services.Boards;

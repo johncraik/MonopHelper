@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Authentication;
-using MonopHelper.Helpers.GameDefaults;
-using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Services.Cards;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Models.Cards.Defaults;
 
 namespace MonopHelper.Controllers;
 

@@ -1,11 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
-using MonopHelper.Helpers;
-using MonopHelper.Helpers.GameDefaults;
-using MonopHelper.Models.GameDb.Cards;
+using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Models.Cards.Defaults;
 
 namespace MonopHelper.Services.Cards;
 

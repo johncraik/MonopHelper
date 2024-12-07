@@ -18,6 +18,7 @@ using MonopolyCL.Data;
 using MonopolyCL.Extensions;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Identity;
+using MonopolyCL.Models.Properties.DataModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -206,4 +207,8 @@ async Task Defaults()
      */
     var cardDefaults = new MonopolyCL.Services.Defaults.Cards.CardDefaults(gameContext, new CsvReader<CardUpload>());
     await cardDefaults.EnsureDefaults();
+
+    var propDefaults =
+        new MonopolyCL.Services.Defaults.Properties.PropertyDefaults(gameContext, new CsvReader<PropertyUpload>());
+    await propDefaults.EnsureDefaults();
 }

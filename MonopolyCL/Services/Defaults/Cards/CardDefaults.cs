@@ -1,9 +1,7 @@
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using MonopHelper.Data;
 using MonopolyCL.Data;
+using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Models.Cards.Defaults;
 
 namespace MonopolyCL.Services.Defaults.Cards;
 
@@ -109,37 +107,37 @@ public class CardDefaults
                                                                      && d.Name == CardDefaultsDictionary.StandardDeck);
         if(type == null || deck == null) return;
 
-        var file = File.OpenRead($"{Environment.CurrentDirectory}/../MonopolyCL/Services/Defaults/Cards/{name}.csv");
-        var records = _csvReader.UploadFile(file);
-        var cards = new List<Card>();
-        foreach (var r in records!.ToList())
-        {
-            //Parse cost:
-            int? cost = null;
-            var success = int.TryParse(r.Cost, out var parsedCost);
-            if (success) cost = parsedCost;
-                
-            //Create card:
-            cards.Add(new Card
-            {
-                TenantId = DefaultsDictionary.MonopolyTenant,
-                CardTypeId = type.Id,
-                DeckId = deck.Id,
-                Text = r.Text,
-                Cost = cost
-            });
-        }
-
         //Get existing cards:
         var existingCards = await _context.Cards.Where(c => c.TenantId == DefaultsDictionary.MonopolyTenant
                                                             && c.CardTypeId == type.Id
                                                             && c.DeckId == deck.Id).ToListAsync();
-
         if (existingCards.Count == 0)
         {
+            var file = File.OpenRead($"{Environment.CurrentDirectory}/../MonopolyCL/Services/Defaults/Cards/{name}.csv");
+            var records = _csvReader.UploadFile(file);
+            var cards = new List<Card>();
+            foreach (var r in records!.ToList())
+            {
+                //Parse cost:
+                int? cost = null;
+                var success = int.TryParse(r.Cost, out var parsedCost);
+                if (success) cost = parsedCost;
+                    
+                //Create card:
+                cards.Add(new Card
+                {
+                    TenantId = DefaultsDictionary.MonopolyTenant,
+                    CardTypeId = type.Id,
+                    DeckId = deck.Id,
+                    Text = r.Text,
+                    Cost = cost
+                });
+            }
+            
             await _context.Cards.AddRangeAsync(cards);
             await _context.SaveChangesAsync();
         }
+        
     }
 
     private async Task CreateType(int id, string name)

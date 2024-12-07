@@ -1,4 +1,4 @@
-namespace MonopolyCL.Models.Cards.Defaults;
+namespace MonopolyCL.Dictionaries;
 
 public static class CardDefaultsDictionary
 {
