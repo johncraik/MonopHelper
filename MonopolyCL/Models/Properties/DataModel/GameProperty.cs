@@ -15,7 +15,8 @@ public class GameProperty : TenantedModel
     public bool IsMortgaged { get; set; }
     
     public string PropertyName { get; set; }
-    [ForeignKey($"{nameof(PropertyName)}, {nameof(TenantId)}")]
+    public int PropertyTenantId { get; set; }
+    [ForeignKey($"{nameof(PropertyName)}, {nameof(PropertyTenantId)}")]
     public virtual PropertyDM Property { get; set; }
     
     public string? OwnerName { get; set; }

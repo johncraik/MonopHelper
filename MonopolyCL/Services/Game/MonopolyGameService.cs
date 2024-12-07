@@ -61,18 +61,33 @@ public class MonopolyGameService
         {
             TenantId = _userInfo.TenantId,
             UserId = _userInfo.UserId,
+            BoardId = boardId,
+            Rules = rules,
             DateCreated = DateTime.Now,
             LastPlayed = DateTime.Now
         };
         //Add to DB (sets ID, used in properties:
         await _gameSet.AddAsync(game);
-        
+
+        return await BuildGame(game.Id, game.BoardId, rules, playerIds);
+    }
+    
+    public async Task<MonopolyGame?> FetchGame(int gameId)
+    {
+        var game = await _gameSet.Query().FirstOrDefaultAsync(g => g.Id == gameId);
+        if (game == null) return null;
+
+        return await BuildGame(game.Id, game.BoardId, game.Rules);
+    }
+
+    private async Task<MonopolyGame?> BuildGame(int gameId, int boardId, GAME_RULES rules, List<string>? playerIds = null)
+    {
         //Build Players:
-        var players = await BuildPlayers(playerIds, game.Id);
+        var players = await BuildPlayers(gameId, playerIds);
         if (players.Count < 2) return null; //If not 2 or more player, return null
 
         //Get list of properties:
-        var properties = await BuildProperties(game.Id, boardId);
+        var properties = await BuildProperties(gameId, boardId);
         if (properties.Count != 28) return null;    //If not correct number of properties, return null
         
         //Build board:
@@ -86,38 +101,46 @@ public class MonopolyGameService
             Rules = rules
         };
     }
-    
-    public async Task<MonopolyGame?> FetchGame(int gameId)
-    {
-        return null;
-    }
 
 
-    private async Task<List<IPlayer>> BuildPlayers(List<string> playerIds, int gameId)
+    private async Task<List<IPlayer>> BuildPlayers(int gameId, List<string>? playerIds)
     {
         var players = new List<IPlayer>();
-        foreach (var pid in playerIds)
+        
+        var gamePlayers = await _playerSet.Query().Where(p => p.GameId == gameId).ToListAsync();
+        switch (gamePlayers.Count)
         {
-            var gamePlayer = await _playerSet.Query().FirstOrDefaultAsync(p => p.PlayerName == pid
-                                                                               && p.GameId == gameId);
-            if (gamePlayer == null)
+            case 0 when playerIds != null:
             {
-                gamePlayer = new GamePlayer
+                foreach (var gamePlayer in playerIds.Select(pid => new GamePlayer
+                         {
+                             TenantId = _userInfo.TenantId,
+                             GameId = gameId,
+                             PlayerName = pid,
+                             Money = 1500,
+                             BoardIndex = 0,
+                             IsInJail = false,
+                             JailCost = 50,
+                             TripleBonus = 1000
+                         }))
                 {
-                    PlayerName = pid,
-                    Money = 1500,
-                    BoardIndex = 0,
-                    IsInJail = false,
-                    JailCost = 50,
-                    TripleBonus = 1000
-                };
-                await _playerSet.AddAsync(gamePlayer);
+                    await _playerSet.AddAsync(gamePlayer);
+                
+                    var player = await _playerCreator.BuildPlayer(gamePlayer);
+                    if (player != null) players.Add(player);
+                }
+
+                break;
             }
-            
-            var player = await _playerCreator.BuildPlayer(gamePlayer);
-            if (player != null)
+            case > 0:
             {
-                players.Add(player);
+                foreach (var gp in gamePlayers)
+                {
+                    var player = await _playerCreator.BuildPlayer(gp);
+                    if (player != null) players.Add(player);
+                }
+
+                break;
             }
         }
 

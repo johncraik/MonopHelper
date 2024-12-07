@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207162850_GameTblUpdates")]
+    partial class GameTblUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -367,9 +370,6 @@ namespace MonopHelper.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PropertyTenantId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("TenantId")
                         .HasColumnType("INTEGER");
 
@@ -377,7 +377,7 @@ namespace MonopHelper.Migrations
 
                     b.HasIndex("OwnerName", "TenantId");
 
-                    b.HasIndex("PropertyName", "PropertyTenantId");
+                    b.HasIndex("PropertyName", "TenantId");
 
                     b.ToTable("GameProps");
                 });
@@ -538,7 +538,7 @@ namespace MonopHelper.Migrations
 
                     b.HasOne("MonopolyCL.Models.Properties.DataModel.PropertyDM", "Property")
                         .WithMany()
-                        .HasForeignKey("PropertyName", "PropertyTenantId")
+                        .HasForeignKey("PropertyName", "TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
