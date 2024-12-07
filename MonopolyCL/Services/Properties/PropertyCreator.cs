@@ -31,6 +31,7 @@ public abstract class PropertyCreator
                 IsDeleted = false,
                 OwnerName = null
             };
+            await _propSet.AddAsync(gameProp);
         };
         
         var property = Factory(p, gameProp);

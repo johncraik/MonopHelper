@@ -98,16 +98,21 @@ public class MonopolyGameService
         var players = new List<IPlayer>();
         foreach (var pid in playerIds)
         {
-            var gamePlayer = await _playerSet.Query().FirstOrDefaultAsync(p => p.PlayerName == pid 
-                                                                               && p.GameId == gameId) ?? new GamePlayer
+            var gamePlayer = await _playerSet.Query().FirstOrDefaultAsync(p => p.PlayerName == pid
+                                                                               && p.GameId == gameId);
+            if (gamePlayer == null)
             {
-                PlayerName = pid,
-                Money = 1500,
-                BoardIndex = 0,
-                IsInJail = false,
-                JailCost = 50,
-                TripleBonus = 1000
-            };
+                gamePlayer = new GamePlayer
+                {
+                    PlayerName = pid,
+                    Money = 1500,
+                    BoardIndex = 0,
+                    IsInJail = false,
+                    JailCost = 50,
+                    TripleBonus = 1000
+                };
+                await _playerSet.AddAsync(gamePlayer);
+            }
             
             var player = await _playerCreator.BuildPlayer(gamePlayer);
             if (player != null)

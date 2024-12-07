@@ -1,3 +1,4 @@
+using MonopolyCL.Extensions;
 using MonopolyCL.Models.Boards.Enums;
 
 namespace MonopolyCL.Models.Boards;
@@ -9,9 +10,9 @@ public interface IBoardSpace
 
 public class GenericSpace : IBoardSpace
 {
-    public string Name { get; set; }
     public byte BoardIndex { get; set; }
     public SPACE_ACTIONS Action { get; set; }
+    public string Name => Action.GetDisplayName();
 }
 
 public class TaxSpace : IBoardSpace

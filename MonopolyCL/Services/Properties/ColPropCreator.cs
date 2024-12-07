@@ -12,7 +12,9 @@ public class ColPropCreator(GameDbSet<GameProperty> propSet) : PropertyCreator(p
         var prop = new ColouredProperty
         {
             BuiltLevel = gp.BuiltLevel ?? BUILT_LEVEL.NONE,
-            BuildCost = p.Set.GetBuildCost()
+            BuildCost = p.Set.GetBuildCost(),
+            Set = p.Set,
+            BoardIndex = p.BoardIndex
         };
 
         prop.Rent = prop.Set switch

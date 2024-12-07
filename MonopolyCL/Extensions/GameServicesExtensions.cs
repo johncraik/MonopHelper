@@ -6,6 +6,7 @@ using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Services.Boards;
+using MonopolyCL.Services.Game;
 using MonopolyCL.Services.Players;
 using MonopolyCL.Services.Properties;
 
@@ -39,6 +40,8 @@ public static class GameServicesExtensions
         
         services.AddScoped<PlayerCreator>();
         services.AddScoped<BoardCreator>();
+
+        services.AddTransient<MonopolyGameService>();
         
         services.AddScoped<CsvReader<CardUpload>>();
         
