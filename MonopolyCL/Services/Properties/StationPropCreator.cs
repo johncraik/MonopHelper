@@ -4,7 +4,7 @@ using MonopolyCL.Models.Properties.DataModel;
 
 namespace MonopolyCL.Services.Properties;
 
-public class StationPropCreator(GameDbSet<PropertyDM> propSet) : PropertyCreator(propSet)
+public class StationPropCreator(GameDbSet<GameProperty> propSet) : PropertyCreator(propSet)
 {
     public override IProperty Factory(PropertyDM p, GameProperty gp) => new StationProperty
     {

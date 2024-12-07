@@ -5,7 +5,7 @@ using MonopolyCL.Models.Properties.Enums;
 
 namespace MonopolyCL.Services.Properties;
 
-public class ColPropCreator(GameDbSet<PropertyDM> propSet) : PropertyCreator(propSet)
+public class ColPropCreator(GameDbSet<GameProperty> propSet) : PropertyCreator(propSet)
 {
     public override IProperty Factory(PropertyDM p, GameProperty gp)
     {

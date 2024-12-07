@@ -16,4 +16,6 @@ public class GamePlayer : TenantedModel
     public string PlayerName { get; set; }
     [ForeignKey($"{nameof(PlayerName)}, {nameof(TenantId)}")]
     public virtual PlayerDM Player { get; set; }
+    
+    public int GameId { get; set; }
 }

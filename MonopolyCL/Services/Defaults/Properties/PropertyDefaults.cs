@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Data;
 using MonopolyCL.Dictionaries;
+using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
 
@@ -36,6 +37,39 @@ public class PropertyDefaults
                 }).ToList();
 
             await _context.Properties.AddRangeAsync(properties);
+            await _context.SaveChangesAsync();
+
+            existingProps = properties;
+        }
+
+        var existingBoard = await _context.Boards.FirstOrDefaultAsync(b => b.TenantId == DefaultsDictionary.MonopolyTenant);
+        var boardId = existingBoard?.Id ?? 0;
+        if (existingBoard == null)
+        {
+            var board = new BoardDM
+            {
+                Name = "Monopoly Board",
+                TenantId = DefaultsDictionary.MonopolyTenant,
+                DateCreated = DateTime.Now,
+                DateUpdated = DateTime.Now
+            };
+            await _context.Boards.AddAsync(board);
+            await _context.SaveChangesAsync();
+
+            boardId = board.Id;
+        }
+
+        var boardsToProperties = await _context.BoardsToProperties.Where(bp => bp.BoardId == boardId).ToListAsync();
+        if (boardsToProperties.Count == 0)
+        {
+            boardsToProperties.AddRange(existingProps.Select(p => new BoardToProperty
+            {
+                TenantId = DefaultsDictionary.MonopolyTenant, 
+                PropertyName = p.Name, 
+                BoardId = boardId
+            }));
+
+            await _context.BoardsToProperties.AddRangeAsync(boardsToProperties);
             await _context.SaveChangesAsync();
         }
     }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
 
@@ -37,6 +38,7 @@ public class GameDbContext : DbContext
 
     #region Game
 
+    public DbSet<GameDM> Games { get; set; }
     public DbSet<PlayerDM> Players { get; set; }
     public DbSet<GamePlayer> GamePlayers { get; set; }
     public DbSet<DiceNumbers> PlayerDiceNumbers { get; set; }
