@@ -1,4 +1,5 @@
 using MonopHelper.Data;
+using MonopolyCL.Models.Boards;
 using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;

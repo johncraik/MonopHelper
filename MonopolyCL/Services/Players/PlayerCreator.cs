@@ -19,13 +19,16 @@ public class PlayerCreator
         var playerDataModel = await _playerSet.Query().FirstOrDefaultAsync(p => p.Name == gp.PlayerName);
         if (playerDataModel == null) return null;
 
-        var player = new Player();
-        player.Name = playerDataModel.Name;
-        player.TenantId = playerDataModel.TenantId;
-        player.BoardIndex = gp.BoardIndex;
-        player.Money = gp.Money;
-        player.JaiLCost = gp.JailCost;
-        player.TripleBonus = gp.TripleBonus;
+        var player = new Player
+        {
+            Name = playerDataModel.Name,
+            TenantId = playerDataModel.TenantId,
+            BoardIndex = gp.BoardIndex,
+            Money = gp.Money,
+            IsInJail = gp.IsInJail,
+            JaiLCost = gp.JailCost,
+            TripleBonus = gp.TripleBonus
+        };
 
         return player;
     }

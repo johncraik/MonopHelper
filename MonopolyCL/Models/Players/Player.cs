@@ -9,6 +9,8 @@ public class Player : IPlayer
     public int GameId { get; set; }
     
     public int Money { get; set; }
+    public bool IsInJail { get; set; }
+    
     
     public (int Dice1, int Dice2)? DiceNumber { get; set; }
     public byte BoardIndex { get; set; }

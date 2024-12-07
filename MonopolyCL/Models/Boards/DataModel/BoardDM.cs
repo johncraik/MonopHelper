@@ -1,6 +1,6 @@
 using MonopolyCL.Models.Identity;
 
-namespace MonopolyCL.Models.Game.Boards;
+namespace MonopolyCL.Models.Boards.DataModel;
 
 public class BoardDM : TenantedModel
 {

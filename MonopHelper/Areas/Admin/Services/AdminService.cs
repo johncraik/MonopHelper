@@ -11,17 +11,14 @@ namespace MonopHelper.Areas.Admin.Services;
 public class AdminService
 {
     private readonly ApplicationDbContext _appContext;
-    private readonly GameDbContext _gameContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _config;
 
-    public AdminService(ApplicationDbContext appContext, GameDbContext gameContext,
-        UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-        IConfiguration config)
+    public AdminService(ApplicationDbContext appContext, UserManager<ApplicationUser> userManager, 
+        RoleManager<IdentityRole> roleManager, IConfiguration config)
     {
         _appContext = appContext;
-        _gameContext = gameContext;
         _userManager = userManager;
         _roleManager = roleManager;
         _config = config;

@@ -15,6 +15,7 @@ using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
 using MonopolyCL;
 using MonopolyCL.Data;
+using MonopolyCL.Extensions;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Identity;
 
@@ -45,7 +46,7 @@ builder.Services.AddScoped<GameDbSet<TypeToGame>>();
 
 builder.Services.AddScoped<UploadCardsService>();
 
-builder.Services.AddScoped<CsvReader<CardUpload>>();
+builder.Services.GetGameServices();
 
 
 

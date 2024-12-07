@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Models.Game.Boards;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Models.Identity;
 using MonopolyCL.Models.Properties.DataModel;
 
-namespace MonopolyCL.Models.Game.Boards;
+namespace MonopolyCL.Models.Boards.DataModel;
 
 [PrimaryKey(nameof(BoardId), nameof(PropertyName), nameof(TenantId))]
 public class BoardToProperty : TenantedModel
