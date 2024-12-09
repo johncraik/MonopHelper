@@ -1,3 +1,4 @@
+using MonopolyCL.Models.Cards.Game;
 using MonopolyCL.Models.Properties;
 
 namespace MonopolyCL.Models.Players;
@@ -8,6 +9,7 @@ public class Player : IPlayer
     public int TenantId { get; set; }
     public int GameId { get; set; }
     
+    public int Order { get; set; }
     public int Money { get; set; }
     public bool IsInJail { get; set; }
     
@@ -18,4 +20,5 @@ public class Player : IPlayer
     public int? TripleBonus { get; set; }
     
     public List<IProperty>? Properties { get; set; }
+    public List<GameCardViewModel>? Cards { get; set; }
 }

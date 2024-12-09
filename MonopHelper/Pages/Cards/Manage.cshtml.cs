@@ -25,7 +25,7 @@ public class Manage : PageModel
     
     //Cards Tab:
     public List<SelectListItem> CardDeckDropdown { get; set; }
-    public List<Card> Cards { get; set; }
+    public List<(Card Card, bool HasAction)> Cards { get; set; }
     
     //Card Types Tab:
     public List<CardType> CardTypes { get; set; }
@@ -87,7 +87,7 @@ public class Manage : PageModel
             selectedDeckId = deckId;
         }
         
-        Cards = await _cardService.GetCardsFromDeck(selectedDeckId, true);
+        Cards = await _cardService.GetCardsAndActionFromDeck(selectedDeckId, true);
     }
     
     public async Task<IActionResult> OnGet(int id)

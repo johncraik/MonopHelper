@@ -1,5 +1,5 @@
 @using MonopolyCL.Dictionaries
-@model List<MonopolyCL.Models.Cards.Card>
+@model List<(MonopolyCL.Models.Cards.Card Card, bool HasAction)>
 
 
 @{
@@ -15,7 +15,7 @@
                 <th>Card Type</th>
                 <th>Card Text</th>
                 <th>Cost</th>
-                @if (Model.First()?.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
+                @if (Model.First().Card.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
                 {
                     <th style="width: 120px"></th>
                 }
@@ -23,27 +23,27 @@
             </thead>
             <tbody>
             @{
-                foreach (var card in Model)
+                foreach (var ca in Model)
                 {
-                    var cost = card.Cost?.ToString() ?? "";
+                    var cost = ca.Card.Cost?.ToString() ?? "";
                     if (cost == "") cost = "-";
             
                     <tr>
-                        <td>@card.CardType.Name</td>
-                        <td>@card.Text</td>
+                        <td>@ca.Card.CardType.Name</td>
+                        <td>@ca.Card.Text</td>
                         <td>@cost</td>
-                        @if (Model.First().CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
+                        @if (Model.First().Card.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
                         {
                             <td>
-                                <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Actions/@(card.Id)')"
+                                <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Actions/@(ca.Card.Id)')"
                                         title="Card Action">
-                                    <span class="fa-solid fa-microchip text-secondary"></span>
+                                    <span class="fa-solid fa-microchip text-@(ca.HasAction ? "success" : "danger")"></span>
                                 </button>
-                                <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Edit/@(card.Id)')"
+                                <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Edit/@(ca.Card.Id)')"
                                         title="Edit Card">
                                     <span class="fa-solid fa-pencil"></span>
                                 </button>
-                                <button class="btn btn-sm btn-link" onclick="DeleteCard('@(card.Id)')"
+                                <button class="btn btn-sm btn-link" onclick="DeleteCard('@(ca.Card.Id)')"
                                         title="Delete Card">
                                     <span class="fa-solid fa-x text-danger"></span>
                                 </button>

@@ -4,6 +4,7 @@ using MonopHelper.Data;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Cards.Actions;
 using MonopolyCL.Models.Cards.Enums;
+using MonopolyCL.Models.Properties.Enums;
 
 namespace MonopolyCL.Services.Cards;
 
@@ -11,28 +12,34 @@ public class CardActionsService
 {
     private readonly UserInfo _userInfo;
     private readonly GameDbSet<Card> _cardSet;
+    private readonly GameDbSet<CardType> _typeSet;
     private readonly GameDbSet<CardAction> _actionSet;
     private readonly GameDbSet<AdvanceAction> _advSet;
     private readonly GameDbSet<MoveAction> _moveSet;
     private readonly GameDbSet<KeepAction> _keepSet;
+    private readonly GameDbSet<ChoiceAction> _choiceSet;
     private readonly GameDbSet<PayPlayerAction> _ppSet;
     private readonly GameDbSet<StreetRepairsAction> _srSet;
 
     public CardActionsService(UserInfo userInfo,
         GameDbSet<Card> cardSet,
+        GameDbSet<CardType> typeSet,
         GameDbSet<CardAction> actionSet,
         GameDbSet<AdvanceAction> advSet,
         GameDbSet<MoveAction> moveSet,
         GameDbSet<KeepAction> keepSet,
+        GameDbSet<ChoiceAction> choiceSet,
         GameDbSet<PayPlayerAction> ppSet,
         GameDbSet<StreetRepairsAction> srSet)
     {
         _userInfo = userInfo;
         _cardSet = cardSet;
+        _typeSet = typeSet;
         _actionSet = actionSet;
         _advSet = advSet;
         _moveSet = moveSet;
         _keepSet = keepSet;
+        _choiceSet = choiceSet;
         _ppSet = ppSet;
         _srSet = srSet;
     }
@@ -49,22 +56,25 @@ public class CardActionsService
         await _actionSet.AddAsync(cardAction);
     }
 
-    public async Task<bool> AddAdvanceAction(int cardId, int index)
+    public async Task<bool> AddAdvanceAction(int cardId, int index, PROP_SET set, bool claimGo)
     {
         var card = await _cardSet.Query().FirstOrDefaultAsync(c => c.Id == cardId);
         if (card == null) return false;
 
-        var advance = await _advSet.Query().FirstOrDefaultAsync(a => a.AdvanceIndex == index);
+        var advance = await _advSet.Query().FirstOrDefaultAsync(a => a.AdvanceIndex == index && a.ClaimGo == claimGo);
         if (advance == null)
         {
             advance = new AdvanceAction
             {
-                AdvanceIndex = index
+                AdvanceIndex = index,
+                ClaimGo = claimGo,
+                Set = set
             };
+            advance.SetColour();
             await _advSet.AddAsync(advance);
         }
 
-        await CreateAction(card.Id, advance.AdvanceIndex, CARD_ACTION.ADVANCE);
+        await CreateAction(card.Id, advance.Id, CARD_ACTION.ADVANCE);
         return true;
     }
 
@@ -96,6 +106,28 @@ public class CardActionsService
         var keep = new KeepAction();
         await _keepSet.AddAsync(keep);
         await CreateAction(card.Id, keep.Id, CARD_ACTION.KEEP_CARD);
+        return true;
+    }
+
+    public async Task<bool> AddChoiceAction(int cardId, int typeId)
+    {
+        var card = await _cardSet.Query().FirstOrDefaultAsync(c => c.Id == cardId);
+        if (card == null) return false;
+
+        var type = await _typeSet.Query().FirstOrDefaultAsync(t => t.Id == typeId);
+        if (type == null) return false;
+
+        var choice = await _choiceSet.Query().FirstOrDefaultAsync(c => c.CardTypeId == type.Id);
+        if (choice == null)
+        {
+            choice = new ChoiceAction
+            {
+                CardTypeId = type.Id
+            };
+            await _choiceSet.AddAsync(choice);
+        }
+
+        await CreateAction(card.Id, choice.Id, CARD_ACTION.CHOICE);
         return true;
     }
 
@@ -152,7 +184,7 @@ public class CardActionsService
         ICardAction? action = cardAction.Action switch
         {
             CARD_ACTION.ADVANCE =>
-                await _advSet.Query().FirstOrDefaultAsync(a => a.AdvanceIndex == cardAction.ActionId),
+                await _advSet.Query().FirstOrDefaultAsync(a => a.Id == cardAction.ActionId),
             CARD_ACTION.KEEP_CARD =>
                 await _keepSet.Query().FirstOrDefaultAsync(a => a.Id == cardAction.ActionId),
             CARD_ACTION.PAY_PLAYER =>
@@ -161,6 +193,8 @@ public class CardActionsService
                 await _srSet.Query().FirstOrDefaultAsync(a => a.Id == cardAction.ActionId),
             CARD_ACTION.MOVE => 
                 await _moveSet.Query().FirstOrDefaultAsync(m => m.Id == cardAction.ActionId),
+            CARD_ACTION.CHOICE =>
+                await _choiceSet.Query().FirstOrDefaultAsync(c => c.Id == cardAction.ActionId),
             _ => null
         };
 

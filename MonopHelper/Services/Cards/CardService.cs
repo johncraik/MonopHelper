@@ -3,6 +3,7 @@ using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Services.Cards;
 
@@ -12,16 +13,19 @@ public class CardService
     private readonly GameDbSet<CardType> _typeSet;
     private readonly GameDbSet<CardDeck> _deckSet;
     private readonly UserInfo _userInfo;
+    private readonly CardActionsService _cardActionsService;
 
     public CardService(GameDbSet<Card> cardSet,
         GameDbSet<CardType> typeSet,
         GameDbSet<CardDeck> deckSet,
-        UserInfo userInfo)
+        UserInfo userInfo,
+        CardActionsService cardActionsService)
     {
         _cardSet = cardSet;
         _typeSet = typeSet;
         _deckSet = deckSet;
         _userInfo = userInfo;
+        _cardActionsService = cardActionsService;
     }
 
     public async Task<List<Card>> GetCardsFromDeck(int deckId, bool undefined = false)
@@ -33,6 +37,19 @@ public class CardService
                         && (undefined || c.CardType.TenantId != DefaultsDictionary.DefaultTenant)
                         && (undefined || c.CardDeck.TenantId != DefaultsDictionary.DefaultTenant))
             .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
+    }
+
+    public async Task<List<(Card, bool)>> GetCardsAndActionFromDeck(int deckId, bool undefined = false)
+    {
+        var cards = await GetCardsFromDeck(deckId, undefined);
+        var rtn = new List<(Card, bool)>();
+        foreach (var card in cards)
+        {
+            var action = await _cardActionsService.GetCardAction(card.Id);
+            rtn.Add((card, action is { Item1: not null, Item2: not null }));
+        }
+
+        return rtn;
     }
 
     public async Task<bool> MoveCardsInDeck(int deckId, int newDeckId)

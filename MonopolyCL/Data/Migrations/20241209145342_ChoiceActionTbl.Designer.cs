@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209145342_ChoiceActionTbl")]
+    partial class ChoiceActionTbl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -126,11 +129,9 @@ namespace MonopHelper.Migrations
                     b.Property<int>("CardTypeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CardTypeName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CardTypeId");
 
                     b.ToTable("ChoiceActions");
                 });
@@ -335,62 +336,6 @@ namespace MonopHelper.Migrations
                     b.ToTable("CardTypes");
                 });
 
-            modelBuilder.Entity("MonopolyCL.Models.Cards.Game.GameCard", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<uint>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CardId");
-
-                    b.ToTable("GameCards");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Cards.Game.GameType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<uint>("CurrentIndex")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("GameCardTypes");
-                });
-
             modelBuilder.Entity("MonopolyCL.Models.Cards.TypeToGame", b =>
                 {
                     b.Property<int>("TypeId")
@@ -490,9 +435,6 @@ namespace MonopHelper.Migrations
                     b.Property<int>("Money")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("PlayerName")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -528,27 +470,6 @@ namespace MonopHelper.Migrations
                     b.HasKey("Name", "TenantId");
 
                     b.ToTable("Players");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToCard", b =>
-                {
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("PlayerId", "CardId");
-
-                    b.HasIndex("CardId");
-
-                    b.ToTable("PlayersToCards");
                 });
 
             modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.GameProperty", b =>
@@ -655,6 +576,17 @@ namespace MonopHelper.Migrations
                     b.Navigation("Card");
                 });
 
+            modelBuilder.Entity("MonopolyCL.Models.Cards.Actions.ChoiceAction", b =>
+                {
+                    b.HasOne("MonopolyCL.Models.Cards.CardType", "CardType")
+                        .WithMany()
+                        .HasForeignKey("CardTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CardType");
+                });
+
             modelBuilder.Entity("MonopolyCL.Models.Cards.Card", b =>
                 {
                     b.HasOne("MonopolyCL.Models.Cards.CardType", "CardType")
@@ -702,28 +634,6 @@ namespace MonopHelper.Migrations
                     b.Navigation("Card");
 
                     b.Navigation("Game");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Cards.Game.GameCard", b =>
-                {
-                    b.HasOne("MonopolyCL.Models.Cards.Card", "Card")
-                        .WithMany()
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Card");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Cards.Game.GameType", b =>
-                {
-                    b.HasOne("MonopolyCL.Models.Cards.CardType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("MonopolyCL.Models.Cards.TypeToGame", b =>
@@ -774,25 +684,6 @@ namespace MonopHelper.Migrations
                         .HasForeignKey("PlayerName", "TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToCard", b =>
-                {
-                    b.HasOne("MonopolyCL.Models.Cards.Game.GameCard", "Card")
-                        .WithMany()
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MonopolyCL.Models.Players.DataModel.GamePlayer", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Card");
 
                     b.Navigation("Player");
                 });

@@ -23,6 +23,7 @@ public class PlayerCreator
         {
             Name = playerDataModel.Name,
             TenantId = playerDataModel.TenantId,
+            Order = gp.Order,
             BoardIndex = gp.BoardIndex,
             Money = gp.Money,
             IsInJail = gp.IsInJail,

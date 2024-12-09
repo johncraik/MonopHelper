@@ -6,3 +6,8 @@ public enum PAY_PLAYER
     LEFT,
     RIGHT
 }
+
+public static class PayPlayerExtensions
+{
+    public static List<PAY_PLAYER> GetPayTypeList() => [PAY_PLAYER.ALL, PAY_PLAYER.LEFT, PAY_PLAYER.RIGHT];
+}

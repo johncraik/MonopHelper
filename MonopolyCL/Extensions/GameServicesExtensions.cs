@@ -3,6 +3,7 @@ using MonopHelper.Data;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Cards.Actions;
+using MonopolyCL.Models.Cards.Game;
 using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
@@ -29,6 +30,7 @@ public static class GameServicesExtensions
         services.AddScoped<GameDbSet<AdvanceAction>>();
         services.AddScoped<GameDbSet<MoveAction>>();
         services.AddScoped<GameDbSet<KeepAction>>();
+        services.AddScoped<GameDbSet<ChoiceAction>>();
         services.AddScoped<GameDbSet<PayPlayerAction>>();
         services.AddScoped<GameDbSet<StreetRepairsAction>>();
 
@@ -39,7 +41,10 @@ public static class GameServicesExtensions
         services.AddScoped<GameDbSet<PlayerDM>>();
         services.AddScoped<GameDbSet<DiceNumbers>>();
         services.AddScoped<GameDbSet<GamePlayer>>();
+        services.AddScoped<GameDbSet<PlayerToCard>>();
         services.AddScoped<GameDbSet<GameDM>>();
+        services.AddScoped<GameDbSet<GameCard>>();
+        services.AddScoped<GameDbSet<GameType>>();
 
         services.AddTransient<GeneralBoardSpaces>();
 

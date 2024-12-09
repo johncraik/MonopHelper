@@ -6,6 +6,7 @@ namespace MonopolyCL.Models.Players.DataModel;
 public class GamePlayer : TenantedModel
 {
     public int Id { get; set; }
+    public int Order { get; set; }
     public int Money { get; set; }
     public byte BoardIndex { get; set; }
     public bool IsInJail { get; set; }

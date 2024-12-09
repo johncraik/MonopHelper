@@ -1,12 +1,17 @@
-using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using MonopolyCL.Models.Properties.Enums;
 
 namespace MonopolyCL.Models.Cards.Actions;
 
-[PrimaryKey(nameof(AdvanceIndex))]
 public class AdvanceAction : ICardAction
 {
+    public int Id { get; set; }
+    [DisplayName("Board Index")]
+    [Range(0, 39)]
     public int AdvanceIndex { get; set; }
+    [DisplayName("Can Claim Money from GO")]
+    public bool ClaimGo { get; set; }
     public PROP_SET Set { get; set; }
     public string Colour { get; private set; }
 

@@ -39,28 +39,9 @@ public class Index : PageModel
             if (action != null)
             {
                 Action = new ActionModel();
-                switch (cardAction.Action)
-                {
-                    case CARD_ACTION.ADVANCE:
-                        Action.AdvanceAction = (AdvanceAction)action;
-                        ActionCol = "bg-adv";
-                        break;
-                    case CARD_ACTION.KEEP_CARD:
-                        Action.KeepAction = (KeepAction)action;
-                        ActionCol = "bg-keep";
-                        break;
-                    case CARD_ACTION.PAY_PLAYER:
-                        Action.PayPlayerAction = (PayPlayerAction)action;
-                        ActionCol = "bg-payply";
-                        break;
-                    case CARD_ACTION.STREET_REPAIRS:
-                        Action.StreetRepairsAction = (StreetRepairsAction)action;
-                        ActionCol = "bg-sr";
-                        break;
-                    default:
-                        ActionCol = "bg-danger text-white";
-                        break;
-                }
+                Action.SetModel(cardAction.Action, action);
+
+                ActionCol = cardAction.Action.GetActionColour();
             }
         }
         

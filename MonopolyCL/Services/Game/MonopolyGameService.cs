@@ -117,6 +117,7 @@ public class MonopolyGameService
                              TenantId = _userInfo.TenantId,
                              GameId = gameId,
                              PlayerName = pid,
+                             Order = 0,
                              Money = 1500,
                              BoardIndex = 0,
                              IsInJail = false,

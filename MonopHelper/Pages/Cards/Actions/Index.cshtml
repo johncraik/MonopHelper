@@ -6,7 +6,7 @@
 @{
     ViewData["Title"] = "Card Action";
 }
-
+<button class="btn btn-sm btn-primary rounded-pill px-3 mb-3" onclick="location.assign('/Cards/Manage')">Go Back</button>
 <div class="card mb-4">
     <div class="card-header bg-info text-white">
         Card Information
@@ -70,11 +70,13 @@
                 {
                     case CARD_ACTION.ADVANCE:
                         <div class="row">
-                            <div class="col-sm-8">
+                            <div class="col-sm-5">
                                 <p>
                                     This card is set up with an 'Advance' action. This will move the player to the specified board index.
                                     <br/>
                                     <b>Board Index: </b>@(Model.Action?.AdvanceAction?.AdvanceIndex).
+                                    <br/>
+                                    <b>Collect Money if Passed Go: </b>@(Model.Action?.AdvanceAction?.ClaimGo == true ? "Yes" : "No").
                                 </p>
                                 <span>
                                     Board corner indexes:
@@ -84,9 +86,9 @@
                                         <li><b>Free Parking: </b>20</li>
                                         <li><b>Go to Jail: </b>30</li>
                                     </ul>
-                                </span>
+                                </span><br/>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-3 pt-2">
                                 <div class="prop bt bb bl br">
                                     <div class="bb @(Model.Action?.AdvanceAction?.Colour)" style="height: 20%"></div>
                                     <div class="bg-white prop-index" style="height: 80%">
@@ -94,10 +96,28 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-4 p-2">
+                                <img src="~/board.png" width="100%" height="100%" alt="Monopoly Board"/>
+                            </div>
+                        </div>
+                        break;
+                    case CARD_ACTION.MOVE:
+                        <div class="mb-4">
+                            <label><b>Move Amount:</b></label><br/>
+                            <p>@(Model.Action?.MoveAction?.MoveAmount.ToString() ?? "NaN")</p>
+                            <label><b>Direction:</b></label><br/>
+                            <p>@(Model.Action?.MoveAction?.IsForward == false ? "Backwards" : "Forwards")</p>
                         </div>
                         break;
                     case CARD_ACTION.KEEP_CARD:
                         <p>The player who draws this card will keep it. The card will be removed from the deck until it is used by the player.</p>
+                        break;
+                    case CARD_ACTION.CHOICE:
+                        <div class="mb-4">
+                            <p>The player can pay the amount on this card (Cost) or choose a card with the following type.</p>
+                            <label><b>Card Type:</b></label><br/>
+                            <p>@(Model.Action?.ChoiceAction?.CardTypeName ?? "N/A")</p>
+                        </div>
                         break;
                     case CARD_ACTION.PAY_PLAYER:
                         <div class="row">
@@ -127,7 +147,69 @@
             }
             else
             {
-                
+                <p>
+                    <span class="fa-solid fa-warning text-warning"></span>
+                    Make sure the action you define matches what the card says.
+                </p>
+                <div class="mt row">
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Advance Action</b></h4>
+                        <p>
+                            This action will move the player to the chosen space on the board.
+                        </p>
+                        <button class="btn btn-secondary bg-adv" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=0')">
+                            Create Advance Action
+                        </button>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Move Action</b></h4>
+                        <p>
+                            This action will move the player a specified amount, either forwards or backwards.
+                        </p>
+                        <button class="btn btn-secondary bg-move" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=4')">
+                            Create Move Action
+                        </button>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Keep Action</b></h4>
+                        <p>
+                            This action will allow the player to keep the card and use at a later time.
+                            The card will be removed from the deck until it is played.
+                        </p>
+                        <button class="btn btn-secondary bg-keep" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=3')">
+                            Create Keep Action
+                        </button>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Choice Action</b></h4>
+                        <p>
+                            This action will allow the player to either pay the amount on the card, or take a different card.
+                        </p>
+                        <button class="btn btn-secondary bg-choice" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=5')">
+                            Create Choice Action
+                        </button>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Pay Player Action</b></h4>
+                        <p>
+                            This action will take the amount stated on the card and pay to the player on the left, right, or all players.
+                            <br/>
+                            Positive cost on the card will mean the player will receive the amount.
+                        </p>
+                        <button class="btn btn-secondary bg-payply" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=2')">
+                            Create Pay Player Action
+                        </button>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4><b>Street Repairs Action</b></h4>
+                        <p>
+                            This action will apply a cost based on the number of houses and hotels the player has.
+                        </p>
+                        <button class="btn btn-secondary bg-sr" onclick="location.assign('/Cards/Actions/Setup/@(Model.Card.Id)?action=1')">
+                            Create Street Repairs Action
+                        </button>
+                    </div>
+                </div>
             }
         }
     </div>
