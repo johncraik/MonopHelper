@@ -17,7 +17,7 @@
                 <th>Cost</th>
                 @if (Model.First()?.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
                 {
-                    <th style="width: 85px"></th>
+                    <th style="width: 120px"></th>
                 }
             </tr>
             </thead>
@@ -35,6 +35,10 @@
                         @if (Model.First().CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
                         {
                             <td>
+                                <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Actions/@(card.Id)')"
+                                        title="Card Action">
+                                    <span class="fa-solid fa-microchip text-secondary"></span>
+                                </button>
                                 <button class="btn btn-sm btn-link" onclick="location.assign('/Cards/Edit/@(card.Id)')"
                                         title="Edit Card">
                                     <span class="fa-solid fa-pencil"></span>

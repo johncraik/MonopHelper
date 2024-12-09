@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209101548_MoveAction")]
+    partial class MoveAction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -127,17 +130,13 @@ namespace MonopHelper.Migrations
 
             modelBuilder.Entity("MonopolyCL.Models.Cards.Actions.MoveAction", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MoveAmount")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsForward")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MoveAmount")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
+                    b.HasKey("MoveAmount", "IsForward");
 
                     b.ToTable("MoveActions");
                 });

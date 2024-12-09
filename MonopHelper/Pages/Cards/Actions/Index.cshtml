@@ -1,0 +1,134 @@
+@page "{id}"
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.Enums
+@model MonopHelper.Pages.Cards.Actions.Index
+
+@{
+    ViewData["Title"] = "Card Action";
+}
+
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        Card Information
+    </div>
+    <div class="card-body bg-light">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="mt mb-3">
+                    <label><b>Card Type:</b></label><br/>
+                    <p>@Model.Card.CardType.Name</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="mt mb-3">
+                    <label><b>Card Deck:</b></label><br/>
+                    <p>@Model.Card.CardDeck.Name</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="mt mb-3">
+                    <label><b>Card Deck Difficulty Rating:</b></label><br/>
+                    <p>@Model.Card.CardDeck.DiffRating</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="mt mb-3">
+                    <label><b>Card Text:</b></label><br/>
+                    <p>@Model.Card.Text</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="mt mb-3">
+                    <label><b>Card Cost:</b></label><br/>
+                    <p>@(Model.Card.Cost?.ToString() ?? "None")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header @Model.ActionCol">
+        @{
+            if (Model.CardAction != null)
+            {
+                <span>@Model.CardAction.Action.GetDisplayName() Action</span>
+            }
+            else
+            {
+                <span>Setup Action</span>
+            }
+        }
+    </div>
+    <div class="card-body bg-light">
+        @{
+            if (Model.CardAction != null)
+            {
+                switch (Model.CardAction.Action)
+                {
+                    case CARD_ACTION.ADVANCE:
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <p>
+                                    This card is set up with an 'Advance' action. This will move the player to the specified board index.
+                                    <br/>
+                                    <b>Board Index: </b>@(Model.Action?.AdvanceAction?.AdvanceIndex).
+                                </p>
+                                <span>
+                                    Board corner indexes:
+                                    <ul>
+                                        <li><b>GO: </b>0</li>
+                                        <li><b>Jail: </b>10</li>
+                                        <li><b>Free Parking: </b>20</li>
+                                        <li><b>Go to Jail: </b>30</li>
+                                    </ul>
+                                </span>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="prop bt bb bl br">
+                                    <div class="bb @(Model.Action?.AdvanceAction?.Colour)" style="height: 20%"></div>
+                                    <div class="bg-white prop-index" style="height: 80%">
+                                        <span>@Model.Action?.AdvanceAction?.AdvanceIndex</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        break;
+                    case CARD_ACTION.KEEP_CARD:
+                        <p>The player who draws this card will keep it. The card will be removed from the deck until it is used by the player.</p>
+                        break;
+                    case CARD_ACTION.PAY_PLAYER:
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label><b>Pay/Receive Type:</b></label><br/>
+                                <p>@(Model.Action?.PayPlayerAction?.PayToType.GetDisplayName() ?? "N/A")</p>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label><b>Amount Paid/Received:</b></label><br/>
+                                <p>£@(Model.Action?.PayPlayerAction?.AmountToPlayer.ToString() ?? "NaN")</p>
+                            </div>
+                            <p><b>NOTE: </b>A negative amount refers to the player paying, positive amount refers to the player receiving.</p>
+                        </div>
+                        break;
+                    case CARD_ACTION.STREET_REPAIRS:
+                        <div class="mb-4">
+                            <label><b>House Cost:</b></label><br/>
+                            <p>£@(Model.Action?.StreetRepairsAction?.HouseCost.ToString() ?? "NaN")</p>
+                            <label><b>Hotel Cost:</b></label><br/>
+                            <p>£@(Model.Action?.StreetRepairsAction?.HotelCost.ToString() ?? "NaN")</p>
+                        </div>
+                        break;
+                }
+                <div class="mt">
+                    <button class="btn btn-warning">Delete Action</button>
+                </div>
+            }
+            else
+            {
+                
+            }
+        }
+    </div>
+</div>

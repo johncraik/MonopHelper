@@ -27,7 +27,8 @@ public class PlayerCreator
             Money = gp.Money,
             IsInJail = gp.IsInJail,
             JaiLCost = gp.JailCost,
-            TripleBonus = gp.TripleBonus
+            TripleBonus = gp.TripleBonus,
+            GameId = gp.GameId
         };
 
         return player;

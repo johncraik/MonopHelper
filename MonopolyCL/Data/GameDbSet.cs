@@ -31,7 +31,11 @@ public class GameDbSet<T>
     private void FilterDbSet()
     {
         //Do not filter if not tenanted model:
-        if (!typeof(T).IsSubclassOf(typeof(TenantedModel))) return;
+        if (!typeof(T).IsSubclassOf(typeof(TenantedModel)))
+        {
+            _qry = _set;
+            return;
+        }
         
         try
         {

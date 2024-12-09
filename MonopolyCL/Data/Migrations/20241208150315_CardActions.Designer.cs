@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241208150315_CardActions")]
+    partial class CardActions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -71,13 +74,6 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Colour")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Set")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("AdvanceIndex");
 
                     b.ToTable("AdvanceActions");
@@ -123,23 +119,6 @@ namespace MonopHelper.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KeepActions");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Cards.Actions.MoveAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsForward")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MoveAmount")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MoveActions");
                 });
 
             modelBuilder.Entity("MonopolyCL.Models.Cards.Actions.PayPlayerAction", b =>

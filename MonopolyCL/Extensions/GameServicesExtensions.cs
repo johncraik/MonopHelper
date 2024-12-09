@@ -2,10 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MonopHelper.Data;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Cards.Actions;
 using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Services.Boards;
+using MonopolyCL.Services.Cards;
 using MonopolyCL.Services.Game;
 using MonopolyCL.Services.Players;
 using MonopolyCL.Services.Properties;
@@ -22,6 +24,13 @@ public static class GameServicesExtensions
         services.AddScoped<GameDbSet<CardGame>>();
         services.AddScoped<GameDbSet<CardToGame>>();
         services.AddScoped<GameDbSet<TypeToGame>>();
+        
+        services.AddScoped<GameDbSet<CardAction>>();
+        services.AddScoped<GameDbSet<AdvanceAction>>();
+        services.AddScoped<GameDbSet<MoveAction>>();
+        services.AddScoped<GameDbSet<KeepAction>>();
+        services.AddScoped<GameDbSet<PayPlayerAction>>();
+        services.AddScoped<GameDbSet<StreetRepairsAction>>();
 
         services.AddScoped<GameDbSet<BoardDM>>();
         services.AddScoped<GameDbSet<BoardToProperty>>();
@@ -42,6 +51,7 @@ public static class GameServicesExtensions
         services.AddScoped<BoardCreator>();
 
         services.AddTransient<MonopolyGameService>();
+        services.AddTransient<CardActionsService>();
         
         services.AddScoped<CsvReader<CardUpload>>();
         

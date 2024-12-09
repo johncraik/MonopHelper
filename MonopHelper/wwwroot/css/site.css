@@ -9,6 +9,12 @@
   --darkBlueP: #1f1352;
   --station: #222;
   --util: #fefefe;
+  
+  --adv: #79db60;
+  --move: #dbf067;
+  --keep: #6da9b5;
+  --payply: #9c44a6;
+  --sr: #d13d3d;
 }
 
 html {
@@ -102,6 +108,78 @@ h4{
 }
 .mb{
   margin-bottom: 10px;
+}
+
+.bt{
+  border-top: 2px solid #000;
+}
+
+.bl{
+  border-left: 2px solid #000;
+}
+
+.bb{
+  border-bottom: 2px solid #000;
+}
+
+.br{
+  border-right: 2px solid #000;
+}
+
+.space-board{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.bg-empty{
+  background: var(--bs-gray-500);
+}
+
+.bg-adv{
+  background: var(--adv);
+  color: black;
+}
+
+.bg-move{
+  background: var(--move);
+  color: black;
+}
+
+.bg-keep{
+  background: var(--keep);
+  color: white;
+}
+
+.bg-payply{
+  background: var(--payply);
+  color: white;
+}
+
+.bg-sr{
+  background: var(--sr);
+  color: white;
+}
+
+.prop{
+  width: 95%;
+  max-width: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 214px;
+  aspect-ratio: 0.7;
+  
+  border-radius: 4px;
+}
+
+.prop-index{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .prop-0{
