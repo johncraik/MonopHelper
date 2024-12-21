@@ -2,12 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopHelper.Models;
+using MonopolyCL.Extensions;
 
 namespace MonopHelper.Services.InGame;
 
 public class PlayerService
 {
-    private const int JailIncrement = 20;
+    private const float JailIncrement = 0.5f;
     private const int TripleIncrement = 500;
     
     private readonly ApplicationDbContext _context;
@@ -42,7 +43,7 @@ public class PlayerService
         var player = await GetPlayer(id);
         if (player == null) return 0;
         
-        player.JailCost += JailIncrement;
+        player.JailCost = ((int)(player.JailCost + (player.JailCost * JailIncrement))).RoundToTen();
         _context.Players.Update(player);
         await _context.SaveChangesAsync();
         

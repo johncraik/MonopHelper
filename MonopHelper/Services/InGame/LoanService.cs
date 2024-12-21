@@ -32,14 +32,22 @@ public class LoanService
         return await _context.Loans.FirstOrDefaultAsync(l => l.TenantId == _userInfo.TenantId && l.Id == id);
     }
 
-    public async Task CreateLoan(Loan loan)
+    public async Task<bool> CreateLoan(Loan loan)
     {
+        var numLoans = NumberOfPlayerLoans(loan.PlayerId);
+        if (numLoans >= 3) return false;
+        
         loan.TenantId = _userInfo.TenantId;
         loan.Repaid = false;
         loan.RepaidAmount = 0;
+        
         await _context.Loans.AddAsync(loan);
         await _context.SaveChangesAsync();
+
+        return true;
     }
+
+    private int NumberOfPlayerLoans(int playerId) => _context.Loans.Count(l => l.PlayerId == playerId && !l.Repaid);
 
     public async Task Repay(int loanId, int amount)
     {

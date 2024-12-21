@@ -37,8 +37,16 @@ public class NewLoan : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        await _loanService.CreateLoan(Loan);
-        return RedirectToPage($"/InGame/{nameof(Index)}", new { id = GameId });
+        var success = await _loanService.CreateLoan(Loan);
+        if (success) return RedirectToPage($"/InGame/{nameof(Index)}", new { id = GameId });
+        
+        success = await PopulateData(Loan.PlayerId);
+        if(!success) return RedirectToPage(nameof(NotFound));
+        
+        //Add error:
+        ModelState.AddModelError("Loan.Amount", "You can only have a maximum of 3 unpaid loans at one time!");
+        return Page();
+
     }
     
     private async Task<bool> PopulateData(int playerId)
