@@ -1,4 +1,5 @@
 using MonopolyCL.Extensions;
+using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Properties.Enums;
 
 namespace MonopolyCL.Models.Properties;
@@ -11,4 +12,9 @@ public class ColouredProperty : Property, IProperty
     public int[] Rent { get; set; }
 
     public int GetRent() => Rent[(int)BuiltLevel];
+    
+    public override bool Buy(Player p)
+    {
+        return true;
+    }
 }
