@@ -7,7 +7,7 @@ public class StationProperty : Property, IProperty
 {
     public int NumInSet { get; set; }
 
-    public int GetRent() => NumInSet * 50;
+    public int GetRent() => NumInSet * 25;
 
     public async Task<bool> BuyProperty()
     {

@@ -47,6 +47,7 @@ builder.Services.AddScoped<GameDbSet<TypeToGame>>();
 
 builder.Services.AddScoped<UploadCardsService>();
 
+builder.Services.CreateContextServices();
 builder.Services.GetGameServices();
 
 

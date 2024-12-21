@@ -5,6 +5,7 @@ using MonopHelper.Data;
 using MonopHelper.Helpers;
 using MonopHelper.Models.GameDb.Cards;
 using MonopHelper.Models.GameDb.Cards.ViewModels;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Cards;
 
 namespace MonopHelper.Services.Cards;
@@ -13,24 +14,15 @@ public class CardGameService
 {
     private readonly CardService _cardService;
     private readonly UserInfo _userInfo;
-    private readonly ILogger<CardGameService> _logger;
-    private readonly GameDbSet<CardGame> _gameSet;
-    private readonly GameDbSet<CardToGame> _cardToGameSet;
-    private readonly GameDbSet<TypeToGame> _typeToGameSet;
+    private readonly CardContext _cardContext;
 
     public CardGameService(CardService cardService,
         UserInfo userInfo,
-        ILogger<CardGameService> logger,
-        GameDbSet<CardGame> gameSet,
-        GameDbSet<CardToGame> cardToGameSet,
-        GameDbSet<TypeToGame> typeToGameSet)
+        CardContext cardContext)
     {
         _cardService = cardService;
         _userInfo = userInfo;
-        _logger = logger;
-        _gameSet = gameSet;
-        _cardToGameSet = cardToGameSet;
-        _typeToGameSet = typeToGameSet;
+        _cardContext = cardContext;
     }
 
     public async Task<CardGameViewModel?> CreateGame(int deckId)
@@ -49,7 +41,7 @@ public class CardGameService
             DeckId = deck.Id,
             IsDeleted = false
         };
-        await _gameSet.AddAsync(game);
+        await _cardContext.CardGameSet.AddAsync(game);
         
         //Get cards and shuffle:
         var cardsInDeck = await _cardService.GetCardsFromDeck(deckId);
@@ -99,8 +91,8 @@ public class CardGameService
         }
 
         //Add referenced to databed:
-        await _cardToGameSet.AddAsync(addCardToGame);
-        await _typeToGameSet.AddAsync(addTypeToGame);
+        await _cardContext.CardToGameSet.AddAsync(addCardToGame);
+        await _cardContext.TypeToGameSet.AddAsync(addTypeToGame);
         
         //Return view model:
         return cgvm;
@@ -110,13 +102,13 @@ public class CardGameService
     public async Task<CardGameViewModel?> FetchGame(int id)
     {
         //Get game:
-        var game = await _gameSet.Query().FirstOrDefaultAsync(g => g.UserId == _userInfo.UserId
+        var game = await _cardContext.CardGameSet.Query().FirstOrDefaultAsync(g => g.UserId == _userInfo.UserId
                                                                    && g.Id == id);
         //Return null if no game found:
         if (game == null) return null;
         
         //Get card IDs in game:
-        var cardIds = _cardToGameSet.Query(true).Where(ctg => ctg.GameId == game.Id)
+        var cardIds = _cardContext.CardToGameSet.Query(true).Where(ctg => ctg.GameId == game.Id)
             .Select(ctg => new
             {
                 ctg.CardId,
@@ -145,7 +137,7 @@ public class CardGameService
         }
 
         //Get types for view model:
-        var typeIds = _typeToGameSet.Query(true).Where(ttg => ttg.GameId == game.Id)
+        var typeIds = _cardContext.TypeToGameSet.Query(true).Where(ttg => ttg.GameId == game.Id)
             .Select(ttg => new
             {
                 ttg.TypeId,
@@ -164,7 +156,7 @@ public class CardGameService
 
         //Set last played:
         game.LastPlayed = DateTime.Now;
-        await _gameSet.UpdateAsync(game);
+        await _cardContext.CardGameSet.UpdateAsync(game);
 
         return cgvm;
     }
@@ -198,12 +190,12 @@ public class CardGameService
         
         
         //Update current index:
-        var type = await _typeToGameSet.Query(true)
+        var type = await _cardContext.TypeToGameSet.Query(true)
             .FirstOrDefaultAsync(t => t.GameId == gameId && t.TypeId == typeVm.Type.Id);
         if (type == null) return null;
 
         type.CurrentIndex = newIndex + 1;
-        await _typeToGameSet.UpdateAsync(type);
+        await _cardContext.TypeToGameSet.UpdateAsync(type);
         
         return card;
     }
@@ -214,25 +206,25 @@ public class CardGameService
         if (cgvm == null) return false;
 
         //Remove many-many records:
-        var cardsInGame = _cardToGameSet.Query(true).Where(c => c.GameId == id).ToList();
-        var typesInGame = _typeToGameSet.Query(true).Where(t => t.GameId == id).ToList();
+        var cardsInGame = _cardContext.CardToGameSet.Query(true).Where(c => c.GameId == id).ToList();
+        var typesInGame = _cardContext.TypeToGameSet.Query(true).Where(t => t.GameId == id).ToList();
 
-        await _cardToGameSet.RemoveAsync(cardsInGame);
-        await _typeToGameSet.RemoveAsync(typesInGame);
+        await _cardContext.CardToGameSet.RemoveAsync(cardsInGame);
+        await _cardContext.TypeToGameSet.RemoveAsync(typesInGame);
         
         //Update game to is deleted:
         cgvm.Game.IsDeleted = true;
-        await _gameSet.UpdateAsync(cgvm.Game);
+        await _cardContext.CardGameSet.UpdateAsync(cgvm.Game);
 
         return true;
     }
 
-    public async Task<List<CardGame>> GetCardGames() => await _gameSet.Query().Include(g => g.Deck)
+    public async Task<List<CardGame>> GetCardGames() => await _cardContext.CardGameSet.Query().Include(g => g.Deck)
             .Where(g => g.UserId == _userInfo.UserId).ToListAsync();
 
     public async Task RemoveGamesWithDeck(int deckId)
     {
-        var games = await _gameSet.Query().Where(g => g.DeckId == deckId).ToListAsync();
+        var games = await _cardContext.CardGameSet.Query().Where(g => g.DeckId == deckId).ToListAsync();
         foreach (var g in games)
         {
             await DeleteCardGame(g.Id);
