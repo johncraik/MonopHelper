@@ -1,12 +1,27 @@
 @model (List<MonopolyCL.Models.Cards.CardType> Types, bool Show)
 
 @if(Model.Show){
-    foreach (var type in Model.Types)
+    foreach (var type in Model.Types.OrderBy(t => t.Id))
     {
-        <button class="btn btn-warning mt" style="width: 100%; word-break: break-word; word-wrap: break-word" type="button"
+        <button class="btn btn-light typeBtn-@(type.Id) mt" style="width: 100%; word-break: break-word; word-wrap: break-word" type="button"
                 data-bs-toggle="modal" data-bs-target="#uploadCards" onclick="SetUploadType('@(type.Id)', '@(type.Name)')">
             Upload @type.Name Cards
         </button>
+        
+        <style>
+            .typeBtn-@(type.Id){
+                background: @(type.Colour);
+                color: @(type.FontColour());
+                width: 100%; 
+                height: 60px;
+                overflow-wrap: break-word;
+            }
+
+            .typeBtn-@(type.Id):hover{
+                background: @(type.HoverColour());
+                color: @(type.FontColour());
+            }
+        </style>
     }
     
     <div class="h-line mt-3"></div>

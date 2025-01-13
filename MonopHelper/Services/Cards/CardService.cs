@@ -31,7 +31,7 @@ public class CardService
             .Where(c => c.DeckId == deckId 
                         && (undefined || c.CardType.TenantId != DefaultsDictionary.DefaultTenant)
                         && (undefined || c.CardDeck.TenantId != DefaultsDictionary.DefaultTenant))
-            .OrderBy(c => c.CardType.Name).ThenBy(c => c.Text).ToListAsync();
+            .OrderBy(c => c.CardType.Id).ThenBy(c => c.Text).ToListAsync();
     }
 
     public async Task<List<(Card, bool)>> GetCardsAndActionFromDeck(int deckId, bool undefined = false)

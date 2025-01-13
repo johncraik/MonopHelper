@@ -78,6 +78,11 @@ public class CardDefaults
                     break;
             }
         }
+        else
+        {
+            var type = defTypes[0];
+            type.Colour = colour;
+        }
     }
 
     private async Task CheckDecks(int id, string name)

@@ -9,10 +9,10 @@ public class CardType : TenantedModel
     public required string Name { get; set; }
     public bool IsDeleted { get; set; }
 
-    private string _Colour = "#7afaba";
+    private string? _Colour = "#7afaba";
     public string Colour
     {
-        get => _Colour;
+        get => _Colour ?? "#7afaba";
         set
         {
             var val = value;

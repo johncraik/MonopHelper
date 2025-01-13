@@ -29,7 +29,7 @@
                     if (cost == "") cost = "-";
             
                     <tr>
-                        <td>@ca.Card.CardType.Name</td>
+                        <td style="background: @(ca.Card.CardType.HoverColour()); color: @(ca.Card.CardType.FontColour());">@ca.Card.CardType.Name</td>
                         <td>@ca.Card.Text</td>
                         <td>@cost</td>
                         @if (Model.First().Card.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)
