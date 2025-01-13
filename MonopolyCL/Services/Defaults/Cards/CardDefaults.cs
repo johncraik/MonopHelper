@@ -26,16 +26,16 @@ public class CardDefaults
     {
         //Create undefined type and deck:
         await EnsureDefaults(DefaultsDictionary.DefaultTenant, DefaultsDictionary.Undefined, 
-            CardDefaultsCheck.All);
+            DefaultsDictionary.UndefinedColour, CardDefaultsCheck.All);
         
         //Create monopoly chance and com chest:
         await EnsureDefaults(DefaultsDictionary.MonopolyTenant, CardDefaultsDictionary.Chance, 
-            CardDefaultsCheck.Types);
+            CardDefaultsDictionary.ChanceColour, CardDefaultsCheck.Types);
         await EnsureDefaults(DefaultsDictionary.MonopolyTenant, CardDefaultsDictionary.ComChest, 
-            CardDefaultsCheck.Types);
+            CardDefaultsDictionary.ComChestColour, CardDefaultsCheck.Types);
         
         //Create monopoly deck:
-        await EnsureDefaults(DefaultsDictionary.MonopolyTenant, CardDefaultsDictionary.StandardDeck,
+        await EnsureDefaults(DefaultsDictionary.MonopolyTenant, CardDefaultsDictionary.StandardDeck, "",
             CardDefaultsCheck.Decks);
         
         //Check chance and com chest cards exist:
@@ -43,25 +43,25 @@ public class CardDefaults
         await EnsureCards(CardDefaultsDictionary.ComChest);
     }
 
-    private async Task EnsureDefaults(int id, string name, CardDefaultsCheck check)
+    private async Task EnsureDefaults(int id, string name, string colour, CardDefaultsCheck check)
     {
         switch (check)
         {
             case CardDefaultsCheck.Types:
-                await CheckTypes(id, name);
+                await CheckTypes(id, name, colour);
                 break;
             case CardDefaultsCheck.Decks:
                 await CheckDecks(id, name);
                 break;
             case CardDefaultsCheck.All:
             default:
-                await CheckTypes(id, name);
+                await CheckTypes(id, name, colour);
                 await CheckDecks(id, name);
                 break;
         }
     }
 
-    private async Task CheckTypes(int id, string name)
+    private async Task CheckTypes(int id, string name, string colour)
     {
         var defTypes = await _context.CardTypes.Where(t => t.TenantId == id && t.Name == name).ToListAsync();
         if (defTypes.Count != 1)
@@ -69,7 +69,7 @@ public class CardDefaults
             switch (defTypes.Count)
             {
                 case 0:
-                    await CreateType(id, name);
+                    await CreateType(id, name, colour);
                     break;
                 default:
                     _context.CardTypes.RemoveRange(defTypes.Where(t =>
@@ -140,12 +140,13 @@ public class CardDefaults
         
     }
 
-    private async Task CreateType(int id, string name)
+    private async Task CreateType(int id, string name, string colour)
     {
         var type = new CardType
         {
             TenantId = id,
             Name = name,
+            Colour = colour,
             IsDeleted = false
         };
         await _context.CardTypes.AddAsync(type);

@@ -6,7 +6,7 @@
 }
 
 <div class="card text-center">
-    <div class="card-header bg-danger text-white">
+    <div style="background: @(Model.Card.CardType.Colour) !important; color: @(Model.Card.CardType.FontColour()) !important;" class="card-header bg-danger">
         @Model.Card.CardType.Name Card
     </div>
     <div class="card-body bg-light">

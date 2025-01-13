@@ -25,7 +25,7 @@ public class CardController : Controller
     
     public async Task<IActionResult> CardsTablePartial(int id)
     {
-        var model = await _cardService.GetCardsFromDeck(id, true);
+        var model = await _cardService.GetCardsAndActionFromDeck(id, true);
         return PartialView("Cards/_CardsTable", model);
     }
 
@@ -55,7 +55,7 @@ public class CardController : Controller
     }
 
     [HttpPost]
-    public async Task<bool> AddCardType(string name)
+    public async Task<bool> AddCardType(string name, string colour)
     {
         var valid = await _cardService.ValidateCardType(name);
         if (!valid) return valid;
@@ -64,6 +64,7 @@ public class CardController : Controller
         {
             TenantId = _userInfo.TenantId,
             Name = name,
+            Colour = colour,
             IsDeleted = false
         };
 
@@ -72,12 +73,13 @@ public class CardController : Controller
     }
 
     [HttpPost]
-    public async Task<bool> EditCardType(int id, string name)
+    public async Task<bool> EditCardType(int id, string name, string colour)
     {
         var cardType = await _cardService.FindCardType(id);
         if (cardType == null) return false;
 
         cardType.Name = name;
+        cardType.Colour = colour;
         await _cardService.UpdateCardType(cardType);
         return true;
     }

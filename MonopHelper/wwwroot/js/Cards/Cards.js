@@ -73,6 +73,7 @@ function EditCardType(id, edit){
         title: action + " Card Type",
         icon: "info",
         input: "text",
+        inputLabel: "Name",
         showCancelButton: true,
         confirmButtonText: "Save"
     }).then((result) => {
@@ -80,25 +81,37 @@ function EditCardType(id, edit){
             if(edit === true){
                 params += '&';
             }
-            params += 'name=' + result.value
+            params += 'name=' + result.value;
             
-            $.ajax({
-                type: 'POST',
-                url: url + 'CardType' + params,
-                success: function (res){
-                    Swal.fire("Card Type " + successMsg, "", "success").then((r) => {
-                        let url = BaseUrl + "CardTypesPartial";
-                        let model = document.getElementById("CardTypeTable");
-                        FetchPartial(url, model);
+            Swal.fire({
+               title: action + " Card Type",
+               icon: "info",
+               input: "text",
+               inputLabel: "Colour (Hex Code, eg: #7afaba)",
+                showCancelButton: true,
+                confirmButtonText: "Save"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    params += '&colour=' + encodeURIComponent(result.value);
 
-                        let deckId = document.getElementById("DeckId").value;
-                        url = BaseUrl + "AddCardsPartial?deckId=" + deckId;
-                        model = document.getElementById("AddCardsBtns");
-                        FetchPartial(url, model);
+                    $.ajax({
+                        type: 'POST',
+                        url: url + 'CardType' + params,
+                        success: function (res){
+                            Swal.fire("Card Type " + successMsg, "", "success").then((r) => {
+                                let url = BaseUrl + "CardTypesPartial";
+                                let model = document.getElementById("CardTypeTable");
+                                FetchPartial(url, model);
+
+                                let deckId = document.getElementById("DeckId").value;
+                                url = BaseUrl + "AddCardsPartial?deckId=" + deckId;
+                                model = document.getElementById("AddCardsBtns");
+                                FetchPartial(url, model);
+                            });
+                        }
                     });
                 }
-            })
-
+            });
         }
     })
 }

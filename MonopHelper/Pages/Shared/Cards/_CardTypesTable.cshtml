@@ -6,6 +6,7 @@
         <table class="table table-striped table-hover table-bordered">
             <thead>
             <tr>
+                <th style="width: 50px">Colour</th>
                 <th>Type Name</th>
                 <th style="width: 85px"></th>
             </tr>
@@ -15,6 +16,7 @@
                 foreach (var ct in Model)
                 {
                     <tr>
+                        <td style="background: @(ct.Colour);"></td>
                         <td>@ct.Name</td>
                         <td>
                             <button class="btn btn-sm btn-link" onclick="EditCardType('@(ct.Id)', true)"

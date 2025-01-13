@@ -18,11 +18,27 @@
                         <form method="post" asp-page-handler="Card">
                             <input type="hidden" asp-for="TypeId" value="@type.Type.Id"/>
                             <input type="hidden" asp-for="GameId" value="@Model.CardGameView?.Game.Id"/>
-                            <input type="submit" class="btn btn-success" style="width: 100%; height: 60px;" value="Take @type.Type.Name Card"/>
+                            <input type="submit" class="btn btn-light typeBtn-@(type.Type.Id)" value="Take @type.Type.Name Card"/>
                         </form>
                     </div>
+                    
+                    <style>
+                        .typeBtn-@(type.Type.Id){
+                            background: @(type.Type.Colour);
+                            color: @(type.Type.FontColour());
+                            width: 100%; 
+                            height: 60px;
+                            overflow-wrap: break-word;
+                        }
+
+                        .typeBtn-@(type.Type.Id):hover{
+                            background: @(type.Type.HoverColour());
+                            color: @(type.Type.FontColour());
+                        }
+                    </style>
                 }
             }
         </div>
     </div>
 </div>
+
