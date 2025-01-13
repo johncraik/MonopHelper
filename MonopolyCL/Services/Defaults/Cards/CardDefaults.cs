@@ -82,6 +82,8 @@ public class CardDefaults
         {
             var type = defTypes[0];
             type.Colour = colour;
+            _context.CardTypes.Update(type);
+            await _context.SaveChangesAsync();
         }
     }
 
