@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
 using MonopolyCL.Models.Boards.DataModel;
+using MonopolyCL.Models.Cards.ViewModels;
 using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Players.DataModel;
@@ -9,6 +10,7 @@ using MonopolyCL.Models.Properties;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
 using MonopolyCL.Services.Boards;
+using MonopolyCL.Services.Cards;
 using MonopolyCL.Services.Players;
 using MonopolyCL.Services.Properties;
 
@@ -28,6 +30,7 @@ public class MonopolyGameService
     private readonly GameDbSet<BoardToProperty> _boardToPropSet;
     private readonly GameDbSet<PropertyDM> _propSet;
     private readonly GameDbSet<GamePlayer> _playerSet;
+    private readonly CardGameService _cardGameService;
 
     public MonopolyGameService(UserInfo userInfo,
         PlayerCreator playerCreator,
@@ -38,7 +41,8 @@ public class MonopolyGameService
         GameDbSet<GameDM> gameSet,
         GameDbSet<BoardToProperty> boardToPropSet,
         GameDbSet<PropertyDM> propSet,
-        GameDbSet<GamePlayer> playerSet)
+        GameDbSet<GamePlayer> playerSet,
+        CardGameService cardGameService)
     {
         _userInfo = userInfo;
         
@@ -52,16 +56,36 @@ public class MonopolyGameService
         _boardToPropSet = boardToPropSet;
         _propSet = propSet;
         _playerSet = playerSet;
+        _cardGameService = cardGameService;
     }
 
-    public async Task<MonopolyGame?> CreateGame(int boardId, List<string> playerIds, GAME_RULES rules)
+    public async Task<List<MonopolyGame>> GetGames()
     {
+        var gameIds = await _gameSet.Query().Select(g => g.Id).ToListAsync();
+        var games = new List<MonopolyGame>();
+        foreach (var g in gameIds)
+        {
+            var game = await FetchGame(g);
+            if(game != null) games.Add(game);
+        }
+
+        return games;
+    }
+
+    public async Task<MonopolyGame?> CreateGame(string name, int boardId, int deckId, List<string> playerIds, GAME_RULES rules)
+    {
+        //Create Card Game:
+        var cardGame = await _cardGameService.CreateGame(deckId);
+        if (cardGame == null) return null;
+        
         //Create Game:
         var game = new GameDM
         {
+            Name = name,
             TenantId = _userInfo.TenantId,
             UserId = _userInfo.UserId,
             BoardId = boardId,
+            CardGameId = cardGame.Game.Id,
             Rules = rules,
             DateCreated = DateTime.Now,
             LastPlayed = DateTime.Now
@@ -69,36 +93,37 @@ public class MonopolyGameService
         //Add to DB (sets ID, used in properties:
         await _gameSet.AddAsync(game);
 
-        return await BuildGame(game.Id, game.BoardId, rules, playerIds);
+        return await BuildGame(game, playerIds, cardGame);
     }
     
     public async Task<MonopolyGame?> FetchGame(int gameId)
     {
-        var game = await _gameSet.Query().FirstOrDefaultAsync(g => g.Id == gameId);
+        var game = await _gameSet.Query().Include(g => g.CardGame).FirstOrDefaultAsync(g => g.Id == gameId);
         if (game == null) return null;
-
-        return await BuildGame(game.Id, game.BoardId, game.Rules);
+        
+        return await BuildGame(game);
     }
 
-    private async Task<MonopolyGame?> BuildGame(int gameId, int boardId, GAME_RULES rules, List<string>? playerIds = null)
+    private async Task<MonopolyGame?> BuildGame(GameDM game, List<string>? playerIds = null, CardGameViewModel? cardGame = null)
     {
         //Build Players:
-        var players = await BuildPlayers(gameId, playerIds);
+        var players = await BuildPlayers(game.Id, playerIds);
         if (players.Count < 2) return null; //If not 2 or more player, return null
 
         //Get list of properties:
-        var properties = await BuildProperties(gameId, boardId);
+        var properties = await BuildProperties(game.Id, game.BoardId);
         if (properties.Count != 28) return null;    //If not correct number of properties, return null
         
         //Build board:
-        var board = await _boardCreator.BuildBoard(boardId, properties);
+        var board = await _boardCreator.BuildBoard(game.BoardId, properties);
         if (board == null) return null;
 
         return new MonopolyGame
         {
+            Game = game,
             Board = board,
             Players = players,
-            Rules = rules
+            Cards = cardGame ?? await _cardGameService.FetchGame(game.Id)
         };
     }
 
@@ -183,4 +208,6 @@ public class MonopolyGameService
 
         return properties;
     }
+
+    private async Task<CardGameViewModel?> BuildCardGame(int id) => await _cardGameService.FetchGame(id);
 }

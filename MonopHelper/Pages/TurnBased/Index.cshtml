@@ -2,18 +2,42 @@
 @model MonopHelper.Pages.TurnBased.Index
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Turn Based Games";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
+<div class="card mt mb">
+    <div class="card-header bg-primary text-white">
+        Create New Game
+    </div>
+    <div class="card-body bg-light">
+        <form method="post">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="CreateGame.GameName"></label>
+                    <input asp-for="CreateGame.GameName" class="form-control mt mb"/>
+                    <span class="text-danger" asp-validation-for="CreateGame.GameName"></span>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="CreateGame.PlayerIds"></label>
+                    <select asp-for="CreateGame.PlayerIds" asp-items="Model.Players" class="form-control mt mb"></select>
+                    <span class="text-danger" asp-validation-for="CreateGame.PlayerIds"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="CreateGame.BoardId"></label>
+                    <select asp-for="CreateGame.BoardId" asp-items="Model.Boards" class="form-control mt mb"></select>
+                    <span class="text-danger" asp-validation-for="CreateGame.BoardId"></span>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="CreateGame.DeckId"></label>
+                    <select asp-for="CreateGame.DeckId" asp-items="Model.Decks" class="form-control mt mb"></select>
+                    <span class="text-danger" asp-validation-for="CreateGame.DeckId"></span>
+                </div>
+            </div>
+            <div class="mt">
+                <input type="submit" class="btn btn-success" value="Create Game"/>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>

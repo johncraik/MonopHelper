@@ -24,10 +24,11 @@ public static class GameServicesExtensions
         services.AddScoped<UtilPropCreator>();
         
         services.AddScoped<PlayerCreator>();
+        services.AddScoped<PlayerService>();
         services.AddScoped<BoardCreator>();
+        services.AddScoped<BoardService>();
 
         services.AddTransient<MonopolyGameService>();
-        services.AddTransient<TurnBasedGameService>();
         services.AddTransient<CardActionsService>();
         
         services.AddScoped<CsvReader<CardUpload>>();
