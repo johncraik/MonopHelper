@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Authentication;
-using MonopHelper.Services.Cards;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Controllers;
 

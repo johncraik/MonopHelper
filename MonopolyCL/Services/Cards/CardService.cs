@@ -1,12 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
-using MonopHelper.Data;
 using MonopolyCL.Data;
 using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Cards;
-using MonopolyCL.Services.Cards;
 
-namespace MonopHelper.Services.Cards;
+namespace MonopolyCL.Services.Cards;
 
 public class CardService
 {

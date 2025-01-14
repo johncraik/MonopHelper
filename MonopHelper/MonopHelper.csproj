@@ -24,8 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\GameDefaults\CSVs\" />
-      <Folder Include="Pages\TurnBased\" />
+      <Folder Include="Models\GameDb\Cards\ViewModels\" />
     </ItemGroup>
 
     <ItemGroup>

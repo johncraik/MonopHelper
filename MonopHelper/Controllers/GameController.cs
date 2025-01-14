@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MonopHelper.Models.ViewModels;
 using MonopHelper.Services;
-using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Controllers;
 

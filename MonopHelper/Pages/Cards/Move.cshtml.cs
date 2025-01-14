@@ -1,13 +1,10 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.Editing;
-using MonopHelper.Models.GameDb.Cards;
-using MonopHelper.Services.Cards;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Pages.Cards;
 

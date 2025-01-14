@@ -1,12 +1,11 @@
 using System.Globalization;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
-using MonopHelper.Models.GameDb.Cards;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
-using MonopHelper.Models.GameDb.Cards.ViewModels;
 using MonopolyCL;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Services.Cards;
 

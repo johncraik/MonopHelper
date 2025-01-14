@@ -1,15 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MonopHelper;
 using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
-using MonopHelper.Helpers;
-using MonopHelper.Helpers.GameDefaults;
 using MonopHelper.Middleware;
-using MonopHelper.Models.GameDb.Cards;
-using MonopHelper.Models.GameDb.Cards.ViewModels;
 using MonopHelper.Services;
 using MonopHelper.Services.Cards;
 using MonopHelper.Services.InGame;
@@ -32,11 +27,6 @@ builder.Services.AddTransient<GameService>();
 builder.Services.AddTransient<PlayerService>();
 builder.Services.AddTransient<PropertyService>();
 builder.Services.AddTransient<LoanService>();
-
-builder.Services.AddTransient<ShuffleList<Card>>();
-
-builder.Services.AddTransient<CardService>();
-builder.Services.AddTransient<CardGameService>();
 
 builder.Services.AddScoped<GameDbSet<Card>>();
 builder.Services.AddScoped<GameDbSet<CardType>>();

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MonopHelper.Models.GameDb.Cards.ViewModels;
-using MonopHelper.Services.Cards;
+using MonopolyCL.Models.Cards.ViewModels;
+using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Pages.Cards.Play;
 

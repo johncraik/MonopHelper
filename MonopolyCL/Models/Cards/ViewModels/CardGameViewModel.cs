@@ -1,6 +1,6 @@
 using MonopolyCL.Models.Cards;
 
-namespace MonopHelper.Models.GameDb.Cards.ViewModels;
+namespace MonopolyCL.Models.Cards.ViewModels;
 
 public class CardGameViewModel
 {

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using MonopolyCL.Helpers;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Services.Boards;
 using MonopolyCL.Services.Cards;
@@ -12,6 +13,10 @@ public static class GameServicesExtensions
 {
     public static IServiceCollection GetGameServices(this IServiceCollection services)
     {
+        services.AddTransient<ShuffleList<Card>>();
+        services.AddTransient<CardService>();
+        services.AddTransient<CardGameService>();
+        
         services.AddTransient<GeneralBoardSpaces>();
 
         services.AddScoped<ColPropCreator>();
@@ -22,6 +27,7 @@ public static class GameServicesExtensions
         services.AddScoped<BoardCreator>();
 
         services.AddTransient<MonopolyGameService>();
+        services.AddTransient<TurnBasedGameService>();
         services.AddTransient<CardActionsService>();
         
         services.AddScoped<CsvReader<CardUpload>>();

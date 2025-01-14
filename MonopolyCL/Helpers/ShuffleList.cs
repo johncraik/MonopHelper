@@ -1,4 +1,4 @@
-namespace MonopHelper.Helpers;
+namespace MonopolyCL.Helpers;
 
 public class ShuffleList<T>
 {

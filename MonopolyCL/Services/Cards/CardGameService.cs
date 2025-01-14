@@ -1,14 +1,11 @@
-using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
-using MonopHelper.Data;
-using MonopHelper.Helpers;
-using MonopHelper.Models.GameDb.Cards;
-using MonopHelper.Models.GameDb.Cards.ViewModels;
 using MonopolyCL.Data;
+using MonopolyCL.Helpers;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Cards.ViewModels;
 
-namespace MonopHelper.Services.Cards;
+namespace MonopolyCL.Services.Cards;
 
 public class CardGameService
 {
