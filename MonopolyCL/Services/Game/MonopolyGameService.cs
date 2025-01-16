@@ -78,7 +78,7 @@ public class MonopolyGameService
         await _gameContext.TurnOrders.AddAsync(turnOrder);
     }
 
-    public async Task<ValidationResponse<MonopolyGame>> CreateGame(string name, int boardId, int deckId, List<string> playerIds, GAME_RULES rules)
+    public async Task<ValidationResponse<MonopolyGame>> CreateGame(string name, int boardId, int deckId, List<int> playerIds, GAME_RULES rules)
     {
         //Create Card Game:
         var cardGame = await _cardGameService.CreateGame(deckId);
@@ -126,7 +126,7 @@ public class MonopolyGameService
         return await BuildGame(game);
     }
 
-    private async Task<MonopolyGame?> BuildGame(GameDM game, List<string>? playerIds = null, CardGameViewModel? cardGame = null)
+    private async Task<MonopolyGame?> BuildGame(GameDM game, List<int>? playerIds = null, CardGameViewModel? cardGame = null)
     {
         //Build Players:
         var players = await BuildPlayers(game.Id, playerIds);
@@ -150,7 +150,7 @@ public class MonopolyGameService
     }
 
 
-    private async Task<List<IPlayer>> BuildPlayers(int gameId, List<string>? playerIds)
+    private async Task<List<IPlayer>> BuildPlayers(int gameId, List<int>? playerIds)
     {
         var players = new List<IPlayer>();
         
@@ -163,7 +163,7 @@ public class MonopolyGameService
                          {
                              TenantId = _userInfo.TenantId,
                              GameId = gameId,
-                             PlayerName = pid,
+                             PlayerId = pid,
                              Order = 0,
                              Money = 1500,
                              BoardIndex = 0,

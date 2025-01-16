@@ -20,12 +20,13 @@ public class PlayerCreator
 
     public async Task<IPlayer?> BuildPlayer(GamePlayer gp)
     {
-        var playerDataModel = await _context.Players.Query().FirstOrDefaultAsync(p => p.Name == gp.PlayerName 
+        var playerDataModel = await _context.Players.Query().FirstOrDefaultAsync(p => p.Id == gp.Id 
             && p.UserId == _userInfo.UserId);
         if (playerDataModel == null) return null;
 
         var player = new Player
         {
+            Id = playerDataModel.Id,
             Name = playerDataModel.Name,
             TenantId = playerDataModel.TenantId,
             Order = gp.Order,

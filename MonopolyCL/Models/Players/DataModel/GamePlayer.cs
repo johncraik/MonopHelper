@@ -14,8 +14,8 @@ public class GamePlayer : TenantedModel
     public int? JailCost { get; set; }
     public int? TripleBonus { get; set; }
     
-    public string PlayerName { get; set; }
-    [ForeignKey($"{nameof(PlayerName)}, {nameof(TenantId)}")]
+    public int PlayerId { get; set; }
+    [ForeignKey(nameof(PlayerId))]
     public virtual PlayerDM Player { get; set; }
     
     public int GameId { get; set; }

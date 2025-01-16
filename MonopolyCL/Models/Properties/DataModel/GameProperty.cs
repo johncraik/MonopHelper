@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Models.Identity;
+using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.Enums;
 
@@ -19,9 +20,9 @@ public class GameProperty : TenantedModel
     [ForeignKey($"{nameof(PropertyName)}, {nameof(PropertyTenantId)}")]
     public virtual PropertyDM Property { get; set; }
     
-    public string? OwnerName { get; set; }
-    [ForeignKey($"{nameof(OwnerName)}, {nameof(TenantId)}")]
-    public virtual PlayerDM? Player { get; set; }
+    public int? OwnerId { get; set; }
+    [ForeignKey(nameof(OwnerId))]
+    public virtual PlayerDM Player { get; set; }
     
     public int GameId { get; set; }
 }

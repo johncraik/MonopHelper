@@ -40,7 +40,7 @@ public class Index : PageModel
         [DisplayName("Card Deck")]
         public int DeckId { get; set; }
         [DisplayName("Players")]
-        public List<string> PlayerIds { get; set; }
+        public List<int> PlayerIds { get; set; }
         [DisplayName("Game Name")]
         public string GameName { get; set; }
     }
@@ -86,7 +86,7 @@ public class Index : PageModel
         Players = (await _playerService.GetPlayers()).Select(p => new SelectListItem
         {
             Text = p.Name,
-            Value = p.Name
+            Value = p.Id.ToString()
         }).ToList();
     }
 

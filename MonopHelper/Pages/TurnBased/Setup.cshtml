@@ -16,6 +16,27 @@
         Turn Order
     </div>
     <div class="card-body bg-light">
-        Form to order players and input numbers!
+        <p>
+            Order the players below in clockwise order.<br/>
+            Then input each player's dice number.
+        </p>
+        @{
+            var index = 0;
+            foreach (var player in Model.Game.Players)
+            {
+                var first = index == 0;
+                
+                <div class="player">
+                    <div class="player-box">
+                        <span>@player.Name</span>
+                    </div>
+                    <div class="input-box">
+                        <select ></select>
+                    </div>
+                </div>
+                
+                index++;
+            }
+        }
     </div>
 </div>

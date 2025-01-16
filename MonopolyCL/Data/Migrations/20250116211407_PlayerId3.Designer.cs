@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250116211407_PlayerId3")]
+    partial class PlayerId3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -540,8 +543,6 @@ namespace MonopHelper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlayerId");
-
                     b.ToTable("GamePlayers");
                 });
 
@@ -629,8 +630,6 @@ namespace MonopHelper.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("PropertyName", "PropertyTenantId");
 
@@ -815,17 +814,6 @@ namespace MonopHelper.Migrations
                     b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.GamePlayer", b =>
-                {
-                    b.HasOne("MonopolyCL.Models.Players.DataModel.PlayerDM", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
             modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToCard", b =>
                 {
                     b.HasOne("MonopolyCL.Models.Cards.Game.GameCard", "Card")
@@ -847,17 +835,11 @@ namespace MonopHelper.Migrations
 
             modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.GameProperty", b =>
                 {
-                    b.HasOne("MonopolyCL.Models.Players.DataModel.PlayerDM", "Player")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
                     b.HasOne("MonopolyCL.Models.Properties.DataModel.PropertyDM", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyName", "PropertyTenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Player");
 
                     b.Navigation("Property");
                 });

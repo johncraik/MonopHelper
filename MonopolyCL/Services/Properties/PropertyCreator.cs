@@ -36,7 +36,7 @@ public abstract class PropertyCreator
                 IsOwned = false,
                 IsDeleted = false,
                 BuiltLevel = BUILT_LEVEL.NONE,
-                OwnerName = null
+                OwnerId = null
             };
             await _boardContext.GameProperties.AddAsync(gameProp);
         };

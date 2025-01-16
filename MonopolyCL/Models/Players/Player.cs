@@ -5,6 +5,7 @@ namespace MonopolyCL.Models.Players;
 
 public class Player : IPlayer
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public int TenantId { get; set; }
     public int GameId { get; set; }
@@ -20,5 +21,4 @@ public class Player : IPlayer
     public int? TripleBonus { get; set; }
     
     public List<IProperty>? Properties { get; set; }
-    public List<GameCardViewModel>? Cards { get; set; }
 }
