@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Properties;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
@@ -9,19 +10,19 @@ namespace MonopolyCL.Services.Properties;
 
 public abstract class PropertyCreator
 {
-    private readonly GameDbSet<GameProperty> _propSet;
+    private readonly BoardContext _boardContext;
     private readonly UserInfo _userInfo;
     public abstract IProperty Factory(PropertyDM p, GameProperty gp);
 
-    public PropertyCreator(GameDbSet<GameProperty> propSet, UserInfo userInfo)
+    public PropertyCreator(BoardContext boardContext, UserInfo userInfo)
     {
-        _propSet = propSet;
+        _boardContext = boardContext;
         _userInfo = userInfo;
     }
     
     public async Task<IProperty?> BuildProperty(PropertyDM p, int gameId)
     {
-        var gameProp = await _propSet.Query().FirstOrDefaultAsync(gp => gp.PropertyName == p.Name && gp.GameId == gameId);
+        var gameProp = await _boardContext.GameProperties.Query().FirstOrDefaultAsync(gp => gp.PropertyName == p.Name && gp.GameId == gameId);
         if (gameProp == null)
         {
             gameProp = new GameProperty
@@ -37,7 +38,7 @@ public abstract class PropertyCreator
                 BuiltLevel = BUILT_LEVEL.NONE,
                 OwnerName = null
             };
-            await _propSet.AddAsync(gameProp);
+            await _boardContext.GameProperties.AddAsync(gameProp);
         };
         
         var property = Factory(p, gameProp);

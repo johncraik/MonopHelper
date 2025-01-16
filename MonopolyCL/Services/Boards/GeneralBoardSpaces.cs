@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Boards;
 using MonopolyCL.Models.Boards.Enums;
@@ -10,12 +11,12 @@ namespace MonopolyCL.Services.Boards;
 
 public class GeneralBoardSpaces
 {
-    private readonly GameDbSet<CardType> _cardSet;
+    private readonly CardContext _cardContext;
     private readonly byte[] _cardIndexes = [2, 7, 17, 22, 33, 36]; 
 
-    public GeneralBoardSpaces(GameDbSet<CardType> cardSet)
+    public GeneralBoardSpaces(CardContext cardContext)
     {
-        _cardSet = cardSet;
+        _cardContext = cardContext;
     }
     
     public List<GenericSpace> GetGenericSpaces()
@@ -69,7 +70,7 @@ public class GeneralBoardSpaces
 
     public async Task<List<CardSpace>> GetCardSpaces()
     {
-        var types = await _cardSet.Query().Where(t => t.TenantId == DefaultsDictionary.MonopolyTenant)
+        var types = await _cardContext.CardTypeSet.Query().Where(t => t.TenantId == DefaultsDictionary.MonopolyTenant)
             .Select(t => new
             {
                 t.Name,

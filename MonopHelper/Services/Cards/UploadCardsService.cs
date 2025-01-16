@@ -4,6 +4,7 @@ using MonopHelper.Data;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using MonopolyCL;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Services.Cards;
 
@@ -11,16 +12,16 @@ namespace MonopHelper.Services.Cards;
 
 public class UploadCardsService
 {
-    private readonly GameDbSet<Card> _cardSet;
+    private readonly CardContext _cardContext;
     private readonly CardService _cardService;
     private readonly ILogger<UploadCardsService> _logger;
     private readonly UserInfo _userInfo;
     private readonly CsvReader<CardUpload> _csvReader;
 
-    public UploadCardsService(GameDbSet<Card> cardSet, CardService cardService, 
+    public UploadCardsService(CardContext cardContext, CardService cardService, 
         ILogger<UploadCardsService> logger, UserInfo userInfo, CsvReader<CardUpload> csvReader)
     {
-        _cardSet = cardSet;
+        _cardContext = cardContext;
         _cardService = cardService;
         _logger = logger;
         _userInfo = userInfo;
@@ -72,7 +73,7 @@ public class UploadCardsService
             }
 
             //Add cards to db:
-            await _cardSet.AddAsync(cards);
+            await _cardContext.CardSet.AddAsync(cards);
             
             return true;
         }
@@ -114,7 +115,7 @@ public class UploadCardsService
                     Cost = cost
                 };
 
-                if (await _cardSet.Query().FirstOrDefaultAsync(c => 
+                if (await _cardContext.CardSet.Query().FirstOrDefaultAsync(c => 
                         c.Text == card.Text && c.TenantId == card.TenantId && c.CardTypeId == card.CardTypeId) == null)
                 {
                     cards.Add(card);
@@ -122,7 +123,7 @@ public class UploadCardsService
             }
 
             //Add cards to db:
-            await _cardSet.AddAsync(cards);
+            await _cardContext.CardSet.AddAsync(cards);
             
             return true;
         }

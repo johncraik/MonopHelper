@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Boards.DataModel;
 
 namespace MonopolyCL.Services.Boards;
 
 public class BoardService
 {
-    private readonly GameDbSet<BoardDM> _boardSet;
+    private readonly BoardContext _boardContext;
 
-    public BoardService(GameDbSet<BoardDM> boardSet)
+    public BoardService(BoardContext boardContext)
     {
-        _boardSet = boardSet;
+        _boardContext = boardContext;
     }
 
-    public async Task<List<BoardDM>> GetBoards() => await _boardSet.Query().ToListAsync();
+    public async Task<List<BoardDM>> GetBoards() => await _boardContext.Boards.Query().ToListAsync();
 }

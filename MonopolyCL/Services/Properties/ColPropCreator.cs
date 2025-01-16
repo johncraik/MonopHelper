@@ -1,12 +1,13 @@
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Properties;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
 
 namespace MonopolyCL.Services.Properties;
 
-public class ColPropCreator(GameDbSet<GameProperty> propSet, UserInfo userInfo) : PropertyCreator(propSet, userInfo)
+public class ColPropCreator(BoardContext boardContext, UserInfo userInfo) : PropertyCreator(boardContext, userInfo)
 {
     public override IProperty Factory(PropertyDM p, GameProperty gp)
     {

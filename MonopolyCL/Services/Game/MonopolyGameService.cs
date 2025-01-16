@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards.ViewModels;
 using MonopolyCL.Models.Game;
@@ -26,13 +27,11 @@ public class MonopolyGameService
     private readonly ColPropCreator _colPropCreator;
     private readonly StationPropCreator _stationPropCreator;
     private readonly UtilPropCreator _utilPropCreator;
-    
-    private readonly GameDbSet<GameDM> _gameSet;
-    private readonly GameDbSet<TurnOrder> _turnSet;
-    private readonly GameDbSet<BoardToProperty> _boardToPropSet;
-    private readonly GameDbSet<PropertyDM> _propSet;
-    private readonly GameDbSet<GamePlayer> _playerSet;
+
     private readonly CardGameService _cardGameService;
+    private readonly BoardContext _boardContext;
+    private readonly PlayerContext _playerContext;
+    private readonly GameContext _gameContext;
 
     public MonopolyGameService(UserInfo userInfo,
         PlayerCreator playerCreator,
@@ -40,12 +39,10 @@ public class MonopolyGameService
         ColPropCreator colPropCreator,
         StationPropCreator stationPropCreator,
         UtilPropCreator utilPropCreator,
-        GameDbSet<GameDM> gameSet,
-        GameDbSet<TurnOrder> turnSet,
-        GameDbSet<BoardToProperty> boardToPropSet,
-        GameDbSet<PropertyDM> propSet,
-        GameDbSet<GamePlayer> playerSet,
-        CardGameService cardGameService)
+        CardGameService cardGameService,
+        BoardContext boardContext,
+        PlayerContext playerContext,
+        GameContext gameContext)
     {
         _userInfo = userInfo;
         
@@ -54,18 +51,15 @@ public class MonopolyGameService
         _colPropCreator = colPropCreator;
         _stationPropCreator = stationPropCreator;
         _utilPropCreator = utilPropCreator;
-        
-        _gameSet = gameSet;
-        _turnSet = turnSet;
-        _boardToPropSet = boardToPropSet;
-        _propSet = propSet;
-        _playerSet = playerSet;
         _cardGameService = cardGameService;
+        _boardContext = boardContext;
+        _playerContext = playerContext;
+        _gameContext = gameContext;
     }
 
     public async Task<List<MonopolyGame>> GetGames()
     {
-        var gameIds = await _gameSet.Query().Select(g => g.Id).ToListAsync();
+        var gameIds = await _gameContext.Games.Query().Select(g => g.Id).ToListAsync();
         var games = new List<MonopolyGame>();
         foreach (var g in gameIds)
         {
@@ -98,7 +92,7 @@ public class MonopolyGameService
             LastPlayed = DateTime.Now
         };
         //Add to DB (sets ID, used in properties:
-        await _gameSet.AddAsync(game);
+        await _gameContext.Games.AddAsync(game);
         
         //Create Turn Order:
         var order = new TurnOrder
@@ -107,7 +101,7 @@ public class MonopolyGameService
             TenantId = _userInfo.TenantId,
             IsSetup = false
         };
-        await _turnSet.AddAsync(order);
+        await _gameContext.TurnOrders.AddAsync(order);
 
         return new ValidationResponse<MonopolyGame>
         {
@@ -118,7 +112,7 @@ public class MonopolyGameService
     
     public async Task<MonopolyGame?> FetchGame(int gameId)
     {
-        var game = await _gameSet.Query().Include(g => g.CardGame).FirstOrDefaultAsync(g => g.Id == gameId);
+        var game = await _gameContext.Games.Query().Include(g => g.CardGame).FirstOrDefaultAsync(g => g.Id == gameId);
         if (game == null) return null;
         
         return await BuildGame(game);
@@ -143,7 +137,7 @@ public class MonopolyGameService
             Game = game,
             Board = board,
             Players = players,
-            Cards = cardGame ?? await _cardGameService.FetchGame(game.Id)
+            Cards = cardGame ?? await _cardGameService.FetchGame(game.CardGameId)
         };
     }
 
@@ -152,7 +146,7 @@ public class MonopolyGameService
     {
         var players = new List<IPlayer>();
         
-        var gamePlayers = await _playerSet.Query().Where(p => p.GameId == gameId).ToListAsync();
+        var gamePlayers = await _playerContext.GamePlayers.Query().Where(p => p.GameId == gameId).ToListAsync();
         switch (gamePlayers.Count)
         {
             case 0 when playerIds != null:
@@ -170,7 +164,7 @@ public class MonopolyGameService
                              TripleBonus = 1000
                          }))
                 {
-                    await _playerSet.AddAsync(gamePlayer);
+                    await _playerContext.GamePlayers.AddAsync(gamePlayer);
                 
                     var player = await _playerCreator.BuildPlayer(gamePlayer);
                     if (player != null) players.Add(player);
@@ -203,10 +197,10 @@ public class MonopolyGameService
     private async Task<List<IProperty>> BuildProperties(int gameId, int boardId)
     {
         //Gets properties in board:
-        var propertiesInBoard = await _boardToPropSet.Query().Where(bp => bp.BoardId == boardId).ToListAsync();
+        var propertiesInBoard = await _boardContext.BoardsToProperties.Query().Where(bp => bp.BoardId == boardId).ToListAsync();
         if (propertiesInBoard.Count != 28) return [];
         //Gets property data models:
-        var propertyDataModels = await _propSet.Query().Where(p => propertiesInBoard.Select(bp => bp.PropertyName)
+        var propertyDataModels = await _boardContext.Properties.Query().Where(p => propertiesInBoard.Select(bp => bp.PropertyName)
             .Contains(p.Name)).ToListAsync();
         
         //Build properties using factory:
@@ -228,6 +222,4 @@ public class MonopolyGameService
 
         return properties;
     }
-
-    private async Task<CardGameViewModel?> BuildCardGame(int id) => await _cardGameService.FetchGame(id);
 }

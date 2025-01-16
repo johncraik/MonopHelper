@@ -1,11 +1,12 @@
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Properties;
 using MonopolyCL.Models.Properties.DataModel;
 
 namespace MonopolyCL.Services.Properties;
 
-public class StationPropCreator(GameDbSet<GameProperty> propSet, UserInfo userInfo) : PropertyCreator(propSet, userInfo)
+public class StationPropCreator(BoardContext boardContext, UserInfo userInfo) : PropertyCreator(boardContext, userInfo)
 {
     public override IProperty Factory(PropertyDM p, GameProperty gp) => new StationProperty
     {

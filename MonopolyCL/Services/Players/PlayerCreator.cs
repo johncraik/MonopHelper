@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopHelper.Authentication;
 using MonopHelper.Data;
+using MonopolyCL.Data;
 using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Players.DataModel;
 
@@ -8,18 +9,18 @@ namespace MonopolyCL.Services.Players;
 
 public class PlayerCreator
 {
-    private readonly GameDbSet<PlayerDM> _playerSet;
+    private readonly PlayerContext _context;
     private readonly UserInfo _userInfo;
 
-    public PlayerCreator(GameDbSet<PlayerDM> playerSet, UserInfo userInfo)
+    public PlayerCreator(PlayerContext context, UserInfo userInfo)
     {
-        _playerSet = playerSet;
+        _context = context;
         _userInfo = userInfo;
     }
 
     public async Task<IPlayer?> BuildPlayer(GamePlayer gp)
     {
-        var playerDataModel = await _playerSet.Query().FirstOrDefaultAsync(p => p.Name == gp.PlayerName 
+        var playerDataModel = await _context.Players.Query().FirstOrDefaultAsync(p => p.Name == gp.PlayerName 
             && p.UserId == _userInfo.UserId);
         if (playerDataModel == null) return null;
 
