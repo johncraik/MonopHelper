@@ -14,18 +14,13 @@ public class CardContext
     public GameDbSet<CardToGame> CardToGameSet { get; init; }
     public GameDbSet<TypeToGame> TypeToGameSet { get; init; }
     
-    public CardContext(GameDbSet<Card> cardSet,
-        GameDbSet<CardType> cardTypeSet,
-        GameDbSet<CardDeck> cardDeckSet,
-        GameDbSet<CardGame> cardGameSet,
-        GameDbSet<CardToGame> cardToGameSet,
-        GameDbSet<TypeToGame> typeToGameSet)
+    public CardContext(GameDbContext context, UserInfo userInfo)
     {
-        CardSet = cardSet;
-        CardTypeSet = cardTypeSet;
-        CardDeckSet = cardDeckSet;
-        CardGameSet = cardGameSet;
-        CardToGameSet = cardToGameSet;
-        TypeToGameSet = typeToGameSet;
+        CardSet = new GameDbSet<Card>(context, userInfo);
+        CardTypeSet = new GameDbSet<CardType>(context, userInfo);
+        CardDeckSet = new GameDbSet<CardDeck>(context, userInfo);
+        CardGameSet = new GameDbSet<CardGame>(context, userInfo);
+        CardToGameSet = new GameDbSet<CardToGame>(context, userInfo);
+        TypeToGameSet = new GameDbSet<TypeToGame>(context, userInfo);
     }
 }

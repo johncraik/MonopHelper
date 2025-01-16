@@ -9,6 +9,7 @@ using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties;
 using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
+using MonopolyCL.Models.Validation;
 using MonopolyCL.Services.Boards;
 using MonopolyCL.Services.Cards;
 using MonopolyCL.Services.Players;
@@ -27,6 +28,7 @@ public class MonopolyGameService
     private readonly UtilPropCreator _utilPropCreator;
     
     private readonly GameDbSet<GameDM> _gameSet;
+    private readonly GameDbSet<TurnOrder> _turnSet;
     private readonly GameDbSet<BoardToProperty> _boardToPropSet;
     private readonly GameDbSet<PropertyDM> _propSet;
     private readonly GameDbSet<GamePlayer> _playerSet;
@@ -39,6 +41,7 @@ public class MonopolyGameService
         StationPropCreator stationPropCreator,
         UtilPropCreator utilPropCreator,
         GameDbSet<GameDM> gameSet,
+        GameDbSet<TurnOrder> turnSet,
         GameDbSet<BoardToProperty> boardToPropSet,
         GameDbSet<PropertyDM> propSet,
         GameDbSet<GamePlayer> playerSet,
@@ -53,6 +56,7 @@ public class MonopolyGameService
         _utilPropCreator = utilPropCreator;
         
         _gameSet = gameSet;
+        _turnSet = turnSet;
         _boardToPropSet = boardToPropSet;
         _propSet = propSet;
         _playerSet = playerSet;
@@ -72,11 +76,14 @@ public class MonopolyGameService
         return games;
     }
 
-    public async Task<MonopolyGame?> CreateGame(string name, int boardId, int deckId, List<string> playerIds, GAME_RULES rules)
+    public async Task<ValidationResponse<MonopolyGame>> CreateGame(string name, int boardId, int deckId, List<string> playerIds, GAME_RULES rules)
     {
         //Create Card Game:
         var cardGame = await _cardGameService.CreateGame(deckId);
-        if (cardGame == null) return null;
+        if (cardGame == null) return new ValidationResponse<MonopolyGame>
+        {
+            Response = new ValidationResponse(false, "All", "Could not create game")
+        };
         
         //Create Game:
         var game = new GameDM
@@ -92,8 +99,21 @@ public class MonopolyGameService
         };
         //Add to DB (sets ID, used in properties:
         await _gameSet.AddAsync(game);
+        
+        //Create Turn Order:
+        var order = new TurnOrder
+        {
+            GameId = game.Id,
+            TenantId = _userInfo.TenantId,
+            IsSetup = false
+        };
+        await _turnSet.AddAsync(order);
 
-        return await BuildGame(game, playerIds, cardGame);
+        return new ValidationResponse<MonopolyGame>
+        {
+            ReturnObj = await BuildGame(game, playerIds, cardGame),
+            Response = new ValidationResponse()
+        };
     }
     
     public async Task<MonopolyGame?> FetchGame(int gameId)

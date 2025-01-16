@@ -1,4 +1,5 @@
 @page
+@using System.ComponentModel
 @model MonopHelper.Pages.TurnBased.Index
 
 @{
@@ -39,5 +40,52 @@
                 <input type="submit" class="btn btn-success" value="Create Game"/>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="card mt mb">
+    <div class="card-header bg-info text-white">
+        Load Game
+    </div>
+    <div class="card-body bg-light">
+        @{
+            if (Model.Games.Any())
+            {
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                    <tr class="table-dark">
+                        <th>Game Name</th>
+                        <th>Board Name</th>
+                        <th>Players</th>
+                        <th>Last Played</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        foreach (var game in Model.Games)
+                        {
+                            <tr onclick="location.assign('/TurnBased/Setup/@(game.GameId)')">
+                                <td>@game.GameName</td>
+                                <td>@game.BoardName</td>
+                                <td>@game.Players</td>
+                                <td>@game.LastPlayed.ToString("g")</td>
+                                <td>
+                                    <button onclick="location.assign('/TurnBased/Setup/@(game.GameId)')"
+                                            class="btn btn-sm btn-success rounded-pill" style="width: 100%">
+                                        Play
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <span>You have not created any games yet.</span>
+            }
+        }
     </div>
 </div>

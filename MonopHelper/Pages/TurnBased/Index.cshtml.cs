@@ -97,11 +97,15 @@ public class Index : PageModel
         await SetupPage();
         if (!ModelState.IsValid) return Page();
 
-        var game = await _gameService.CreateGame(CreateGame.GameName,
+        var res = await _gameService.CreateGame(CreateGame.GameName,
             CreateGame.BoardId, 
             CreateGame.DeckId, 
             CreateGame.PlayerIds,
             (GAME_RULES)511);
-        return game == null ? Page() : RedirectToPage();
+        var game = res.ReturnObj;
+        if (game != null && res.Response.IsValid) return RedirectToPage(nameof(Setup), new { id = game.Game.Id });
+        
+        ModelState.AddModelError(res.Response.ErrorKey, res.Response.ErrorMsg);
+        return Page();
     }
 }

@@ -1,5 +1,11 @@
 namespace MonopolyCL.Models.Validation;
 
+public class ValidationResponse<T>
+{
+    public T? ReturnObj { get; set; }
+    public ValidationResponse Response { get; set; }
+}
+
 public class ValidationResponse
 {
     public bool IsValid { get; }

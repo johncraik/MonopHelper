@@ -12,17 +12,15 @@ public class GameDbSet<T>
 {
     private readonly GameDbContext _context;
     private readonly UserInfo _userInfo;
-    private readonly ILogger<GameDbSet<T>> _logger;
     
     private DbSet<T> _set;
     private string _tenantQry;
     private IQueryable<T> _qry;
 
-    public GameDbSet(GameDbContext context, UserInfo userInfo, ILogger<GameDbSet<T>> logger)
+    public GameDbSet(GameDbContext context, UserInfo userInfo)
     {
         _context = context;
         _userInfo = userInfo;
-        _logger = logger;
 
         _set = context.Set<T>();
         FilterDbSet();
@@ -46,7 +44,7 @@ public class GameDbSet<T>
         }
         catch (Exception ex)
         {
-            _logger.LogCritical($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
+            Console.WriteLine($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
             _qry = _set;
         }
     }
@@ -63,7 +61,7 @@ public class GameDbSet<T>
         }
         catch (Exception ex)
         {
-            _logger.LogCritical($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
+            Console.WriteLine($"Error filtering db set ({typeof(T)}) based on tenant ID!\n{ex}");
             return [];
         }
     }
@@ -81,7 +79,7 @@ public class GameDbSet<T>
         }
         catch (Exception ex)
         {
-            _logger.LogCritical($"Cannot filter query (type: {typeof(T)}) based on tenant ID and deleted entities!\n{ex}");
+            Console.WriteLine($"Cannot filter query (type: {typeof(T)}) based on tenant ID and deleted entities!\n{ex}");
             return _qry;
         }
     }
@@ -93,7 +91,7 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Added single object of type: {typeof(T)}");
+        Console.WriteLine($"Added single object of type: {typeof(T)}");
     }
     
     public async Task AddAsync(List<T> models)
@@ -103,7 +101,7 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Added multiple objects of type: {typeof(T)}");
+        Console.WriteLine($"Added multiple objects of type: {typeof(T)}");
     }
 
     public async Task UpdateAsync(T model)
@@ -113,7 +111,7 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Updated single object of type: {typeof(T)}");
+        Console.WriteLine($"Updated single object of type: {typeof(T)}");
     }
     
     public async Task UpdateAsync(List<T> models)
@@ -123,7 +121,7 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Updated multiple objects of type: {typeof(T)}");
+        Console.WriteLine($"Updated multiple objects of type: {typeof(T)}");
     }
 
     public async Task RemoveAsync(T model)
@@ -133,7 +131,7 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Removed single object of type: {typeof(T)}");
+        Console.WriteLine($"Removed single object of type: {typeof(T)}");
     }
     
     public async Task RemoveAsync(List<T> models)
@@ -143,6 +141,6 @@ public class GameDbSet<T>
         _set = _context.Set<T>();
         FilterDbSet();
         
-        _logger.LogDebug($"Removed multiple objects of type: {typeof(T)}");
+        Console.WriteLine($"Removed multiple objects of type: {typeof(T)}");
     }
 }

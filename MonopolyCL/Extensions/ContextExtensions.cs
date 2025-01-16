@@ -47,6 +47,7 @@ public static class ContextExtensions
         
         //Games:
         services.AddScoped<GameDbSet<GameDM>>();
+        services.AddScoped<GameDbSet<TurnOrder>>();
         services.AddScoped<GameDbSet<GameCard>>();
         services.AddScoped<GameDbSet<GameType>>();
         

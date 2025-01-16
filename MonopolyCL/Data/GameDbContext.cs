@@ -53,6 +53,7 @@ public class GameDbContext : DbContext
     #region Game
 
     public DbSet<GameDM> Games { get; set; }
+    public DbSet<TurnOrder> TurnOrders { get; set; }
     public DbSet<PlayerDM> Players { get; set; }
     public DbSet<GamePlayer> GamePlayers { get; set; }
     public DbSet<PlayerToCard> PlayersToCards { get; set; }

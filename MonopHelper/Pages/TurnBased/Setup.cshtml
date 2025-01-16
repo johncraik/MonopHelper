@@ -1,0 +1,21 @@
+@page "{id?}"
+@model MonopHelper.Pages.TurnBased.Setup
+
+@{
+    var title = Model.Game.Game.Name;
+    if (string.IsNullOrEmpty(title))
+    {
+        title = "Turn Based Game";
+    }
+    ViewData["Title"] = $"{title} - Setup";
+    Layout = "TurnBased/Shared/_TurnLayout";
+}
+
+<div class="card mt mb">
+    <div class="card-header bg-primary text-white">
+        Turn Order
+    </div>
+    <div class="card-body bg-light">
+        Form to order players and input numbers!
+    </div>
+</div>
