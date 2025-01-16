@@ -13,14 +13,16 @@
     <div class="card-body bg-light">
         <form method="post">
             <div class="row">
-                <div class="col-sm-6 mb-3">
+                <div class="col-sm-12 mb-3">
                     <label asp-for="CreateGame.GameName"></label>
                     <input asp-for="CreateGame.GameName" class="form-control mt mb"/>
                     <span class="text-danger" asp-validation-for="CreateGame.GameName"></span>
                 </div>
-                <div class="col-sm-6 mb-3">
+            </div>
+            <div class="row">
+                <div class="col-sm-12 mb-3">
                     <label asp-for="CreateGame.PlayerIds"></label>
-                    <select asp-for="CreateGame.PlayerIds" asp-items="Model.Players" class="form-control mt mb"></select>
+                    <select asp-for="CreateGame.PlayerIds" asp-items="Model.Players" class="chosen-select form-control mt mb"></select>
                     <span class="text-danger" asp-validation-for="CreateGame.PlayerIds"></span>
                 </div>
             </div>
@@ -89,3 +91,9 @@
         }
     </div>
 </div>
+@section Scripts
+{
+    <script type="text/javascript">
+        $(".chosen-select").chosen()
+    </script>
+}
