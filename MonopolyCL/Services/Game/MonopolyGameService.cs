@@ -70,6 +70,14 @@ public class MonopolyGameService
         return games;
     }
 
+    public async Task<TurnOrder?> GetGameTurnOrder(int id) =>
+        await _gameContext.TurnOrders.Query().FirstOrDefaultAsync(t => t.GameId == id);
+
+    public async Task CreateGameTurnOrder(TurnOrder turnOrder)
+    {
+        await _gameContext.TurnOrders.AddAsync(turnOrder);
+    }
+
     public async Task<ValidationResponse<MonopolyGame>> CreateGame(string name, int boardId, int deckId, List<string> playerIds, GAME_RULES rules)
     {
         //Create Card Game:

@@ -8,19 +8,19 @@ public class TurnOrder : TenantedModel
 {
     public int GameId { get; set; }
     public bool IsSetup { get; set; }
-    private string _Order { get; set; }
+    public string? Order { get; set; }
 
-    public bool Order(List<int> ids)
+    public bool SetOrder(List<int> ids)
     {
         if (ids.Count < 2) return false;
         
-        _Order = (ids.Aggregate("", (ord, id) => ord += $"{id}:"))[..^1];
+        Order = (ids.Aggregate("", (ord, id) => ord += $"{id}:"))[..^1];
         return true;
     }
 
-    public List<int> Order()
+    public List<int> GetOrder()
     {
-        var orderIds = _Order.Split(':', StringSplitOptions.RemoveEmptyEntries);
+        var orderIds = Order.Split(':', StringSplitOptions.RemoveEmptyEntries);
         var rtnIds = new List<int>();
         foreach (var idStr in orderIds)
         {

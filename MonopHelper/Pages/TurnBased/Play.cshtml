@@ -1,0 +1,13 @@
+@page "{id?}"
+@model MonopHelper.Pages.TurnBased.Play
+
+@{
+    var title = Model.Game.Game.Name;
+    if (string.IsNullOrEmpty(title))
+    {
+        title = "Turn Based Game";
+    }
+    ViewData["Title"] = $"{title} - Play";
+    Layout = "TurnBased/Shared/_TurnLayout";
+}
+
