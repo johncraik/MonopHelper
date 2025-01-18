@@ -20,23 +20,59 @@
             Order the players below in clockwise order.<br/>
             Then input each player's dice number.
         </p>
-        @{
-            var index = 0;
-            foreach (var player in Model.Game.Players)
-            {
-                var first = index == 0;
-                
-                <div class="player">
-                    <div class="player-box">
-                        <span>@player.Name</span>
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @{
+                var index = 0;
+                foreach (var player in Model.Game.Players)
+                {
+                    <input type="hidden" asp-for="@Model.Input[index].PlayerId" value="@player.Id"/>
+                    <input type="hidden" asp-for="@Model.Input[index].GamePlayerId" value="@player.GamePid"/>
+                    <div class="row mb-3 mx-2">
+                        <div class="col-6 g-1">
+                            <div>
+                                <label asp-for="@Model.Input[index].PlayerId" class="form-label"></label>
+                                <input value="@player.Name" disabled class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-2 g-1">
+                            <div>
+                                <label asp-for="@Model.Input[index].Order" class="form-label"></label>
+                                <select asp-for="@Model.Input[index].Order" asp-items="Model.PlayerOrders" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-2 g-1">
+                            <div>
+                                <label asp-for="@Model.Input[index].Dice1" class="form-label"></label>
+                                <select asp-for="@Model.Input[index].Dice1" id="d1" class="form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2 g-1">
+                            <div>
+                                <label asp-for="@Model.Input[index].Dice2" class="form-label"></label>
+                                <select asp-for="@Model.Input[index].Dice2" id="d2" class="form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-box">
-                        <select ></select>
-                    </div>
-                </div>
-                
-                index++;
+
+                    index++;
+                }
             }
-        }
+            <input type="submit" class="btn btn-success mt-3 mx-2" value="Play"/>
+        </form>
     </div>
 </div>

@@ -84,7 +84,7 @@ public class MonopolyGameService
         var cardGame = await _cardGameService.CreateGame(deckId);
         if (cardGame == null) return new ValidationResponse<MonopolyGame>
         {
-            Response = new ValidationResponse(false, "All", "Could not create game")
+            Response = new ValidationResponse("All", "Could not create game")
         };
         
         //Create Game:
@@ -192,7 +192,7 @@ public class MonopolyGameService
             }
         }
 
-        return players;
+        return players.OrderBy(p => p.Name).ToList();
     }
     
 

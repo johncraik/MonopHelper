@@ -20,13 +20,15 @@ public class PlayerCreator
 
     public async Task<IPlayer?> BuildPlayer(GamePlayer gp)
     {
-        var playerDataModel = await _context.Players.Query().FirstOrDefaultAsync(p => p.Id == gp.Id 
-            && p.UserId == _userInfo.UserId);
+        var playerDataModel = await _context.Players.Query().FirstOrDefaultAsync(p => p.Id == gp.PlayerId);
         if (playerDataModel == null) return null;
 
+        var diceNums = await _context.DiceNums.Query().FirstOrDefaultAsync(d => d.GamePlayerId == gp.Id);
+        
         var player = new Player
         {
             Id = playerDataModel.Id,
+            GamePid = gp.Id,
             Name = playerDataModel.Name,
             TenantId = playerDataModel.TenantId,
             Order = gp.Order,
@@ -35,7 +37,8 @@ public class PlayerCreator
             IsInJail = gp.IsInJail,
             JaiLCost = gp.JailCost,
             TripleBonus = gp.TripleBonus,
-            GameId = gp.GameId
+            GameId = gp.GameId,
+            DiceNumber = (diceNums?.DiceOne ?? 0, diceNums?.DiceTwo ?? 0)
         };
 
         return player;

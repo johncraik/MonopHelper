@@ -6,6 +6,7 @@ namespace MonopolyCL.Models.Players;
 public interface IPlayer
 {
     public int Id { get; set; }
+    public int GamePid { get; set; }
     public string Name { get; internal set; }
     public int TenantId { get; internal set; }
     public int GameId { get; internal set; }

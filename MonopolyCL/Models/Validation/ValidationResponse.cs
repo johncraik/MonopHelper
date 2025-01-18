@@ -12,9 +12,9 @@ public class ValidationResponse
     public string ErrorKey { get; }
     public string ErrorMsg { get; }
 
-    public ValidationResponse(bool isValid, string key, string msg)
+    public ValidationResponse(string key, string msg)
     {
-        IsValid = isValid;
+        IsValid = false;
         ErrorKey = key;
         ErrorMsg = msg;
     }
