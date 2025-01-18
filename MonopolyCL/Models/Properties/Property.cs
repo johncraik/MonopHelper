@@ -8,6 +8,7 @@ namespace MonopolyCL.Models.Properties;
 
 public abstract class Property
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public int TenantId { get; set; }
     public PROP_TYPE Type { get; set; }
@@ -19,6 +20,8 @@ public abstract class Property
     public bool IsOwned { get; set; }
     public bool IsCompleteSet { get; set; }
     public bool IsMortgaged { get; set; }
+    public bool IsInFreeParking { get; set; }
+    public bool IsReserved { get; set; }
     
 
     public virtual bool Buy(Player p)

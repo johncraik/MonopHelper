@@ -41,6 +41,7 @@ public class PlayerService
         {
             playerOne.Id
         };
+        turnOrder.CurrentTurn = playerOne.Id;
         var nextOrder = playerOne.Order + 1;
         for (var i = 0; i < players.Count - 1; i++)
         {
@@ -69,5 +70,15 @@ public class PlayerService
         await _gameContext.TurnOrders.UpdateAsync(turnOrder);
 
         return new ValidationResponse();
+    }
+
+    public async Task<bool> EndTurn(int gameId)
+    {
+        var turn = await _gameContext.TurnOrders.Query().FirstOrDefaultAsync(t => t.GameId == gameId);
+        if (turn == null) return false;
+        
+        turn.NextPlayer();
+        await _gameContext.TurnOrders.UpdateAsync(turn);
+        return true;
     }
 }

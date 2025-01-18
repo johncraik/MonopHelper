@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using MonopolyCL.Models.Cards.Game;
+using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Identity;
 
 namespace MonopolyCL.Models.Players.DataModel;
@@ -14,5 +14,5 @@ public class PlayerToCard : TenantedModel
 
     public int CardId { get; set; }
     [ForeignKey(nameof(CardId))]
-    public virtual GameCard Card { get; set; }
+    public virtual Card Card { get; set; }
 }

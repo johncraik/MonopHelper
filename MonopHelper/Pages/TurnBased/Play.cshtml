@@ -1,4 +1,5 @@
 @page "{id?}"
+@using MonopolyCL.Extensions
 @model MonopHelper.Pages.TurnBased.Play
 
 @{
@@ -11,3 +12,169 @@
     Layout = "TurnBased/Shared/_TurnLayout";
 }
 
+<div class="row align-items-center mt-4 mb-2">
+    <div class="col-8">
+        <div class="bg-info text-white p-3" style=" box-shadow: 2px 5px 18px #888888;">
+            <h1 class="text-center">@(Model.CurrentPlayer?.Name ?? "[ERROR]")'s Turn</h1>
+        </div>
+    </div>
+    <div class="col-4">
+        <form method="post" asp-page-handler="End">
+            <button class="btn btn-danger p-4" style="width: 100%; box-shadow: 2px 5px 18px #888888; font-size: 20px; font-weight: bold;"
+                    type="submit">
+                End Turn
+            </button>
+        </form>
+    </div>
+</div>
+<div class="h-line mt-4"></div>
+
+<div class="my-3">
+    @* Alerts *@
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <div class="card mt mb">
+            <div class="card-header bg-success text-white">
+                Cards
+            </div>
+            <div class="card-body bg-light">
+                @{
+                    foreach (var type in Model.Game.Cards?.Types ?? [])
+                    {
+                        <div class="mb">
+                            <button class="btn btn-light typeBtn-@(type.Type.Id)">@type.Type.Name Card</button>
+                        </div>
+
+                        <style>
+                            .typeBtn-@(type.Type.Id){
+                                background: @(type.Type.Colour);
+                                color: @(type.Type.FontColour());
+                                width: 100%;
+                                height: 60px;
+                                overflow-wrap: break-word;
+                            }
+            
+                            .typeBtn-@(type.Type.Id):hover{
+                                background: @(type.Type.HoverColour());
+                                color: @(type.Type.FontColour());
+                            }
+                        </style>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="card mt mb">
+            <div class="card-header bg-warning">
+                Actions
+            </div>
+            <div class="card-body bg-light">
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <div class="mb-3" style="text-align: center; overflow: hidden">
+                            <span class="fa-solid fa-dice fa-3x" style="display: inline-block;"></span>
+                        </div>
+                        <div class="text-center badge bg-primary p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                            <span>@Model.CurrentPlayer?.DiceNumber?.Dice1 | @Model.CurrentPlayer?.DiceNumber?.Dice2</span>
+                        </div>
+                        <button class="btn btn-warning rounded-pill mt-2" style="width: 100%;">Change Number</button>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-3" style="text-align: center; overflow: hidden">
+                            <span class="fa-solid fa-handcuffs fa-3x" style="display: inline-block;"></span>
+                        </div>
+                        <div class="text-center badge bg-danger p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                            <span class="text-white"><span class="money mx-1">₩</span>@Model.CurrentPlayer?.JaiLCost?.ToString("N0")</span>
+                        </div>
+                        <div class="clearfix">
+                            <button class="btn btn-secondary rounded-pill mt-2 float-start" style="width: 48%">Leave Jail</button>
+                            <button class="btn btn-warning rounded-pill mt-2 float-end" style="width: 48%">Reset</button>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-3" style="text-align: center; overflow: hidden">
+                            <span class="fa-solid fa-dice-three fa-3x" style="display: inline-block;"></span>
+                        </div>
+                        <div class="text-center badge bg-success p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                            <span class="text-white"><span class="money mx-1">₩</span>@Model.CurrentPlayer?.TripleBonus?.ToString("N0")</span>
+                        </div>
+                        <button class="btn btn-secondary rounded-pill mt-2" style="width: 100%;">Claim Triple</button>
+                    </div>
+                </div>
+                
+                <div class="my-3 h-line"></div>
+                
+                <div class="accordion" id="ply-actions">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="free-parking">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fp-collapse" aria-expanded="false" aria-controls="fp-collapse">
+                                Free Parking Properties
+                            </button>
+                        </h2>
+                        <div id="fp-collapse" class="accordion-collapse collapse" aria-labelledby="free-parking" data-bs-parent="#ply-actions">
+                            <div class="accordion-body">
+                                <h4 class="mb-3">Handed In:</h4>
+                                @{
+                                    if (Model.CurrentPlayer?.Properties == null || Model.CurrentPlayer?.Properties?.Count == 0)
+                                    {
+                                        <span>You have not handed any property into free parking yet.</span>
+                                    }
+                                    else
+                                    {
+                                        foreach (var property in Model.CurrentPlayer?.Properties?.Where(p => p.IsInFreeParking) ?? [])
+                                        {
+                                            <span class="badge rounded-pill tprop-@((int)property.Set) ml mr mb px-4 py-2">
+                                                @property.Set.GetDisplayName()
+                                            </span>
+                                        }
+                                    }
+                                }
+                                <br/>
+                                <button class="btn btn-warning mt">Hand a Property In</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="mortgages">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#m-collapse" aria-expanded="false" aria-controls="m-collapse">
+                                Mortgaged Properties
+                            </button>
+                        </h2>
+                        <div id="m-collapse" class="accordion-collapse collapse" aria-labelledby="mortgages" data-bs-parent="#ply-actions">
+                            <div class="accordion-body">
+                                <p>This is a test!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="loans">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#l-collapse" aria-expanded="false" aria-controls="l-collapse">
+                                Loans
+                            </button>
+                        </h2>
+                        <div id="l-collapse" class="accordion-collapse collapse" aria-labelledby="loans" data-bs-parent="#ply-actions">
+                            <div class="accordion-body">
+                                <p>This is a test!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="reservations">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#r-collapse" aria-expanded="false" aria-controls="r-collapse">
+                                Reserved Properties
+                            </button>
+                        </h2>
+                        <div id="r-collapse" class="accordion-collapse collapse" aria-labelledby="reservations" data-bs-parent="#ply-actions">
+                            <div class="accordion-body">
+                                <p>This is a test!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

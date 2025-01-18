@@ -187,43 +187,53 @@ h4{
   margin-bottom: auto;
 }
 
-.prop-0{
+.prop-0,
+.tprop-1{
   background: var(--brownP);
   color: white;
 }
-.prop-1{
+.prop-1,
+.tprop-10{
   background: var(--blueP);
   color: white;
 }
-.prop-2{
+.prop-2,
+.tprop-2{
   background: var(--pinkP);
   color: white;
 }
-.prop-3{
+.prop-3,
+.tprop-20{
   background: var(--orangeP);
   color: white;
 }
-.prop-4{
+.prop-4,
+.tprop-3{
   background: var(--redP);
   color: white;
 }
-.prop-5{
+.prop-5,
+.tprop-30{
   background: var(--yellowP);
   color: black;
 }
-.prop-6{
+.prop-6,
+.tprop-4{
   background: var(--greenP);
   color: white;
 }
-.prop-7{
+.prop-7,
+.tprop-40{
   background: var(--darkBlueP);
   color: white;
 }
-.prop-8{
+.prop-8,
+.tprop-5{
   background: var(--station);
   color: white;
 }
-.prop-9{
+.prop-9,
+.tprop-6{
   background: var(--util);
   color: black;
 }

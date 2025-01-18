@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Cards.Actions;
-using MonopolyCL.Models.Cards.Game;
 using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
@@ -44,6 +43,7 @@ public class GameDbContext : DbContext
 
     public DbSet<PropertyDM> Properties { get; set; }
     public DbSet<GameProperty> GameProps { get; set; }
+    public DbSet<PlayerToProperty> PlayersToProperties { get; set; }
     
     public DbSet<BoardDM> Boards { get; set; }
     public DbSet<BoardToProperty> BoardsToProperties { get; set; }
@@ -58,8 +58,6 @@ public class GameDbContext : DbContext
     public DbSet<GamePlayer> GamePlayers { get; set; }
     public DbSet<PlayerToCard> PlayersToCards { get; set; }
     public DbSet<DiceNumbers> PlayerDiceNumbers { get; set; }
-    public DbSet<GameCard> GameCards { get; set; }
-    public DbSet<GameType> GameCardTypes { get; set; }
 
     #endregion
 }

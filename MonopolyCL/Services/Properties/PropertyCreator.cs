@@ -44,6 +44,7 @@ public abstract class PropertyCreator
         var property = Factory(p, gameProp);
         
         //Set Defaults:
+        property.Id = gameProp.Id;
         property.Name = p.Name;
         property.TenantId = p.TenantId;
         property.Type = p.Type;

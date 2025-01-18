@@ -7,6 +7,7 @@ namespace MonopolyCL.Models.Properties;
 
 public interface IProperty : IBoardSpace
 {
+    public int Id { get; internal set; }
     public string Name { get; internal set; }
     public int TenantId { get; internal set; }
     public PROP_TYPE Type { get; internal set; }
@@ -17,6 +18,8 @@ public interface IProperty : IBoardSpace
     public bool IsOwned { get; set; }
     public bool IsCompleteSet { get; set; }
     public bool IsMortgaged { get; set; }
+    public bool IsInFreeParking { get; set; }
+    public bool IsReserved { get; set; }
     
     public bool Buy(Player p);
     public int GetRent();

@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250118155745_PlayerToProperty")]
+    partial class PlayerToProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -413,9 +416,6 @@ namespace MonopHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CurrentTurn")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -538,27 +538,6 @@ namespace MonopHelper.Migrations
                     b.ToTable("PlayersToCards");
                 });
 
-            modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToProperty", b =>
-                {
-                    b.Property<int>("GamePlayerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GamePropertyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsInFreeParking")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsReserved")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("GamePlayerId", "GamePropertyId");
-
-                    b.HasIndex("GamePropertyId");
-
-                    b.ToTable("PlayersToProperties");
-                });
-
             modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.GameProperty", b =>
                 {
                     b.Property<int>("Id")
@@ -603,6 +582,21 @@ namespace MonopHelper.Migrations
                     b.HasIndex("PropertyName", "PropertyTenantId");
 
                     b.ToTable("GameProps");
+                });
+
+            modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.PlayerToProperty", b =>
+                {
+                    b.Property<int>("GamePlayerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GamePropertyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GamePlayerId", "GamePropertyId");
+
+                    b.HasIndex("GamePropertyId");
+
+                    b.ToTable("PlayersToProperties");
                 });
 
             modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.PropertyDM", b =>
@@ -791,7 +785,24 @@ namespace MonopHelper.Migrations
                     b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToProperty", b =>
+            modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.GameProperty", b =>
+                {
+                    b.HasOne("MonopolyCL.Models.Players.DataModel.PlayerDM", "Player")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("MonopolyCL.Models.Properties.DataModel.PropertyDM", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyName", "PropertyTenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.PlayerToProperty", b =>
                 {
                     b.HasOne("MonopolyCL.Models.Players.DataModel.GamePlayer", "Player")
                         .WithMany()
@@ -802,23 +813,6 @@ namespace MonopHelper.Migrations
                     b.HasOne("MonopolyCL.Models.Properties.DataModel.GameProperty", "Property")
                         .WithMany()
                         .HasForeignKey("GamePropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-
-                    b.Navigation("Property");
-                });
-
-            modelBuilder.Entity("MonopolyCL.Models.Properties.DataModel.GameProperty", b =>
-                {
-                    b.HasOne("MonopolyCL.Models.Players.DataModel.PlayerDM", "Player")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.HasOne("MonopolyCL.Models.Properties.DataModel.PropertyDM", "Property")
-                        .WithMany()
-                        .HasForeignKey("PropertyName", "PropertyTenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -140,12 +140,37 @@ public class MonopolyGameService
         var board = await _boardCreator.BuildBoard(game.BoardId, properties);
         if (board == null) return null;
 
+        //Cards:
+        cardGame ??= await _cardGameService.FetchGame(game.CardGameId);
+        
+        //Player Properties and Cards:
+        foreach (var p in players)
+        {
+            var propLinks = await _playerContext.PlayersToProperties.Query()
+                .Where(pp => pp.GamePlayerId == p.GamePid).ToListAsync();
+            p.Properties = [];
+            foreach (var propLink in propLinks)
+            {
+                var prop = properties.FirstOrDefault(pr => pr.Id == propLink.GamePropertyId);
+                if (prop == null) continue;
+                
+                prop.IsInFreeParking = propLink.IsInFreeParking;
+                prop.IsReserved = propLink.IsReserved;
+                p.Properties.Add(prop);
+            }
+
+            var cardLinks = await _playerContext.PlayersToCards.Query()
+                .Where(pc => pc.PlayerId == p.GamePid)
+                .Select(pc => pc.CardId).ToListAsync();
+            p.Cards = cardGame?.Cards.Select(c => c.Card).Where(c => cardLinks.Contains(c.Id)).ToList() ?? [];
+        }
+        
         return new MonopolyGame
         {
             Game = game,
             Board = board,
             Players = players,
-            Cards = cardGame ?? await _cardGameService.FetchGame(game.CardGameId)
+            Cards = cardGame
         };
     }
 
