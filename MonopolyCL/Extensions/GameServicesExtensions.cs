@@ -27,6 +27,7 @@ public static class GameServicesExtensions
         services.AddScoped<PlayerService>();
         services.AddScoped<BoardCreator>();
         services.AddScoped<BoardService>();
+        services.AddScoped<PropertyService>();
 
         services.AddTransient<MonopolyGameService>();
         services.AddTransient<CardActionsService>();

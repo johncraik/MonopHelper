@@ -1,0 +1,253 @@
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Properties.Enums
+@model MonopolyCL.Models.Players.IPlayer?
+
+<div class="card mt mb">
+    <div class="card-header bg-warning">
+        Actions
+    </div>
+    <div class="card-body bg-light">
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <div class="mb-3" style="text-align: center; overflow: hidden">
+                    <span class="fa-solid fa-dice fa-3x" style="display: inline-block;"></span>
+                </div>
+                <div class="text-center badge bg-primary p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                    <span>@Model?.DiceNumber?.Dice1 | @Model?.DiceNumber?.Dice2</span>
+                </div>
+                <button class="btn btn-warning rounded-pill mt-2" style="width: 100%;" 
+                        onclick="changeNumbers('@(Model?.GamePid)', '@(Model?.Name)')">
+                    Change Number
+                </button>
+            </div>
+            <div class="col-4">
+                <div class="mb-3" style="text-align: center; overflow: hidden">
+                    <span class="fa-solid fa-handcuffs fa-3x" style="display: inline-block;"></span>
+                </div>
+                <div class="text-center badge bg-danger p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                    <span class="text-white"><span class="money mx-1">₩</span>@Model?.JaiLCost?.ToString("N0")</span>
+                </div>
+                <div class="clearfix">
+                    <button class="btn btn-secondary rounded-pill mt-2 float-start" style="width: 48%"
+                            onclick="leaveJail('@(Model?.GamePid)','@(Model?.Name)','@(Model?.JaiLCost)')">
+                        Leave Jail
+                    </button>
+                    <button class="btn btn-warning rounded-pill mt-2 float-end" style="width: 48%"
+                            onclick="resetJail('@(Model?.GamePid)','@(Model?.Name)')">
+                        Reset
+                    </button>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="mb-3" style="text-align: center; overflow: hidden">
+                    <span class="fa-solid fa-dice-three fa-3x" style="display: inline-block;"></span>
+                </div>
+                <div class="text-center badge bg-success p-3 rounded-pill" style="font-size: 20px; width: 100%">
+                    <span class="text-white"><span class="money mx-1">₩</span>@Model?.TripleBonus?.ToString("N0")</span>
+                </div>
+                <button class="btn btn-secondary rounded-pill mt-2" style="width: 100%;"
+                        onclick="claimTriple('@(Model?.GamePid)','@(Model?.Name)','@(Model?.TripleBonus)')">
+                    Claim Triple
+                </button>
+            </div>
+        </div>
+                
+        <div class="my-3 h-line"></div>
+                
+        <div class="accordion" id="ply-actions">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="free-parking">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fp-collapse" aria-expanded="false" aria-controls="fp-collapse">
+                        Free Parking Properties
+                    </button>
+                </h2>
+                <div id="fp-collapse" class="accordion-collapse collapse" aria-labelledby="free-parking" data-bs-parent="#ply-actions">
+                    <div class="accordion-body">
+                        <h4 class="mb-3">Handed In:</h4>
+                        @{
+                            var fpProps = Model?.Properties?.Where(p => p is { IsInFreeParking: true, IsMortgaged: false, IsReserved: false })
+                                .OrderBy(p => p.Set.Order()).ToList();
+                            if (fpProps == null || fpProps.Count == 0)
+                            {
+                                <span>You have not handed any property into free parking yet.</span>
+                            }
+                            else
+                            {
+                                foreach (var property in fpProps)
+                                {
+                                    <span class="badge rounded-pill tprop-@((int)property.Set) ml mr mb px-4 py-2">
+                                        @property.Set.GetDisplayName()
+                                    </span>
+                                }
+                            }
+                        }
+                        <br/>
+                        <button class="btn btn-warning mt" type="button" data-bs-toggle="offcanvas" data-bs-target="#fp-oc" aria-controls="fp-oc">
+                            Hand a Property In
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="mortgages">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#m-collapse" aria-expanded="false" aria-controls="m-collapse">
+                        Mortgaged Properties
+                    </button>
+                </h2>
+                <div id="m-collapse" class="accordion-collapse collapse" aria-labelledby="mortgages" data-bs-parent="#ply-actions">
+                    <div class="accordion-body">
+                        @{
+                            var mortgagedProps = Model?.Properties?.Where(p => p.IsMortgaged && p.OwnerId == Model.GamePid)
+                                .OrderBy(p => p.Set.Order()).ThenBy(p => p.Cost).ToList() ?? [];
+                        }
+                        <div class="clearfix mb-3">
+                            <button class="btn btn-warning float-start mr" type="button" data-bs-toggle="offcanvas" data-bs-target="#mp-new" aria-controls="mp-new">Mortgage</button>
+                            @if ( mortgagedProps.Count > 0)
+                            {
+                                <button class="btn btn-warning float-start" type="button" data-bs-toggle="offcanvas" data-bs-target="#mp-pay" aria-controls="mp-pay">Pay Penalty</button>
+                            }
+                        </div>
+                        <div class="row">
+                            @{
+                                foreach (var mp in mortgagedProps)
+                                {
+                                    <div class="col-sm-3 mb-3">
+                                        <div style="border: 2px #000 solid; border-radius: 5px">
+                                            <div class="tprop-@((int)mp.Set)" style="border-bottom: 2px #000 solid">
+                                                <p class="text-center p-2" style="margin-bottom: 0"><b>@mp.Name</b></p>
+                                            </div>
+                                            <div class="p-2">
+                                                <button class="btn btn-sm btn-success" style="width: 100%"
+                                                        onclick="unmortgage('@(mp.Id)','@(mp.Name)','@(mp.Cost)','@(Model?.GamePid)')">
+                                                    Un-mortgage
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="loans">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#l-collapse" aria-expanded="false" aria-controls="l-collapse">
+                        Loans
+                    </button>
+                </h2>
+                <div id="l-collapse" class="accordion-collapse collapse" aria-labelledby="loans" data-bs-parent="#ply-actions">
+                    <div class="accordion-body">
+                        <div class="clearfix mb-3">
+                            <button class="btn btn-warning float-start mr" type="button" data-bs-toggle="offcanvas" data-bs-target="#l-new" aria-controls="l-new">
+                                New Loan
+                            </button>
+                            @if (Model?.Loans.Count > 0)
+                            {
+                                <button class="btn btn-warning float-start" type="button" data-bs-toggle="offcanvas" data-bs-target="#l-pay" aria-controls="l-pay">
+                                    Pay Loans
+                                </button>
+                            }
+                        </div>
+                        @{
+                            if (Model?.Loans.Count == 0)
+                            {
+                                <p>You have no existing loans.</p>
+                            }
+                            else
+                            {
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr class="table-dark">
+                                        <th>Loan Amount</th>
+                                        <th>Repaid Amount</th>
+                                        <th>Outstanding</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var loan in Model?.Loans ?? [])
+                                    {
+                                    <tr class="table-@(loan.Repaid ? "success" : "light")">
+                                        <td><span class="money">₩</span>@loan.Amount.ToString("N0")</td>
+                                        <td><span class="money">₩</span>@loan.RepaidAmount.ToString("N0")</td>
+                                        <td><span class="money">₩</span>@loan.Outstanding().ToString("N0")</td>
+                                        <td>
+                                            @{
+                                                if (loan.Repaid)
+                                                {
+                                                    <span class="text-success"><b>Paid</b></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-danger"><b>Outstanding</b></span>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="reservations">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#r-collapse" aria-expanded="false" aria-controls="r-collapse">
+                        Reserved Properties
+                    </button>
+                </h2>
+                <div id="r-collapse" class="accordion-collapse collapse" aria-labelledby="reservations" data-bs-parent="#ply-actions">
+                    <div class="accordion-body">
+                        @{
+                            var resProps = Model?.Properties?.Where(p => p is { IsReserved: true, IsMortgaged: false, IsInFreeParking: false })
+                                .OrderBy(p => p.Set.Order()).ThenBy(p => p.Cost).ToList() ?? [];
+                        }
+                        <div class="clearfix mb-3">
+                            <button class="btn btn-warning float-start mr" type="button" data-bs-toggle="offcanvas" data-bs-target="#rp-new" aria-controls="rp-new">
+                                New Reservation
+                            </button>
+                            @if (resProps.Count > 0)
+                            {
+                                <button class="btn btn-warning float-start" type="button" data-bs-toggle="offcanvas" data-bs-target="#rp-pay" aria-controls="rp-pay">
+                                    Pay Fee
+                                </button>
+                            }
+                        </div>
+                        @{
+                            if (resProps.Count > 0)
+                            {
+                                <div class="row">
+                                    @{
+                                        foreach (var rp in resProps)
+                                        {
+                                            <div class="col-sm-3 mb-3">
+                                                <div style="border: 2px #000 solid; border-radius: 5px">
+                                                    <div class="tprop-@((int)rp.Set)" style="border-bottom: 2px #000 solid">
+                                                        <p class="text-center p-2" style="margin-bottom: 0"><b>@rp.Name</b></p>
+                                                    </div>
+                                                    <div class="p-2">
+                                                        <button class="btn btn-sm btn-success" style="width: 100%"
+                                                                onclick="unlockRes('@(rp.Id)','@(rp.Name)','@(Model?.GamePid)')">
+                                                            Unlock
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p>You have no reserved properties</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

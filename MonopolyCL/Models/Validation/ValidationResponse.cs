@@ -1,9 +1,17 @@
 namespace MonopolyCL.Models.Validation;
 
-public class ValidationResponse<T>
+public class ValidationResponse<T> : ValidationResponse
 {
     public T? ReturnObj { get; set; }
-    public ValidationResponse Response { get; set; }
+
+    public ValidationResponse(string key, string msg)
+        : base(key, msg)
+    {
+    }
+
+    public ValidationResponse()
+    {
+    }
 }
 
 public class ValidationResponse

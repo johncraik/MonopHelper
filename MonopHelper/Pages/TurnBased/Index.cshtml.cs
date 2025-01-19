@@ -103,9 +103,9 @@ public class Index : PageModel
             CreateGame.PlayerIds,
             (GAME_RULES)511);
         var game = res.ReturnObj;
-        if (game != null && res.Response.IsValid) return RedirectToPage(nameof(Setup), new { id = game.Game.Id });
+        if (game != null && res.IsValid) return RedirectToPage(nameof(Setup), new { id = game.Game.Id });
         
-        ModelState.AddModelError(res.Response.ErrorKey, res.Response.ErrorMsg);
+        ModelState.AddModelError(res.ErrorKey, res.ErrorMsg);
         return Page();
     }
 }

@@ -52,8 +52,8 @@ public abstract class PropertyCreator
         property.Cost = p.Cost;
         property.Set = p.Set;
         property.GameId = gameProp.GameId;
-        property.Owner = null;
-        property.IsOwned = property.Owner != null;
+        property.OwnerId = gameProp.OwnerId;
+        property.IsOwned = property.OwnerId != null;
         property.IsCompleteSet = gameProp.IsCompleteSet;
         property.IsMortgaged = gameProp.IsMortgaged;
 

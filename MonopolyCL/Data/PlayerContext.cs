@@ -11,6 +11,7 @@ public class PlayerContext
     public GameDbSet<DiceNumbers> DiceNums { get; init; }
     public GameDbSet<PlayerToCard> PlayersToCards { get; init; }
     public GameDbSet<PlayerToProperty> PlayersToProperties { get; init; }
+    public GameDbSet<Loan> PlayerLoans { get; init; }
     
     public PlayerContext(GameDbContext context, UserInfo userInfo)
     {
@@ -19,5 +20,6 @@ public class PlayerContext
         DiceNums = new GameDbSet<DiceNumbers>(context, userInfo);
         PlayersToCards = new GameDbSet<PlayerToCard>(context, userInfo);
         PlayersToProperties = new GameDbSet<PlayerToProperty>(context, userInfo);
+        PlayerLoans = new GameDbSet<Loan>(context, userInfo);
     }
 }

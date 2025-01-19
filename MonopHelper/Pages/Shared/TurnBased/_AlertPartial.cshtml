@@ -1,0 +1,42 @@
+@model MonopolyCL.Models.Game.GameAlert
+
+@{
+    var hasAlerts = false;
+    if (Model.HasLoans)
+    {
+        <div class="alert alert-danger" role="alert">
+            <span class="fa-solid fa-money-bill fa-2x mr text-danger" style="vertical-align: middle"></span>
+            <b style="vertical-align: middle">
+            You have outstanding loans! These need to be paid everytime you pass GO or Free Parking.
+            </b>
+        </div>
+        hasAlerts = true;
+    }
+
+    if (Model.HasMortgage)
+    {
+        <div class="alert alert-warning" role="alert">
+        <span class="fa-solid fa-house-circle-exclamation fa-2x mr text-warning" style="vertical-align: middle"></span>
+            <b style="vertical-align: middle">
+            You have mortgaged properties! A penalty needs to be paid each time you pass GO.
+            </b>
+        </div>
+        hasAlerts = true;
+    }
+    
+    if (Model.HasReservations)
+    {
+        <div class="alert alert-info" role="alert">
+            <span class="fa-solid fa-book-bookmark fa-2x mr text-info" style="vertical-align: middle"></span>
+            <b style="vertical-align: middle">
+            You have at least one reserved property! You can pay into this reservation each time you pass GO in order to unlock the property.
+            </b>
+        </div>
+        hasAlerts = true;
+    }
+
+    if (hasAlerts)
+    {
+        <div class="h-line mb-4"></div>
+    }
+}

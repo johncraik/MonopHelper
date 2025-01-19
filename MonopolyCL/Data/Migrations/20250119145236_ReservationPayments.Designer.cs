@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonopolyCL.Data;
 
 #nullable disable
 
-namespace MonopHelper.Migrations
+namespace MonopolyCL.Data.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250119145236_ReservationPayments")]
+    partial class ReservationPayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -571,10 +574,6 @@ namespace MonopHelper.Migrations
 
             modelBuilder.Entity("MonopolyCL.Models.Players.DataModel.PlayerToProperty", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("GamePlayerId")
                         .HasColumnType("INTEGER");
 
@@ -590,9 +589,7 @@ namespace MonopHelper.Migrations
                     b.Property<int>("ReservedAmount")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("GamePlayerId");
+                    b.HasKey("GamePlayerId", "GamePropertyId");
 
                     b.HasIndex("GamePropertyId");
 

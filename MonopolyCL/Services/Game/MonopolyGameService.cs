@@ -15,6 +15,7 @@ using MonopolyCL.Services.Boards;
 using MonopolyCL.Services.Cards;
 using MonopolyCL.Services.Players;
 using MonopolyCL.Services.Properties;
+using Property = Microsoft.EntityFrameworkCore.Metadata.Internal.Property;
 
 namespace MonopolyCL.Services.Game;
 
@@ -78,14 +79,27 @@ public class MonopolyGameService
         await _gameContext.TurnOrders.AddAsync(turnOrder);
     }
 
+    public GameAlert GetGameAlert(IPlayer? player)
+    {
+        var mortgaged = player?.Properties?
+            .Where(p => p.IsMortgaged && p.OwnerId == player.GamePid).ToList() ?? [];
+        var reserved = player?.Properties?
+            .Where(p => p is { IsReserved: true, IsInFreeParking: false, IsMortgaged: false }).ToList() ?? [];
+        
+        var alert = new GameAlert
+        {
+            HasMortgage = mortgaged.Count > 0,
+            HasReservations = reserved.Count > 0,
+            HasLoans = player?.Loans.Where(l => !l.Repaid).ToList().Count > 0
+        };
+        return alert;
+    }
+
     public async Task<ValidationResponse<MonopolyGame>> CreateGame(string name, int boardId, int deckId, List<int> playerIds, GAME_RULES rules)
     {
         //Create Card Game:
         var cardGame = await _cardGameService.CreateGame(deckId);
-        if (cardGame == null) return new ValidationResponse<MonopolyGame>
-        {
-            Response = new ValidationResponse("All", "Could not create game")
-        };
+        if (cardGame == null) return new ValidationResponse<MonopolyGame>("All", "Could not create game");
         
         //Create Game:
         var game = new GameDM
@@ -114,7 +128,6 @@ public class MonopolyGameService
         return new ValidationResponse<MonopolyGame>
         {
             ReturnObj = await BuildGame(game, playerIds, cardGame),
-            Response = new ValidationResponse()
         };
     }
     
@@ -144,36 +157,61 @@ public class MonopolyGameService
         cardGame ??= await _cardGameService.FetchGame(game.CardGameId);
         
         //Player Properties and Cards:
+        var updatedPlayers = new List<IPlayer>();
         foreach (var p in players)
         {
-            var propLinks = await _playerContext.PlayersToProperties.Query()
-                .Where(pp => pp.GamePlayerId == p.GamePid).ToListAsync();
-            p.Properties = [];
-            foreach (var propLink in propLinks)
-            {
-                var prop = properties.FirstOrDefault(pr => pr.Id == propLink.GamePropertyId);
-                if (prop == null) continue;
-                
-                prop.IsInFreeParking = propLink.IsInFreeParking;
-                prop.IsReserved = propLink.IsReserved;
-                p.Properties.Add(prop);
-            }
-
-            var cardLinks = await _playerContext.PlayersToCards.Query()
-                .Where(pc => pc.PlayerId == p.GamePid)
-                .Select(pc => pc.CardId).ToListAsync();
-            p.Cards = cardGame?.Cards.Select(c => c.Card).Where(c => cardLinks.Contains(c.Id)).ToList() ?? [];
+            var player = await InitialisePlayerLists(p, properties, cardGame);
+            updatedPlayers.Add(player);
         }
         
         return new MonopolyGame
         {
             Game = game,
             Board = board,
-            Players = players,
+            Players = updatedPlayers,
             Cards = cardGame
         };
     }
 
+    private async Task<IPlayer> InitialisePlayerLists(IPlayer player, List<IProperty> properties, CardGameViewModel? cardGame)
+    {
+        var propLinks = await _playerContext.PlayersToProperties.Query()
+            .Where(pp => pp.GamePlayerId == player.GamePid).ToListAsync();
+        player.Properties = [];
+        foreach (var propLink in propLinks)
+        {
+            var prop = properties.FirstOrDefault(pr => pr.Id == propLink.GamePropertyId);
+            if (prop == null) continue;
+
+            IProperty? newProp = null;
+            if (prop.GetType() == typeof(ColouredProperty))
+            {
+                newProp = new ColouredProperty(prop, propLink);
+            }
+            else if(prop.GetType() == typeof(StationProperty))
+            {
+                newProp = new StationProperty(prop, propLink);
+            }
+            else if (prop.GetType() == typeof(UtilityProperty))
+            {
+                newProp = new UtilityProperty(prop, propLink);
+            }
+                
+            if(newProp != null) player.Properties.Add(newProp);
+        }
+
+        var mortgagedProps = properties.Where(pr => pr.IsMortgaged && pr.OwnerId == player.GamePid).ToList();
+        player.Properties.AddRange(mortgagedProps);
+
+        var cardLinks = await _playerContext.PlayersToCards.Query()
+            .Where(pc => pc.PlayerId == player.GamePid)
+            .Select(pc => pc.CardId).ToListAsync();
+        player.Cards = cardGame?.Cards.Select(c => c.Card).Where(c => cardLinks.Contains(c.Id)).ToList() ?? [];
+
+        player.Loans = await _playerContext.PlayerLoans.Query().Where(l => l.PlayerId == player.GamePid).ToListAsync();
+        
+        return player;
+    }
 
     private async Task<List<IPlayer>> BuildPlayers(int gameId, List<int>? playerIds)
     {

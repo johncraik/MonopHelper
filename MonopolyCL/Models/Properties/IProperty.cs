@@ -14,12 +14,13 @@ public interface IProperty : IBoardSpace
     public int Cost { get; internal set; }
     public PROP_SET Set { get; internal set; }
     public int GameId { get; internal set; }
-    public Player? Owner { get; set; }
+    public int? OwnerId { get; set; }
     public bool IsOwned { get; set; }
     public bool IsCompleteSet { get; set; }
     public bool IsMortgaged { get; set; }
     public bool IsInFreeParking { get; set; }
     public bool IsReserved { get; set; }
+    public int ReservedAmount { get; set; }
     
     public bool Buy(Player p);
     public int GetRent();

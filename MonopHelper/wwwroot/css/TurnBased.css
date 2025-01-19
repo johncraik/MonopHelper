@@ -1,3 +1,9 @@
 .input{
     width: 15%;
 }
+
+.offcanvas{
+    background-image: linear-gradient(#fff, #ddd) !important;
+    border-bottom: #444 solid 2px !important;
+    border-radius: 5px !important;
+}

@@ -1,0 +1,20 @@
+@model MonopolyCL.Models.Cards.Card?
+
+
+@{
+    if (Model == null)
+    {
+        <p>Could not get card!</p>
+    }
+    else
+    {
+        <div class="card text-center">
+            <div style="background: @(Model.CardType.Colour) !important; color: @(Model.CardType.FontColour()) !important;" class="card-header bg-danger">
+                @Model.CardType.Name Card
+            </div>
+            <div class="card-body bg-light">
+                <p>@Model.Text</p>
+            </div>
+        </div>
+    }
+}

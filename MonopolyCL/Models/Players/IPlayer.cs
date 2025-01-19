@@ -1,4 +1,5 @@
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties;
 
 namespace MonopolyCL.Models.Players;
@@ -20,5 +21,6 @@ public interface IPlayer
     public int? TripleBonus { get; set; }
     
     public List<IProperty>? Properties { get; set; }
+    public List<Loan> Loans { get; set; }
     public List<Card> Cards { get; set; }
 }

@@ -22,7 +22,7 @@ public class GameProperty : TenantedModel
     
     public int? OwnerId { get; set; }
     [ForeignKey(nameof(OwnerId))]
-    public virtual PlayerDM Player { get; set; }
+    public virtual GamePlayer Player { get; set; }
     
     public int GameId { get; set; }
 }

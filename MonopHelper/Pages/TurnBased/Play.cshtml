@@ -1,5 +1,6 @@
 @page "{id?}"
 @using MonopolyCL.Extensions
+@using MonopolyCL.Models.Properties.Enums
 @model MonopHelper.Pages.TurnBased.Play
 
 @{
@@ -10,7 +11,13 @@
     }
     ViewData["Title"] = $"{title} - Play";
     Layout = "TurnBased/Shared/_TurnLayout";
+    
+    var mpProps = Model.CurrentPlayer?.Properties?.Where(p => p.IsMortgaged && p.OwnerId == Model.CurrentPlayer?.GamePid)
+        .OrderBy(p => p.Set.Order()).ThenBy(p => p.Cost).ToList();
+    var resProps = Model.CurrentPlayer?.Properties?.Where(p => p is { IsReserved: true, IsMortgaged: false, IsInFreeParking: false })
+        .OrderBy(p => p.Set.Order()).ThenBy(p => p.Cost).ToList();
 }
+<span hidden="@true" id="game-id">@Model.Game.Game.Id</span>
 
 <div class="row align-items-center mt-4 mb-2">
     <div class="col-8">
@@ -29,8 +36,8 @@
 </div>
 <div class="h-line mt-4"></div>
 
-<div class="my-3">
-    @* Alerts *@
+<div class="my-3" id="game-alerts">
+    <partial name="Shared/TurnBased/_AlertPartial" model="Model.Alert"/>
 </div>
 
 <div class="row">
@@ -44,7 +51,11 @@
                     foreach (var type in Model.Game.Cards?.Types ?? [])
                     {
                         <div class="mb">
-                            <button class="btn btn-light typeBtn-@(type.Type.Id)">@type.Type.Name Card</button>
+                            <button class="btn btn-light typeBtn-@(type.Type.Id)"
+                                    onclick="takeCard('@(Model.Game.Cards?.Game.Id)','@(type.Type.Id)')"
+                                    type="button" data-bs-toggle="offcanvas" data-bs-target="#card-take" aria-controls="card-take">
+                                @type.Type.Name Card
+                            </button>
                         </div>
 
                         <style>
@@ -66,115 +77,269 @@
             </div>
         </div>
     </div>
-    <div class="col-8">
-        <div class="card mt mb">
-            <div class="card-header bg-warning">
-                Actions
-            </div>
-            <div class="card-body bg-light">
-                <div class="row justify-content-center">
-                    <div class="col-4">
-                        <div class="mb-3" style="text-align: center; overflow: hidden">
-                            <span class="fa-solid fa-dice fa-3x" style="display: inline-block;"></span>
-                        </div>
-                        <div class="text-center badge bg-primary p-3 rounded-pill" style="font-size: 20px; width: 100%">
-                            <span>@Model.CurrentPlayer?.DiceNumber?.Dice1 | @Model.CurrentPlayer?.DiceNumber?.Dice2</span>
-                        </div>
-                        <button class="btn btn-warning rounded-pill mt-2" style="width: 100%;">Change Number</button>
+    <div class="col-8" id="player-partial">
+        <partial name="Shared/TurnBased/_PlayerPartial" model="Model.CurrentPlayer"/>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="fp-oc" aria-labelledby="fp-oc-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="fp-oc-label">Hand a Property into Free Parking</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-page-handler="FreeParking">
+                <input type="hidden" asp-for="FreeParkingInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <div class="mb-4">
+                    <select class="form-control" asp-for="FreeParkingInput.Id" asp-items="Model.FreeParkingProperties"></select>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Confirm"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="mp-new" aria-labelledby="mp-new-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="mp-new-label">Mortgage a Property</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-page-handler="Mortgage">
+                <input type="hidden" asp-for="MortgageInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <div class="mb-4">
+                    <select class="form-control" asp-for="MortgageInput.Id" asp-items="Model.MortgageProperties"></select>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Confirm"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="mp-pay" aria-labelledby="mp-pay-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="mp-pay-label">Pay Mortgage Fee</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th style="width: 100px">Cost</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    var total = 0;
+                    foreach (var mp in mpProps!)
+                    {
+                        var cost = ((int)(mp.Cost / 10d)).RoundToTen();
+                        total += cost;
+                        <tr>
+                            <td>@mp.Name</td>
+                            <td><span class="money">₩</span>@cost</td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td><b>Total</b></td>
+                    <td><b><span class="money">₩</span>@total</b></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="offcanvas offcanvas-top" tabindex="-1" id="l-pay" aria-labelledby="l-pay-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="l-pay-label">Repay Loans</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-page-handler="PayLoan" id="pay-loans">
+                <input type="hidden" asp-for="PayLoanInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <div class="row">
+                    <div class="col-sm-6">
+                        @{
+                            var totalLoan = Model.CurrentPlayer?.Loans.Select(l => l.Amount).Sum() ?? 0;
+                            var repaid = Model.CurrentPlayer?.Loans.Select(l => l.RepaidAmount).Sum() ?? 0;
+                            var outStanding = Model.CurrentPlayer?.Loans.Select(l => l.Outstanding()).Sum() ?? 0;
+                            var p5 = Model.CurrentPlayer?.Loans.Select(l => l.Pass(1)).Sum() ?? 0;
+                            var p10 = Model.CurrentPlayer?.Loans.Select(l => l.Pass(2)).Sum() ?? 0;
+                            var p15 = Model.CurrentPlayer?.Loans.Select(l => l.Pass(3)).Sum() ?? 0;
+                            var p20 = Model.CurrentPlayer?.Loans.Select(l => l.Pass(4)).Sum() ?? 0;
+                        }
+                        <table class="table table-striped table-hover mb-3">
+                            <thead>
+                            <tr>
+                                <th>Loan Information</th>
+                                <th style="width: 100px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Total Loan Amount:</td>
+                                <td><span class="money">₩</span>@totalLoan</td>
+                            </tr>
+                            <tr>
+                                <td>Amount Repaid:</td>
+                                <td><span class="money">₩</span>@repaid</td>
+                            </tr>
+                            <tr>
+                                <td>Outstanding:</td>
+                                <td><span class="money">₩</span>@outStanding</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-striped table-hover mb-3">
+                            <thead>
+                            <tr>
+                                <th>Standard Repayments</th>
+                                <th style="width: 100px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>One Pass (5%):</td>
+                                <td><span class="money">₩</span>@p5</td>
+                            </tr>
+                            <tr>
+                                <td>Two Passes (10%):</td>
+                                <td><span class="money">₩</span>@p10</td>
+                            </tr>
+                            <tr>
+                                <td>Three Passes (15%):</td>
+                                <td><span class="money">₩</span>@p15</td>
+                            </tr>
+                            <tr>
+                                <td>Four Passes (20%):</td>
+                                <td><span class="money">₩</span>@p20</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-4">
-                        <div class="mb-3" style="text-align: center; overflow: hidden">
-                            <span class="fa-solid fa-handcuffs fa-3x" style="display: inline-block;"></span>
+                    <div class="col-sm-6">
+                        <p><b>Repayment Options</b></p>
+                        <input type="hidden" id="repay-percent" value="5" asp-for="PayLoanInput.Percentage"/>
+                        <div class="mt mb">
+                            <label>One Pass (5%) - <span class="money">₩</span>@p5</label><br/>
+                            <button type="button" class="btn btn-warning mt" onclick="payLoan(1)">Repay 5%</button>
                         </div>
-                        <div class="text-center badge bg-danger p-3 rounded-pill" style="font-size: 20px; width: 100%">
-                            <span class="text-white"><span class="money mx-1">₩</span>@Model.CurrentPlayer?.JaiLCost?.ToString("N0")</span>
+                        <div class="mt mb">
+                            <label>Two Passes (10%) - <span class="money">₩</span>@p10</label><br/>
+                            <button type="button" class="btn btn-warning mt" onclick="payLoan(2)">Repay 10%</button>
                         </div>
-                        <div class="clearfix">
-                            <button class="btn btn-secondary rounded-pill mt-2 float-start" style="width: 48%">Leave Jail</button>
-                            <button class="btn btn-warning rounded-pill mt-2 float-end" style="width: 48%">Reset</button>
+                        <div class="mt mb">
+                            <label>Three Passes (15%) - <span class="money">₩</span>@p15</label><br/>
+                            <button type="button" class="btn btn-warning mt" onclick="payLoan(3)">Repay 15%</button>
                         </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="mb-3" style="text-align: center; overflow: hidden">
-                            <span class="fa-solid fa-dice-three fa-3x" style="display: inline-block;"></span>
+                        <div class="mt mb">
+                            <label>Four Passes (20%) - <span class="money">₩</span>@p20</label><br/>
+                            <button type="button" class="btn btn-warning mt" onclick="payLoan(4)">Repay 20%</button>
                         </div>
-                        <div class="text-center badge bg-success p-3 rounded-pill" style="font-size: 20px; width: 100%">
-                            <span class="text-white"><span class="money mx-1">₩</span>@Model.CurrentPlayer?.TripleBonus?.ToString("N0")</span>
+                        <div class="mt mb">
+                            <label asp-for="PayLoanInput.TotalAmount"></label>
+                            <input asp-for="PayLoanInput.TotalAmount" class="form-control"/>
+                            <button type="button" class="btn btn-warning mt-3" onclick="payLoan(-1)">Repay Custom</button>
                         </div>
-                        <button class="btn btn-secondary rounded-pill mt-2" style="width: 100%;">Claim Triple</button>
                     </div>
                 </div>
-                
-                <div class="my-3 h-line"></div>
-                
-                <div class="accordion" id="ply-actions">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="free-parking">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fp-collapse" aria-expanded="false" aria-controls="fp-collapse">
-                                Free Parking Properties
-                            </button>
-                        </h2>
-                        <div id="fp-collapse" class="accordion-collapse collapse" aria-labelledby="free-parking" data-bs-parent="#ply-actions">
-                            <div class="accordion-body">
-                                <h4 class="mb-3">Handed In:</h4>
-                                @{
-                                    if (Model.CurrentPlayer?.Properties == null || Model.CurrentPlayer?.Properties?.Count == 0)
-                                    {
-                                        <span>You have not handed any property into free parking yet.</span>
-                                    }
-                                    else
-                                    {
-                                        foreach (var property in Model.CurrentPlayer?.Properties?.Where(p => p.IsInFreeParking) ?? [])
-                                        {
-                                            <span class="badge rounded-pill tprop-@((int)property.Set) ml mr mb px-4 py-2">
-                                                @property.Set.GetDisplayName()
-                                            </span>
-                                        }
-                                    }
-                                }
-                                <br/>
-                                <button class="btn btn-warning mt">Hand a Property In</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="mortgages">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#m-collapse" aria-expanded="false" aria-controls="m-collapse">
-                                Mortgaged Properties
-                            </button>
-                        </h2>
-                        <div id="m-collapse" class="accordion-collapse collapse" aria-labelledby="mortgages" data-bs-parent="#ply-actions">
-                            <div class="accordion-body">
-                                <p>This is a test!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="loans">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#l-collapse" aria-expanded="false" aria-controls="l-collapse">
-                                Loans
-                            </button>
-                        </h2>
-                        <div id="l-collapse" class="accordion-collapse collapse" aria-labelledby="loans" data-bs-parent="#ply-actions">
-                            <div class="accordion-body">
-                                <p>This is a test!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="reservations">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#r-collapse" aria-expanded="false" aria-controls="r-collapse">
-                                Reserved Properties
-                            </button>
-                        </h2>
-                        <div id="r-collapse" class="accordion-collapse collapse" aria-labelledby="reservations" data-bs-parent="#ply-actions">
-                            <div class="accordion-body">
-                                <p>This is a test!</p>
-                            </div>
-                        </div>
-                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="l-new" aria-labelledby="l-new-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="l-new-label">Mortgage a Property</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-page-handler="NewLoan">
+                <input type="hidden" asp-for="NewLoanInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <div class="mb-4">
+                    <label asp-for="NewLoanInput.Amount" class="form-label"></label>
+                    <input asp-for="NewLoanInput.Amount" class="form-control"/>
+                    <span asp-validation-for="NewLoanInput.Amount" class="text-danger"></span>
                 </div>
-            </div>
+                <input type="submit" class="btn btn-primary" value="Confirm Loan"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="card-take" aria-labelledby="card-take-label" style="height: 30%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="card-take-label">Card</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" id="card-partial">
+            <partial name="Shared/TurnBased/_CardPartial" model="null"/>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="rp-new" aria-labelledby="rp-new-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="rp-new-label">Reserve a Property</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" asp-page-handler="Reservation">
+                <input type="hidden" asp-for="ReservationInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <div class="mb-4">
+                    <select class="form-control" asp-for="ReservationInput.Id" asp-items="Model.ReservationProperties"></select>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Confirm"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-top" tabindex="-1" id="rp-pay" aria-labelledby="rp-pay-label" style="height: 50%; overflow-y: scroll;">
+    <div class="container-xxl">
+        <div class="offcanvas-header">
+            <h2 id="rp-pay-label">Pay Reservation Fee</h2>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th style="width: 100px">Cost</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    var resTotal = 0;
+                    foreach (var rp in resProps!)
+                    {
+                        var cost = ((int)(rp.Cost / 10d)).RoundToTen();
+                        var paid = cost >= rp.Cost;
+                        if(!paid) resTotal += cost;
+                        
+                        <tr>
+                            <td>@rp.Name</td>
+                            <td>@Html.Raw(paid ? "<span class=\"text-success\"><b>Paid</b></span" : $"<span class=\"money\">\u20a9</span>{cost}")</td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td><b>Total</b></td>
+                    <td><b><span class="money">₩</span>@resTotal</b></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

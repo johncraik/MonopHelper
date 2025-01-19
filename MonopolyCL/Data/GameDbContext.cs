@@ -56,6 +56,7 @@ public class GameDbContext : DbContext
     public DbSet<TurnOrder> TurnOrders { get; set; }
     public DbSet<PlayerDM> Players { get; set; }
     public DbSet<GamePlayer> GamePlayers { get; set; }
+    public DbSet<Loan> PlayerLoans { get; set; }
     public DbSet<PlayerToCard> PlayersToCards { get; set; }
     public DbSet<DiceNumbers> PlayerDiceNumbers { get; set; }
 
