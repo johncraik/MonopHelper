@@ -1,0 +1,41 @@
+@page
+@model MonopHelper.Pages.Players.Index
+
+@{
+    ViewData["Title"] = "Players";
+}
+
+<div class="card mt mb">
+    <div class="card-header bg-primary text-white">
+        Players
+    </div>
+    <div class="card-body bg-light">
+        <button class="btn btn-warning mb-2" onclick="location.assign('/Players/Edit/0')">New Player</button>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr class="table-dark">
+                <th>Player Name</th>
+                <th>Wins</th>
+                <th style="width: 60px"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                foreach (var player in Model.Players)
+                {
+                    <tr>
+                        <td>@player.Name</td>
+                        <td>@player.Wins</td>
+                        <td>
+                            <button title="Edit Player" onclick="location.assign('/Players/Edit/@(player.Id)')"
+                                    class="btn btn-sm btn-link">
+                                <span class="fa-solid fa-pencil"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

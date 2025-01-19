@@ -64,7 +64,7 @@ public class MonopolyGameService
         var games = new List<MonopolyGame>();
         foreach (var g in gameIds)
         {
-            var game = await FetchGame(g);
+            var game = await FetchGame(g, true);
             if(game != null) games.Add(game);
         }
 
@@ -131,15 +131,23 @@ public class MonopolyGameService
         };
     }
     
-    public async Task<MonopolyGame?> FetchGame(int gameId)
+    public async Task<MonopolyGame?> FetchGame(int gameId, bool allPlayers = false)
     {
         var game = await _gameContext.Games.Query().Include(g => g.CardGame).FirstOrDefaultAsync(g => g.Id == gameId);
         if (game == null) return null;
         
-        return await BuildGame(game);
+        return await BuildGame(game, allPlayers: allPlayers);
     }
 
-    private async Task<MonopolyGame?> BuildGame(GameDM game, List<int>? playerIds = null, CardGameViewModel? cardGame = null)
+    public async Task DeleteGame(int id)
+    {
+        var game = await _gameContext.Games.Query().FirstOrDefaultAsync(g => g.Id == id);
+        if(game == null) return;
+        
+        await _gameContext.Games.RemoveAsync(game);
+    }
+
+    private async Task<MonopolyGame?> BuildGame(GameDM game, List<int>? playerIds = null, CardGameViewModel? cardGame = null, bool allPlayers = false)
     {
         //Build Players:
         var players = await BuildPlayers(game.Id, playerIds);
@@ -158,7 +166,7 @@ public class MonopolyGameService
         
         //Player Properties and Cards:
         var updatedPlayers = new List<IPlayer>();
-        foreach (var p in players)
+        foreach (var p in players.Where(ply => allPlayers ? ply.IsBankrupt || !ply.IsBankrupt : !ply.IsBankrupt))
         {
             var player = await InitialisePlayerLists(p, properties, cardGame);
             updatedPlayers.Add(player);

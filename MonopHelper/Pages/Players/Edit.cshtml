@@ -1,0 +1,24 @@
+@page "{id?}"
+@model MonopHelper.Pages.Players.Edit
+
+@{
+    ViewData["Title"] = "Edit Player";
+    var title = Model.Adding ? "New" : "Edit";
+    var btn = Model.Adding ? "Create" : "Modify";
+}
+
+<div class="card mt mb">
+    <div class="card-header bg-@(Model.Adding ? "success text-white" : "warning")">
+        @title Player
+    </div>
+    <div class="card-body bg-light">
+        <form method="post">
+            <div class="mt mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <button class="btn btn-primary">@btn Player</button>
+        </form>
+    </div>
+</div>

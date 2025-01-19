@@ -8,5 +8,6 @@ public class PlayerDM : TenantedModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public uint Wins { get; set; }
     public string UserId { get; set; }
 }

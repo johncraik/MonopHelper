@@ -40,7 +40,7 @@
     <partial name="Shared/TurnBased/_AlertPartial" model="Model.Alert"/>
 </div>
 
-<div class="row">
+<div class="row mb-4">
     <div class="col-4">
         <div class="card mt mb">
             <div class="card-header bg-success text-white">
@@ -80,6 +80,12 @@
     <div class="col-8" id="player-partial">
         <partial name="Shared/TurnBased/_PlayerPartial" model="Model.CurrentPlayer"/>
     </div>
+</div>
+
+<div class="my-4">
+    <form method="post" asp-page-handler="Bankrupt">
+        <button style="width: 100%; height: 80px" class="btn btn-danger rounded-pill" type="submit">Declare Bankruptcy</button>
+    </form>
 </div>
 
 <div class="offcanvas offcanvas-top" tabindex="-1" id="fp-oc" aria-labelledby="fp-oc-label" style="height: 50%; overflow-y: scroll;">
@@ -312,34 +318,44 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Property</th>
-                    <th style="width: 100px">Cost</th>
-                </tr>
-                </thead>
-                <tbody>
-                @{
-                    var resTotal = 0;
-                    foreach (var rp in resProps!)
-                    {
-                        var cost = ((int)(rp.Cost / 10d)).RoundToTen();
-                        var paid = cost >= rp.Cost;
-                        if(!paid) resTotal += cost;
-                        
-                        <tr>
-                            <td>@rp.Name</td>
-                            <td>@Html.Raw(paid ? "<span class=\"text-success\"><b>Paid</b></span" : $"<span class=\"money\">\u20a9</span>{cost}")</td>
-                        </tr>
+            <form method="post" asp-page-handler="PayReservation">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th style="width: 100px">Cost</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        var resTotal = 0;
+                        var amounts = "";
+                        foreach (var rp in resProps!)
+                        {
+                            var cost = ((int)(rp.Cost / 10d)).RoundToTen();
+                            var paid = rp.ReservedAmount >= rp.Cost;
+                            if (!paid)
+                            {
+                                resTotal += cost;
+                                amounts += $"{rp.Id}-{cost}:";
+                            }
+
+                            <tr>
+                                <td>@rp.Name</td>
+                                <td>@Html.Raw(paid ? "<span class=\"text-success\"><b>Paid</b></span" : $"<span class=\"money\">\u20a9</span>{cost}")</td>
+                            </tr>
+                        }
                     }
-                }
-                <tr>
-                    <td><b>Total</b></td>
-                    <td><b><span class="money">₩</span>@resTotal</b></td>
-                </tr>
-                </tbody>
-            </table>
+                    <tr>
+                        <td><b>Total</b></td>
+                        <td><b><span class="money">₩</span>@resTotal</b></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <input type="hidden" asp-for="PayReservationInput.Amounts" value="@amounts"/>
+                <input type="hidden" asp-for="PayReservationInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="submit" class="btn btn-primary mt-3" value="Pay Fee"/>
+            </form>
         </div>
     </div>
 </div>

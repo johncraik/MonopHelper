@@ -14,6 +14,7 @@ public class GamePlayer : TenantedModel
     public int Money { get; set; }
     public byte BoardIndex { get; set; }
     public bool IsInJail { get; set; }
+    public bool IsBankrupt { get; set; }
     
     public int? JailCost { get; set; }
     public int? TripleBonus { get; set; }

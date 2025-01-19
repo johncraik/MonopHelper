@@ -1,0 +1,28 @@
+@page
+@model MonopHelper.Pages.TurnBased.Win
+
+@{
+    var title = Model.Game.Game.Name;
+    if (string.IsNullOrEmpty(title))
+    {
+        title = "Turn Based Game";
+    }
+    ViewData["Title"] = $"{title} - Win";
+    Layout = "TurnBased/Shared/_TurnLayout";
+
+    var winner = Model.Game.Players.FirstOrDefault();
+    var name = winner?.Name ?? "[ERROR]";
+}
+
+<div class="card mt mb">
+    <div class="card-header bg-success text-white text-center">
+        <h1>Winner</h1>
+    </div>
+    <div class="card-body text-center">
+        <h1><b>@name</b></h1>
+        <p>@name has won a total of <b>@winner?.Wins games.</b></p>
+        <form method="post">
+            <button class="btn btn-warning mt-3" type="submit">Delete Game</button>
+        </form>
+    </div>
+</div>

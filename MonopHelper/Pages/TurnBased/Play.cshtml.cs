@@ -69,6 +69,14 @@ public class Play : PageModel
         public int PlayerId { get; set; }
     }
 
+    public class PayReservationViewModel
+    {
+        [Required]
+        public int PlayerId { get; set; }
+        [Required]
+        public string Amounts { get; set; }
+    }
+
     [BindProperty]
     public FreeParkingViewModel FreeParkingInput { get; set; } = new FreeParkingViewModel();
     public List<SelectListItem> FreeParkingProperties { get; set; }
@@ -85,9 +93,12 @@ public class Play : PageModel
 
     [BindProperty]
     public ReservationViewModel ReservationInput { get; set; } = new ReservationViewModel();
+    [BindProperty]
+    public PayReservationViewModel PayReservationInput { get; set; } = new PayReservationViewModel();
     public List<SelectListItem> ReservationProperties { get; set; }
     
     public MonopolyGame Game { get; set; }
+    private TurnOrder TurnOrder { get; set; }
     public GameAlert Alert { get; set; }
     public IPlayer? CurrentPlayer { get; set; }
 
@@ -95,11 +106,14 @@ public class Play : PageModel
     {
         var game = await _gameService.FetchGame(id);
         if (game == null) return RedirectToPage(nameof(Index));
+
+        if (game.Players.Count < 2) return RedirectToPage(nameof(Win), new {id});
         
         var turnOrder = await _gameService.GetGameTurnOrder(game.Game.Id);
         if(turnOrder == null) return RedirectToPage(nameof(Index));
         if (!turnOrder.IsSetup) return RedirectToPage(nameof(Setup), new {id = game.Game.Id});
-        
+
+        TurnOrder = turnOrder;
         CurrentPlayer = game.Players.FirstOrDefault(p => p.Id == turnOrder.CurrentTurn);
         Game = game;
         Alert = _gameService.GetGameAlert(CurrentPlayer);
@@ -142,6 +156,7 @@ public class Play : PageModel
     {
         var redirect = await SetupPage(id);
         if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.HandInProperty(FreeParkingInput.Id, FreeParkingInput.PlayerId);
@@ -152,6 +167,7 @@ public class Play : PageModel
     {
         var redirect = await SetupPage(id);
         if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.MortgageProperty(MortgageInput.Id, MortgageInput.PlayerId);
@@ -162,6 +178,7 @@ public class Play : PageModel
     {
         var redirect = await SetupPage(id);
         if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
         if (!ModelState.IsValid) return Page();
 
         await _playerService.PayLoans(PayLoanInput.PlayerId, PayLoanInput.Percentage, PayLoanInput.TotalAmount);
@@ -172,6 +189,7 @@ public class Play : PageModel
     {
         var redirect = await SetupPage(id);
         if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
         if (!ModelState.IsValid) return Page();
 
         var res = await _playerService.NewLoan(NewLoanInput.PlayerId, NewLoanInput.Amount);
@@ -185,9 +203,31 @@ public class Play : PageModel
     {
         var redirect = await SetupPage(id);
         if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.ReserveProperty(ReservationInput.Id, ReservationInput.PlayerId);
+        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+    }
+
+    public async Task<IActionResult> OnPostPayReservation(int id)
+    {
+        var redirect = await SetupPage(id);
+        if (redirect != null) return redirect;
+        if (!ModelState.IsValid) return Page();
+
+        var res = await _propertyService.PayReservationFee(PayReservationInput.Amounts, PayReservationInput.PlayerId);
+        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+    }
+
+    public async Task<IActionResult> OnPostBankrupt(int id)
+    {
+        var redirect = await SetupPage(id);
+        if (redirect != null) return redirect;
+        ModelState.Remove("Amounts");
+        if (!ModelState.IsValid) return Page();
+
+        var res = await _playerService.DeclareBankruptcy(CurrentPlayer, TurnOrder);
         return res ? RedirectToPage(nameof(Play), new { id }) : Page();
     }
 }

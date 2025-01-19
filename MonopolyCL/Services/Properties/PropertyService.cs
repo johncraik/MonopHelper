@@ -73,6 +73,33 @@ public class PropertyService
         return true;
     }
 
+    public async Task<bool> PayReservationFee(string amountsStr, int playerId)
+    {
+        var amounts = amountsStr.Split(':', StringSplitOptions.RemoveEmptyEntries);
+        var updateLinks = new List<PlayerToProperty>();
+        foreach (var a in amounts)
+        {
+            var idAndAmount = a.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            if (idAndAmount.Length < 2) return false;
+            
+            var success = int.TryParse(idAndAmount[0], out var id);
+            if (!success) return false;
+
+            success = int.TryParse(idAndAmount[1], out var amount);
+            if(!success) return false;
+
+            var link = await _playerContext.PlayersToProperties.Query()
+                .FirstOrDefaultAsync(l => l.GamePlayerId == playerId && l.GamePropertyId == id && l.IsReserved);
+            if(link == null) continue;
+
+            link.ReservedAmount += amount;
+            updateLinks.Add(link);
+        }
+
+        await _playerContext.PlayersToProperties.UpdateAsync(updateLinks);
+        return true;
+    }
+
     public async Task<ValidationResponse> UnlockReservation(int propId, int playerId)
     {
         var property = await _boardContext.GameProperties.Query().FirstOrDefaultAsync(p => p.Id == propId);

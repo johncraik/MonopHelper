@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MonopHelper.Authentication;
 using MonopolyCL.Data;
+using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Validation;
@@ -31,6 +32,9 @@ public class PlayerService
 
     public async Task<List<PlayerDM>> GetPlayers() => await _playerContext.Players.Query()
         .OrderBy(p => p.Name).ToListAsync();
+
+    public async Task<PlayerDM?> GetPlayer(int id) => await _playerContext.Players.Query()
+        .FirstOrDefaultAsync(p => p.Id == id);
 
     public async Task<ValidationResponse<dynamic>> GetGamePlayer(int id, bool includeDice = false)
     {
@@ -102,11 +106,39 @@ public class PlayerService
     }
 
     public async Task<IPlayer?> BuildPlayer(GamePlayer gamePlayer) => await _playerCreator.BuildPlayer(gamePlayer);
-    
-    public async Task<ValidationResponse> TryAddPlayer(PlayerDM player)
+
+    public async Task<ValidationResponse> ValidatePlayer(PlayerDM player)
     {
         var inUse = await _playerContext.Players.Query().AnyAsync(p => p.Name == player.Name && p.UserId == _userInfo.UserId);
         return inUse ? new ValidationResponse(nameof(player.Name), "This player already exists") : new ValidationResponse();
+    }
+    public async Task<ValidationResponse> TryAddPlayer(string name)
+    {
+        var player = new PlayerDM
+        {
+            Name = name,
+            TenantId = _userInfo.TenantId,
+            UserId = _userInfo.UserId,
+            Wins = 0
+        };
+        var res = await ValidatePlayer(player);
+        if (!res.IsValid) return res;
+
+        await _playerContext.Players.AddAsync(player);
+        return res;
+    }
+
+    public async Task<ValidationResponse> TryUpdatePlayer(int id, string name)
+    {
+        var player = await _playerContext.Players.Query().FirstOrDefaultAsync(p => p.Id == id);
+        if (player == null) return new ValidationResponse("Name", "Cannot update player");
+
+        player.Name = name;
+        var res = await ValidatePlayer(player);
+        if (!res.IsValid) return res;
+
+        await _playerContext.Players.UpdateAsync(player);
+        return res;
     }
 
     public async Task<ValidationResponse> SetupPlayerTurnOrders(List<(int Id, int GPID, int Order, int D1, int D2)> players, int gameId)
@@ -202,5 +234,30 @@ public class PlayerService
         };
         await _playerContext.PlayerLoans.AddAsync(loan);
         return new ValidationResponse();
+    }
+
+    public async Task<bool> DeclareBankruptcy(IPlayer? player, TurnOrder turnOrder)
+    {
+        if (player == null || player.IsBankrupt) return false;
+
+        var gamePlayer = await _playerContext.GamePlayers.Query().FirstOrDefaultAsync(p => p.Id == player.GamePid);
+        if (gamePlayer == null) return false;
+
+        var playerDm = await _playerContext.Players.Query().FirstOrDefaultAsync(p => p.Id == player.Id);
+        if (playerDm == null) return false;
+
+        gamePlayer.IsBankrupt = true;
+        await _playerContext.GamePlayers.UpdateAsync(gamePlayer);
+
+        var hasWon = turnOrder.RemovePlayer(playerDm.Id);
+        await _gameContext.TurnOrders.UpdateAsync(turnOrder);
+        if (hasWon == -1) return true;
+
+        var winner = await _playerContext.Players.Query().FirstOrDefaultAsync(p => p.Id == hasWon);
+        if (winner == null) return false;
+
+        winner.Wins++;
+        await _playerContext.Players.UpdateAsync(winner);
+        return true;
     }
 }

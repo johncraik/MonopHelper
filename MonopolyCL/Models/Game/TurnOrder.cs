@@ -11,9 +11,9 @@ public class TurnOrder : TenantedModel
     public string? Order { get; set; }
     public int CurrentTurn { get; set; }
 
-    public bool SetOrder(List<int> ids)
+    public bool SetOrder(List<int> ids, bool bypassCheck = false)
     {
-        if (ids.Count < 2) return false;
+        if (ids.Count < 2 && !bypassCheck) return false;
         
         Order = (ids.Aggregate("", (ord, id) => ord += $"{id}:"))[..^1];
         return true;
@@ -32,7 +32,23 @@ public class TurnOrder : TenantedModel
         return rtnIds;
     }
 
+    public int RemovePlayer(int id)
+    {
+        var next = GetNext();
+        var ids = GetOrder();
+        if (ids.Contains(id)) ids.Remove(id);
+
+        SetOrder(ids, true);
+        CurrentTurn = next;
+        return ids.Count > 1 ? -1 : ids.FirstOrDefault();
+    }
+
     public void NextPlayer()
+    {
+        CurrentTurn = GetNext();
+    }
+
+    public int GetNext()
     {
         var order = GetOrder();
         var currentIndex = order.IndexOf(CurrentTurn);
@@ -40,6 +56,6 @@ public class TurnOrder : TenantedModel
 
         if (nextIndex >= order.Count) nextIndex = 0;
 
-        CurrentTurn = order[nextIndex];
+        return order[nextIndex];
     }
 }

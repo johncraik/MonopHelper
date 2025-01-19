@@ -15,6 +15,8 @@ public class Player : IPlayer
     public int Order { get; set; }
     public int Money { get; set; }
     public bool IsInJail { get; set; }
+    public bool IsBankrupt { get; set; }
+    public uint Wins { get; set; }
     
     
     public (int Dice1, int Dice2)? DiceNumber { get; set; }
