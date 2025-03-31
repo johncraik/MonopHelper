@@ -1,3 +1,4 @@
+@using MonopolyCL.Helpers
 @model (List<MonopolyCL.Models.Cards.CardType> Types, bool Show)
 
 @if(Model.Show){
@@ -7,19 +8,22 @@
                 data-bs-toggle="modal" data-bs-target="#uploadCards" onclick="SetUploadType('@(type.Id)', '@(type.Name)')">
             Upload @type.Name Cards
         </button>
-        
+
+        var fontCol = ColourHelper.FontColour(type.Colour);
+        var hovCol = ColourHelper.HoverColour(type.Colour);
+
         <style>
             .typeBtn-@(type.Id){
                 background: @(type.Colour);
-                color: @(type.FontColour());
-                width: 100%; 
+                color: @(fontCol);
+                width: 100%;
                 height: 60px;
                 overflow-wrap: break-word;
             }
 
             .typeBtn-@(type.Id):hover{
-                background: @(type.HoverColour());
-                color: @(type.FontColour());
+                background: @(hovCol);
+                color: @(fontCol);
             }
         </style>
     }

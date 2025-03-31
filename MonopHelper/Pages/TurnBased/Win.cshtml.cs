@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopolyCL.Models.Game;
@@ -5,6 +6,7 @@ using MonopolyCL.Services.Game;
 
 namespace MonopHelper.Pages.TurnBased;
 
+[Authorize]
 public class Win : PageModel
 {
     private readonly MonopolyGameService _gameService;

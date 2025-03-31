@@ -37,6 +37,7 @@ public class PlayerCreator
             IsInJail = gp.IsInJail,
             IsBankrupt = gp.IsBankrupt,
             Wins = playerDataModel.Wins,
+            Colour = playerDataModel.Colour,
             JaiLCost = gp.JailCost,
             TripleBonus = gp.TripleBonus,
             GameId = gp.GameId,

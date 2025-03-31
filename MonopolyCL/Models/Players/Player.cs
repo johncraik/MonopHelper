@@ -17,7 +17,7 @@ public class Player : IPlayer
     public bool IsInJail { get; set; }
     public bool IsBankrupt { get; set; }
     public uint Wins { get; set; }
-    
+    public string Colour { get; set; } = "#42a7f5";
     
     public (int Dice1, int Dice2)? DiceNumber { get; set; }
     public byte BoardIndex { get; set; }

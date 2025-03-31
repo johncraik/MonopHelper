@@ -166,25 +166,28 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach (var loan in Model?.Loans ?? [])
-                                    {
-                                    <tr class="table-@(loan.Repaid ? "success" : "light")">
-                                        <td><span class="money">₩</span>@loan.Amount.ToString("N0")</td>
-                                        <td><span class="money">₩</span>@loan.RepaidAmount.ToString("N0")</td>
-                                        <td><span class="money">₩</span>@loan.Outstanding().ToString("N0")</td>
-                                        <td>
-                                            @{
-                                                if (loan.Repaid)
-                                                {
-                                                    <span class="text-success"><b>Paid</b></span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-danger"><b>Outstanding</b></span>
-                                                }
-                                            }
-                                        </td>
-                                    </tr>
+                                    @{
+                                        var loans = Model?.Loans.OrderBy(l => l.Repaid).ToList() ?? [];
+                                        foreach (var loan in loans)
+                                        {
+                                            <tr class="table-@(loan.Repaid ? "success" : "light")">
+                                                <td><span class="money">₩</span>@loan.Amount.ToString("N0")</td>
+                                                <td><span class="money">₩</span>@loan.RepaidAmount.ToString("N0")</td>
+                                                <td><span class="money">₩</span>@loan.Outstanding().ToString("N0")</td>
+                                                <td>
+                                                    @{
+                                                        if (loan.Repaid)
+                                                        {
+                                                            <span class="text-success"><b>Paid</b></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-danger"><b>Outstanding</b></span>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
                                     }
                                     </tbody>
                                 </table>

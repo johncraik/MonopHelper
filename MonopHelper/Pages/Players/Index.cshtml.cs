@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MonopHelper.Pages.TurnBased;
@@ -6,6 +7,7 @@ using MonopolyCL.Services.Players;
 
 namespace MonopHelper.Pages.Players;
 
+[Authorize]
 public class Index : PageModel
 {
     private readonly PlayerService _playerService;

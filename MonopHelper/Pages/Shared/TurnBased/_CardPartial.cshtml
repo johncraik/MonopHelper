@@ -1,3 +1,4 @@
+@using MonopolyCL.Helpers
 @model MonopolyCL.Models.Cards.Card?
 
 
@@ -9,7 +10,7 @@
     else
     {
         <div class="card text-center">
-            <div style="background: @(Model.CardType.Colour) !important; color: @(Model.CardType.FontColour()) !important;" class="card-header bg-danger">
+            <div style="background: @(Model.CardType.Colour) !important; color: @(ColourHelper.FontColour(Model.CardType.Colour)) !important;" class="card-header bg-danger">
                 @Model.CardType.Name Card
             </div>
             <div class="card-body bg-light">

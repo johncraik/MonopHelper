@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using MonopolyCL.Services.Players;
 
 namespace MonopHelper.Pages.TurnBased;
 
+[Authorize]
 public class Index : PageModel
 {
     private readonly MonopolyGameService _gameService;

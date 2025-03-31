@@ -16,6 +16,7 @@ public interface IPlayer
     public int Order { get; internal set; }
     public int Money { get; set; }
     public uint Wins { get; set; }
+    public string Colour { get; set; }
     
     public (int Dice1, int Dice2)? DiceNumber { get; set; }
     public byte BoardIndex { get; set; }

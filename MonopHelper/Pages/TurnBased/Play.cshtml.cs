@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using MonopolyCL.Services.Properties;
 
 namespace MonopHelper.Pages.TurnBased;
 
+[Authorize]
 public class Play : PageModel
 {
     private readonly MonopolyGameService _gameService;

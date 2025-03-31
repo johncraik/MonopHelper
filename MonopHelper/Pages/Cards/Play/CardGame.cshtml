@@ -1,4 +1,6 @@
 @page "{id}"
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonopolyCL.Helpers
 @model MonopHelper.Pages.Cards.Play.CardGame
 
 @{
@@ -21,19 +23,22 @@
                             <input type="submit" class="btn btn-light typeBtn-@(type.Type.Id)" value="Take @type.Type.Name Card"/>
                         </form>
                     </div>
-                    
+
+                    var fontCol = ColourHelper.FontColour(type.Type.Colour);
+                    var hovCol = ColourHelper.HoverColour(type.Type.Colour);
+
                     <style>
                         .typeBtn-@(type.Type.Id){
                             background: @(type.Type.Colour);
-                            color: @(type.Type.FontColour());
-                            width: 100%; 
+                            color: @(fontCol);
+                            width: 100%;
                             height: 60px;
                             overflow-wrap: break-word;
                         }
 
                         .typeBtn-@(type.Type.Id):hover{
-                            background: @(type.Type.HoverColour());
-                            color: @(type.Type.FontColour());
+                            background: @(hovCol);
+                            color: @(fontCol);
                         }
                     </style>
                 }

@@ -18,6 +18,11 @@
                 <input asp-for="Name" class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <div class="mt mb-3">
+                <label asp-for="Colour" class="form-label"></label><br/>
+                <input asp-for="Colour" class="mt" type="color"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
             <button class="btn btn-primary">@btn Player</button>
         </form>
     </div>

@@ -1,4 +1,5 @@
 @using MonopolyCL.Dictionaries
+@using MonopolyCL.Helpers
 @model List<(MonopolyCL.Models.Cards.Card Card, bool HasAction)>
 
 
@@ -29,7 +30,7 @@
                     if (cost == "") cost = "-";
             
                     <tr>
-                        <td style="background: @(ca.Card.CardType.HoverColour()); color: @(ca.Card.CardType.FontColour());">@ca.Card.CardType.Name</td>
+                        <td style="background: @(ColourHelper.HoverColour(ca.Card.CardType.Colour)); color: @(ColourHelper.FontColour(ca.Card.CardType.Colour));">@ca.Card.CardType.Name</td>
                         <td>@ca.Card.Text</td>
                         <td>@cost</td>
                         @if (Model.First().Card.CardDeck.TenantId != DefaultsDictionary.MonopolyTenant)

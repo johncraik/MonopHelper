@@ -1,4 +1,5 @@
 @page "{id}"
+@using MonopolyCL.Helpers
 @model MonopHelper.Pages.Cards.Play.View
 
 @{
@@ -6,7 +7,7 @@
 }
 
 <div class="card text-center">
-    <div style="background: @(Model.Card.CardType.Colour) !important; color: @(Model.Card.CardType.FontColour()) !important;" class="card-header bg-danger">
+    <div style="background: @(Model.Card.CardType.Colour) !important; color: @(ColourHelper.FontColour(Model.Card.CardType.Colour)) !important;" class="card-header bg-danger">
         @Model.Card.CardType.Name Card
     </div>
     <div class="card-body bg-light">

@@ -210,7 +210,7 @@ function payLoan(type){
         input.value = type;
     }
     else{
-        input.value = undefined;
+        input.value = 5;
     }
     
     let form = document.getElementById("pay-loans");

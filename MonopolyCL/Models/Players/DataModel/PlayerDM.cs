@@ -10,4 +10,5 @@ public class PlayerDM : TenantedModel
     public string Name { get; set; }
     public uint Wins { get; set; }
     public string UserId { get; set; }
+    public string Colour { get; set; }
 }

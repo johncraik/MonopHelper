@@ -109,14 +109,16 @@ public class PlayerService
 
     public async Task<ValidationResponse> ValidatePlayer(PlayerDM player)
     {
-        var inUse = await _playerContext.Players.Query().AnyAsync(p => p.Name == player.Name && p.UserId == _userInfo.UserId);
+        var inUse = await _playerContext.Players.Query()
+            .AnyAsync(p => p.Name == player.Name && p.Colour == player.Colour && p.UserId == _userInfo.UserId);
         return inUse ? new ValidationResponse(nameof(player.Name), "This player already exists") : new ValidationResponse();
     }
-    public async Task<ValidationResponse> TryAddPlayer(string name)
+    public async Task<ValidationResponse> TryAddPlayer(string name, string colour)
     {
         var player = new PlayerDM
         {
             Name = name,
+            Colour = colour,
             TenantId = _userInfo.TenantId,
             UserId = _userInfo.UserId,
             Wins = 0
@@ -128,12 +130,13 @@ public class PlayerService
         return res;
     }
 
-    public async Task<ValidationResponse> TryUpdatePlayer(int id, string name)
+    public async Task<ValidationResponse> TryUpdatePlayer(int id, string name, string colour)
     {
         var player = await _playerContext.Players.Query().FirstOrDefaultAsync(p => p.Id == id);
         if (player == null) return new ValidationResponse("Name", "Cannot update player");
 
         player.Name = name;
+        player.Colour = colour;
         var res = await ValidatePlayer(player);
         if (!res.IsValid) return res;
 
@@ -197,18 +200,18 @@ public class PlayerService
 
     public async Task PayLoans(int playerId, byte? type = 5, uint? total = 0)
     {
-        var loans = await _playerContext.PlayerLoans.Query().Where(l => l.PlayerId == playerId).ToListAsync();
+        var loans = await _playerContext.PlayerLoans.Query().Where(l => !l.Repaid && l.PlayerId == playerId).ToListAsync();
         if(loans.Count == 0) return;
 
         var splitAmount = total ?? 0;
-        if ((type == null || type < 0) && total is > 0)
+        if (type == 5 && total > 0)
         {
             splitAmount = (uint)Math.Round((double)total / loans.Count);
         }
 
         foreach (var loan in loans)
         {
-            var repay = type > 0 ? loan.Pass(type ?? 0) : (int)splitAmount;
+            var repay = type < 5 ? loan.Pass(type ?? 0) : (int)splitAmount;
             loan.RepaidAmount += repay;
             if (loan.RepaidAmount < loan.Amount) continue;
             

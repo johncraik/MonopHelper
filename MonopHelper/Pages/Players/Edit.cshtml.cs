@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,6 +9,7 @@ using MonopolyCL.Services.Players;
 
 namespace MonopHelper.Pages.Players;
 
+[Authorize]
 public class Edit : PageModel
 {
     private readonly PlayerService _playerService;
@@ -22,6 +24,9 @@ public class Edit : PageModel
     [Required]
     [BindProperty]
     public string Name { get; set; }
+    [Required]
+    [BindProperty]
+    public string Colour { get; set; }
 
     public async Task<bool> SetupPage(int id)
     {
@@ -51,6 +56,7 @@ public class Edit : PageModel
         if (Adding) return Page();
 
         Name = Player.Name;
+        Colour = Player.Colour;
         return Page();
     }
 
@@ -65,11 +71,11 @@ public class Edit : PageModel
         ValidationResponse response;
         if (Adding)
         {
-            response = await _playerService.TryAddPlayer(Name);
+            response = await _playerService.TryAddPlayer(Name, Colour);
         }
         else
         {
-            response = await _playerService.TryUpdatePlayer(id, Name);
+            response = await _playerService.TryUpdatePlayer(id, Name, Colour);
         }
 
         if (response.IsValid) return RedirectToPage(nameof(Index));
