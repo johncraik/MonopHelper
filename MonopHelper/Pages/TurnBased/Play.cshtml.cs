@@ -103,8 +103,12 @@ public class Play : PageModel
     private TurnOrder TurnOrder { get; set; }
     public GameAlert Alert { get; set; }
     public IPlayer? CurrentPlayer { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public int SwitchPlayerId { get; set; }
 
-    public async Task<IActionResult?> SetupPage(int id)
+    public bool SwitchView { get; set; }
+
+    public async Task<IActionResult?> SetupPage(int id, int switchId = 0)
     {
         var game = await _gameService.FetchGame(id);
         if (game == null) return RedirectToPage(nameof(Index));
@@ -118,6 +122,18 @@ public class Play : PageModel
         TurnOrder = turnOrder;
         CurrentPlayer = game.Players.FirstOrDefault(p => p.Id == turnOrder.CurrentTurn);
         Game = game;
+
+        if (SwitchPlayerId > 0 || switchId > 0)
+        {
+            if (switchId > 0) SwitchPlayerId = switchId;
+            var player = Game.Players.FirstOrDefault(p => p.Id == SwitchPlayerId);
+            if (player != null)
+            {
+                SwitchView = true;
+                CurrentPlayer = player;
+            }
+        }
+        
         Alert = _gameService.GetGameAlert(CurrentPlayer);
 
         FreeParkingProperties = (await _propertyService.GetFreeParkingDropDown(CurrentPlayer?.GamePid ?? 0, id))
@@ -142,9 +158,9 @@ public class Play : PageModel
         return null;
     }
     
-    public async Task<IActionResult> OnGet(int id)
+    public async Task<IActionResult> OnGet(int id, int switchId = 0)
     {
-        var res = await SetupPage(id);
+        var res = await SetupPage(id, switchId);
         return res ?? Page();
     }
 
@@ -154,6 +170,8 @@ public class Play : PageModel
         return res ? RedirectToPage(nameof(Play), new {id}) : RedirectToPage(nameof(Index));
     }
 
+    public IActionResult OnPostReturn(int id) => RedirectToPage(nameof(Play), new { id });
+    
     public async Task<IActionResult> OnPostFreeParking(int id)
     {
         var redirect = await SetupPage(id);
@@ -162,7 +180,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.HandInProperty(FreeParkingInput.Id, FreeParkingInput.PlayerId);
-        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+        return res ? RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId }) : Page();
     }
 
     public async Task<IActionResult> OnPostMortgage(int id)
@@ -173,7 +191,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.MortgageProperty(MortgageInput.Id, MortgageInput.PlayerId);
-        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+        return res ? RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId }) : Page();
     }
 
     public async Task<IActionResult> OnPostPayLoan(int id)
@@ -184,7 +202,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         await _playerService.PayLoans(PayLoanInput.PlayerId, PayLoanInput.Percentage, PayLoanInput.TotalAmount);
-        return RedirectToPage(nameof(Play), new { id });
+        return RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId });
     }
 
     public async Task<IActionResult> OnPostNewLoan(int id)
@@ -195,7 +213,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         var res = await _playerService.NewLoan(NewLoanInput.PlayerId, NewLoanInput.Amount);
-        if (res.IsValid) return RedirectToPage(nameof(Play), new { id });
+        if (res.IsValid) return RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId });
         
         ModelState.AddModelError(res.ErrorKey, res.ErrorMsg);
         return Page();
@@ -209,7 +227,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.ReserveProperty(ReservationInput.Id, ReservationInput.PlayerId);
-        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+        return res ? RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId }) : Page();
     }
 
     public async Task<IActionResult> OnPostPayReservation(int id)
@@ -219,7 +237,7 @@ public class Play : PageModel
         if (!ModelState.IsValid) return Page();
 
         var res = await _propertyService.PayReservationFee(PayReservationInput.Amounts, PayReservationInput.PlayerId);
-        return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+        return res ? RedirectToPage(nameof(Play), new { id, switchId = SwitchPlayerId }) : Page();
     }
 
     public async Task<IActionResult> OnPostBankrupt(int id)
@@ -231,5 +249,17 @@ public class Play : PageModel
 
         var res = await _playerService.DeclareBankruptcy(CurrentPlayer, TurnOrder);
         return res ? RedirectToPage(nameof(Play), new { id }) : Page();
+    }
+
+    public async Task<IActionResult> OnPostDraw(int id)
+    {
+        var redirect = await SetupPage(id);
+        if (redirect != null) return redirect;
+        
+        ModelState.Remove("Amounts");
+        if (!ModelState.IsValid) return Page();
+
+        await _gameService.DeleteGame(id);
+        return RedirectToPage(nameof(Index));
     }
 }

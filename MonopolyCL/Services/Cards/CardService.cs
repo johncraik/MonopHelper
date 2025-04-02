@@ -10,15 +10,12 @@ public class CardService
 {
     private readonly CardContext _cardContext;
     private readonly UserInfo _userInfo;
-    private readonly CardActionsService _cardActionsService;
 
     public CardService(CardContext cardContext,
-        UserInfo userInfo,
-        CardActionsService cardActionsService)
+        UserInfo userInfo)
     {
         _cardContext = cardContext;
         _userInfo = userInfo;
-        _cardActionsService = cardActionsService;
     }
 
     public async Task<List<Card>> GetCardsFromDeck(int deckId, bool undefined = false)
@@ -35,14 +32,7 @@ public class CardService
     public async Task<List<(Card, bool)>> GetCardsAndActionFromDeck(int deckId, bool undefined = false)
     {
         var cards = await GetCardsFromDeck(deckId, undefined);
-        var rtn = new List<(Card, bool)>();
-        foreach (var card in cards)
-        {
-            var action = await _cardActionsService.GetCardAction(card.Id);
-            rtn.Add((card, action is { Item1: not null, Item2: not null }));
-        }
-
-        return rtn;
+        return cards.Select(card => (card, false)).ToList();
     }
 
     public async Task<bool> MoveCardsInDeck(int deckId, int newDeckId)

@@ -1,7 +1,6 @@
 @page "{id?}"
 @using MonopolyCL.Extensions
 @using MonopolyCL.Helpers
-@using MonopolyCL.Models.Players.DataModel
 @using MonopolyCL.Models.Properties.Enums
 @model MonopHelper.Pages.TurnBased.Play
 
@@ -19,6 +18,7 @@
     var resProps = Model.CurrentPlayer?.Properties?.Where(p => p is { IsReserved: true, IsMortgaged: false, IsInFreeParking: false })
         .OrderBy(p => p.Set.Order()).ThenBy(p => p.Cost).ToList();
 }
+
 <span hidden="@true" id="game-id">@Model.Game.Game.Id</span>
 
 <div class="row align-items-center mt-4 mb-2">
@@ -26,18 +26,44 @@
         @{
             var font = ColourHelper.FontColour(Model.CurrentPlayer?.Colour ?? "#000000");
             var col = Model.CurrentPlayer?.Colour ?? "#000000";
+            var playerTitle = Model.SwitchView ? $"Viewing {(Model.CurrentPlayer?.Name ?? "[ERROR]")}" : $"{(Model.CurrentPlayer?.Name ?? "[ERROR]")}'s Turn";
         }
-        <div class="p-3" style="background: @col; color: @font; box-shadow: 2px 5px 18px #888888;">
-            <h1 class="text-center">@(Model.CurrentPlayer?.Name ?? "[ERROR]")'s Turn</h1>
+        <div class="p-4" style="background: @col; color: @font; box-shadow: 2px 5px 18px #888888;">
+            <h1 class="text-center">@playerTitle</h1>
         </div>
     </div>
     <div class="col-4">
-        <form method="post" asp-page-handler="End">
-            <button class="btn btn-danger p-4" style="width: 100%; box-shadow: 2px 5px 18px #888888; font-size: 20px; font-weight: bold;"
-                    type="submit">
-                End Turn
-            </button>
-        </form>
+        @{
+            if (Model.SwitchView)
+            {
+                <form method="post" asp-page-handler="Return">
+                    <button class="btn btn-success p-2" style="width: 100%; box-shadow: 2px 5px 18px #888888; font-size: 18px; font-weight: bold;"
+                            type="submit">
+                        Return to Player
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form method="post" asp-page-handler="End">
+                    <button class="btn btn-danger p-2" style="width: 100%; box-shadow: 2px 5px 18px #888888; font-size: 18px; font-weight: bold;"
+                            type="submit">
+                        End Turn
+                    </button>
+                </form>
+            }
+
+            
+            var playerList = Model.Game.Players.Where(p => p != Model.CurrentPlayer).Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString() }).ToList();
+            <div class="mt">
+                <form method="get">
+                    <div class="clearfix">
+                        <select class="form-control float-start" style="width: 50%; box-shadow: 2px 5px 18px #888888;" asp-items="playerList" asp-for="SwitchPlayerId"></select>
+                        <button type="submit" class="btn btn-info float-end text-white" style="box-shadow: 2px 5px 18px #888888; width: 45%">Switch</button>
+                    </div>
+                </form>
+            </div>
+        }
     </div>
 </div>
 <div class="h-line mt-4"></div>
@@ -130,8 +156,14 @@
 </div>
 
 <div class="my-4">
-    <form method="post" asp-page-handler="Bankrupt">
-        <button style="width: 100%; height: 80px" class="btn btn-danger rounded-pill" type="submit">Declare Bankruptcy</button>
+    <form method="post" asp-page-handler="Bankrupt" id="bankrupt-form">
+        <input type="hidden" asp-for="SwitchPlayerId"/>
+        <button style="width: 100%; height: 80px" class="btn btn-danger rounded-pill" type="button" onclick="bankrupt('@(Model.CurrentPlayer.Name)')">Declare Bankruptcy</button>
+    </form>
+</div>
+<div class="my-4">
+    <form method="post" asp-page-handler="Draw" id="draw-form">
+        <button style="width: 100%; height: 80px" class="btn btn-warning rounded-pill" type="button" onclick="draw()">Declare Draw & Delete Game</button>
     </form>
 </div>
 
@@ -144,6 +176,7 @@
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="FreeParking">
                 <input type="hidden" asp-for="FreeParkingInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <div class="mb-4">
                     <select class="form-control" asp-for="FreeParkingInput.Id" asp-items="Model.FreeParkingProperties"></select>
                 </div>
@@ -162,6 +195,7 @@
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="Mortgage">
                 <input type="hidden" asp-for="MortgageInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <div class="mb-4">
                     <select class="form-control" asp-for="MortgageInput.Id" asp-items="Model.MortgageProperties"></select>
                 </div>
@@ -216,6 +250,7 @@
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="PayLoan" id="pay-loans">
                 <input type="hidden" asp-for="PayLoanInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <div class="row">
                     <div class="col-sm-6">
                         @{
@@ -318,6 +353,7 @@
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="NewLoan">
                 <input type="hidden" asp-for="NewLoanInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <div class="mb-4">
                     <label asp-for="NewLoanInput.Amount" class="form-label"></label>
                     <input asp-for="NewLoanInput.Amount" class="form-control"/>
@@ -350,6 +386,7 @@
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="Reservation">
                 <input type="hidden" asp-for="ReservationInput.PlayerId" value="@Model.CurrentPlayer?.GamePid"/>
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <div class="mb-4">
                     <select class="form-control" asp-for="ReservationInput.Id" asp-items="Model.ReservationProperties"></select>
                 </div>
@@ -367,6 +404,7 @@
         </div>
         <div class="offcanvas-body">
             <form method="post" asp-page-handler="PayReservation">
+                <input type="hidden" asp-for="SwitchPlayerId"/>
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>

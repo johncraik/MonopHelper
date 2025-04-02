@@ -254,3 +254,34 @@ function unlockRes(id, name, playerId){
         }
     })
 }
+
+function bankrupt(name){
+    Swal.fire({
+        title: 'Are you sure you want ' + name + ' to declare bankruptcy?',
+        icon: 'question',
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No"
+    }).then((res) => {
+        if(res.isConfirmed){
+            let form = document.getElementById('bankrupt-form');
+            form.submit();
+        }
+    })
+}
+
+function draw(){
+    Swal.fire({
+        title: 'Are you sure you want to declare a draw?',
+        text: 'This will delete the game.',
+        icon: 'question',
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No"
+    }).then((res) => {
+        if(res.isConfirmed){
+            let form = document.getElementById('draw-form');
+            form.submit();
+        }
+    })
+}

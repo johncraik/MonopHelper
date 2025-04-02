@@ -30,7 +30,6 @@ public static class GameServicesExtensions
         services.AddScoped<PropertyService>();
 
         services.AddTransient<MonopolyGameService>();
-        services.AddTransient<CardActionsService>();
         
         services.AddScoped<CsvReader<CardUpload>>();
         

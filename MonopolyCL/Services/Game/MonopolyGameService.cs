@@ -8,14 +8,12 @@ using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties;
-using MonopolyCL.Models.Properties.DataModel;
 using MonopolyCL.Models.Properties.Enums;
 using MonopolyCL.Models.Validation;
 using MonopolyCL.Services.Boards;
 using MonopolyCL.Services.Cards;
 using MonopolyCL.Services.Players;
 using MonopolyCL.Services.Properties;
-using Property = Microsoft.EntityFrameworkCore.Metadata.Internal.Property;
 
 namespace MonopolyCL.Services.Game;
 

@@ -8,7 +8,6 @@ public static class ContextExtensions
     {
         //Cards:
         services.AddScoped<CardContext>();
-        services.AddScoped<CardActionContext>();
         
         //Games:
         services.AddScoped<BoardContext>();
