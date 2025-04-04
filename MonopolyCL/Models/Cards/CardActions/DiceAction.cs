@@ -1,7 +1,16 @@
 namespace MonopolyCL.Models.Cards.CardActions;
 
-public class DiceAction
+public class DiceAction : ICardActionModel
 {
-    public bool IsConvert { get; set; }
-    public bool IsTriple { get; set; }  //
+    public int Group { get; set; }
+    public CardActions Type { get; set; } = CardActions.DICE;
+    
+    public DiceConvert Convert { get; set; }
+    public PlayerAction PlayerAction { get; set; }
+}
+
+public enum DiceConvert
+{
+    TO_DOUBLE,
+    TO_TRIPLE
 }

@@ -15,11 +15,10 @@ public class ActionConfig
     
 
     public string[] GetGroups() => 
-        string.IsNullOrEmpty(Groups) ? [] : Groups.Split(GroupDelimiter, StringSplitOptions.RemoveEmptyEntries);
-
-    public const string GroupDelimiter = "-";
-    public const string OrOperator = "|";
-    public const string AndOperator = "&";
+        string.IsNullOrEmpty(Groups) ? [] : Groups.Split(OrOperator, StringSplitOptions.RemoveEmptyEntries);
+    
+    public const string OrOperator = "|";   //Splits groups
+    public const string AndOperator = "&";  //Splits actions in groups
 }
 
 [Flags]
@@ -33,10 +32,8 @@ public enum CardActions
     CARD = 32
 }
 
-/*
- * Example:
- * Return a set -OR- Pay £5,000 AND £300
- * Property -OR- Pay AND Advance => 8 -OR- 4 AND 4 => 12
- * 
- * 8|,4&4
- */
+public interface ICardActionModel
+{
+    public int Group { get; set; }
+    public CardActions Type { get; }
+}

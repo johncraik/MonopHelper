@@ -1,11 +1,14 @@
 namespace MonopolyCL.Models.Cards.CardActions;
 
-public class PayAction
+public class PayAction : ICardActionModel
 {
+    public int Group { get; set; }
+    public CardActions Type { get; } = CardActions.PAY;
+    
     public bool IsPay { get; set; } = true;
     public int Value { get; set; } //Pay/Receive amount
     public PayTo PayTo { get; set; }
-    public PayPlayer PayPlayer { get; set; }
+    public PlayerAction PlayerAction { get; set; }
     public PayMultiplier Multiplier { get; set; }
 }
 
@@ -16,7 +19,7 @@ public enum PayTo
     PLAYER
 }
 
-public enum PayPlayer
+public enum PlayerAction
 {
     NONE = 0,
     LEFT,
