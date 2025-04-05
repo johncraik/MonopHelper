@@ -167,7 +167,7 @@ async Task Defaults()
         adminUser = new ApplicationUser
         {
             Email = "jcraik23@gmail.com",
-            UserName = "serveradmin",
+            UserName = "systemadmin",
             EmailConfirmed = true,
             TwoFactorEnabled = false,
             DisplayName = "Admin",
@@ -175,7 +175,7 @@ async Task Defaults()
         };
         await userManager.CreateAsync(adminUser);
         await userManager.AddToRoleAsync(adminUser, GameRoles.Admin);
-        var p = "TempPassword23@Helperv1.2";
+        var p = "TempPassword23@Helperv1.3.6";
         await userManager.AddPasswordAsync(adminUser, p);
         Console.WriteLine("=============================");
         Console.WriteLine("-----------------------------");
