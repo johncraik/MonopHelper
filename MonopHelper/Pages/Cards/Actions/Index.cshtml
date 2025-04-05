@@ -1,18 +1,186 @@
 @page "{id}"
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions
 @model MonopHelper.Pages.Cards.Actions.Index
 
 @{
     ViewData["Title"] = "Card Action";
 }
+
+<div class="modal fade" id="add-action" tabindex="-1" role="dialog" aria-labelledby="add-action" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Action to <span id="add-group">Unknown Group!</span></h4>
+                <button type="button" class="btn btn-sm btn-link" data-bs-dismiss="modal">
+                    <span class="fa-solid fa-x text-danger"></span>
+                </button>
+            </div>
+            <form method="post" asp-page-handler="AddAction" class="ml mr">
+                <input type="hidden" asp-for="AddAction.Group" id="group-id"/>
+                <div class="mt-2 mb-3">
+                    <label asp-for="AddAction.SelectedAction" class="mb-1"></label>
+                    <select asp-for="AddAction.SelectedAction" asp-items="Model.AddAction.Actions" class="form-control"></select>
+                </div>
+                <button class="btn btn-success mb-3">Setup Action</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <button class="btn btn-sm btn-primary rounded-pill px-3 mb-3" onclick="location.assign('/Cards/Manage')">Go Back</button>
 <div class="card mb-4">
-    <div class="card-header bg-info text-white">
+    <div class="card-header bg-danger text-white">
         Card Actions
     </div>
     <div class="card-body bg-light">
-        <p class="text-center"><b>Coming Soon</b></p>
-        <form method="post">
-            <button class="btn btn-danger">Test</button>
-        </form>
+        <partial name="Cards/Actions/_CardInfo" model="Model.ActionConfig.Card"/>
+
+        <div class="mb-4">
+            <form method="post">
+                <div class="clearfix align-items-center">
+                    <div class="float-start mr mt-1 form-check form-switch">
+                        @if (Model.ActionConfig.IsKeep)
+                        {
+                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep" checked/>
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep"/>
+                        }
+                        <label asp-for="IsKeep" class="form-check-label" for="is-keep-toggle"></label>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <span class="fa-solid fa-floppy-disk mr"></span> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @foreach (var g in Model.Actions)
+        {
+            <div class="divider mb">
+                <h4>Group @g.Key</h4>
+                <div class="h-line"></div>
+                @foreach (var a in g)
+                {
+                    <div class="mt-2 mb-2">
+                        <table class="table table-sm">
+                            <thead class="table-dark">
+                            <tr>
+                                <th colspan="20" class="text-center">@a.Type.GetDisplayName() Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <table class="table table-sm table-hover table-bordered">
+                                        @{
+                                            switch (a.Type)
+                                            {
+                                                case CardActions.MOVE:
+                                                    var moveAction = (MoveAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Value</th>
+                                                        <th>Direction</th>
+                                                        <th>Player</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@(moveAction.IsAdvance ? $"Advance to Index {moveAction.Value}" : $"Move {moveAction.Value} Spaces")</td>
+                                                        <td>@(moveAction.IsForward ? "Move forwards (Pass GO)" : "Move backwards (Do not pass GO)")</td>
+                                                        <td>@(moveAction.IsAllPlayers ? "All Players" : "Player who plays the card")</td>
+                                                    </tr>
+                                                    </tbody>
+                                                    break;
+                                                case CardActions.PAY:
+                                                    var payAction = (PayAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Value</th>
+                                                        <th>Pay/Receive</th>
+                                                        <th>Player</th>
+                                                        <th>Based on (Multiplier)</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@(payAction.IsPay ? "Pay" : "Receive") @payAction.Value</td>
+                                                        <td>@payAction.PayTo.GetDisplayName()</td>
+                                                        <td>@payAction.PlayerAction.GetDisplayName()</td>
+                                                        <td>@payAction.Multiplier.GetDisplayName()</td>
+                                                    </tr>
+                                                    </tbody>
+                                                    break;
+                                                case CardActions.PROPERTY:
+                                                    var propertyAction = (PropertyAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Take/Return</th>
+                                                        <th>Destination/Source</th>
+                                                        <th>Full Set?</th>
+                                                        <th>Swapping?</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@(propertyAction.IsTake ? "Take Property" : "Return Property")</td>
+                                                        <td>@propertyAction.Source.GetDisplayName()</td>
+                                                        <td>@(propertyAction.IsSet ? "Yes" : "No")</td>
+                                                        <td>@(propertyAction.IsSwap ? "Yes" : "No")</td>
+                                                    </tr>
+                                                    </tbody>
+                                                    break;
+                                                case CardActions.DICE:
+                                                    break;
+                                                case CardActions.RESET:
+                                                    break;
+                                                case CardActions.CARD:
+                                                    break;
+                                                default:
+                                                    <p class="text-danger">
+                                                        <b>Unable to determine action type.</b>
+                                                    </p>
+                                                    break;
+                                            }
+                                        }
+                                    </table>
+                                </td>
+                                <td class="align-middle" style="width: 100px">
+                                    <div class="clearfix">
+                                        <button class="btn btn-xs btn-link float-start" title="Edit Action"
+                                                onclick="location.assign('/Cards/Actions/Edit/@(Model.ActionConfig.CardId)/@(a.ActionId)/@(g.Key)/@((int)a.Type)')">
+                                            <span class="fa-solid fa-pencil"></span>
+                                        </button>
+                                        <button class="btn btn-xs btn-link float-start" title="Delete Action"
+                                                onclick="location.assign('/Cards/Actions/Edit/@(Model.ActionConfig.CardId)/@(a.ActionId)/@(g.Key)/@((int)a.Type)')">
+                                            <span class="fa-solid fa-x text-danger"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                <div class="mt-2 mb-2">
+                    <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#add-action"
+                            onclick="SetGroup('@(g.Key)')">
+                        Add Action to Group @g.Key
+                    </button>
+                </div>
+            </div>
+        }
+
+        <div class="mt-2 mb-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-action"
+                    onclick="SetGroup('0')">
+                Add Action to New Group
+            </button>
+        </div>
     </div>
 </div>
+
+<script type="text/javascript" src="/js/Cards/Actions.js"></script>

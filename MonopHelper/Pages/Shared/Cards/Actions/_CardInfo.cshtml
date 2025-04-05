@@ -1,0 +1,6 @@
+@model MonopolyCL.Models.Cards.Card?
+
+<div class="mb">
+    <b>Card Type: </b>@(Model?.CardType?.Name ?? "ERROR")<br/>
+    <b>Card Text: </b>@(Model?.Text ?? "ERROR")
+</div>

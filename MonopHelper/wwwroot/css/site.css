@@ -87,6 +87,10 @@ h4{
   border-radius: 2px;
 }
 
+.action{
+  margin: 5px 2px;
+}
+
 .list{
   padding: 0 10px;
 }
