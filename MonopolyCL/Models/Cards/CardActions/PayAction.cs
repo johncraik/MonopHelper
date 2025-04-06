@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MonopolyCL.Models.Cards.CardActions;
 
@@ -18,6 +19,14 @@ public class PayAction : ICardActionModel
     public PlayerAction PlayerAction { get; set; }
     [DisplayName("Multiplier")]
     public PayMultiplier Multiplier { get; set; }
+    
+    public void Validate(ModelStateDictionary modelState)
+    {
+        if (PayTo == PayTo.PLAYER && PlayerAction == PlayerAction.CURRENT_PLAYER)
+        {
+            modelState.AddModelError("Pay.PlayerAction", "You must select a player action when paying to/receiving from a player.");
+        }
+    }
 }
 
 public enum PayTo
@@ -29,7 +38,8 @@ public enum PayTo
 
 public enum PlayerAction
 {
-    NONE = 0,
+    CURRENT_PLAYER = 0,
+    SPECIFIC_PLAYER,
     LEFT,
     RIGHT,
     ALL

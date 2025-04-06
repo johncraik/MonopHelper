@@ -1,6 +1,8 @@
 @page "{id}"
 @using MonopolyCL.Extensions
 @using MonopolyCL.Models.Cards.CardActions
+@using MonopolyCL.Services.Cards
+@inject CardService CardService
 @model MonopHelper.Pages.Cards.Actions.Index
 
 @{
@@ -36,25 +38,36 @@
     <div class="card-body bg-light">
         <partial name="Cards/Actions/_CardInfo" model="Model.ActionConfig.Card"/>
 
-        <div class="mb-4">
-            <form method="post">
-                <div class="clearfix align-items-center">
-                    <div class="float-start mr mt-1 form-check form-switch">
+        <div class="mb-4 row align-items-end">
+            <div class="col-sm-10">
+                <form method="post" asp-page-handler="Save">
+                    <div class="mb-2 form-check form-switch">
                         @if (Model.ActionConfig.IsKeep)
                         {
-                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep" checked/>
+                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep" onchange="ShowPlayCondition(this)" checked/>
                         }
                         else
                         {
-                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep"/>
+                            <input type="checkbox" class="form-check-input" id="is-keep-toggle" asp-for="IsKeep" onchange="ShowPlayCondition(this)"/>
                         }
                         <label asp-for="IsKeep" class="form-check-label" for="is-keep-toggle"></label>
+                    </div>
+                    <div class="mb-2 form-floating" hidden="@(!Model.ActionConfig.IsKeep)" id="con-dd">
+                        <select asp-for="SelectedCondition" asp-items="Model.PlayConditions" class="form-select" id="play-condition"></select>
+                        <label asp-for="SelectedCondition" for="play-condition"></label>
                     </div>
                     <button type="submit" class="btn btn-sm btn-success">
                         <span class="fa-solid fa-floppy-disk mr"></span> Save
                     </button>
+                </form>
+            </div>
+            <div class="col-sm-2">
+                <div class="float-end">
+                    <form method="post" asp-page-handler="Clear" id="delete-form">
+                        <button class="btn btn-warning" type="button" onclick="DeleteActions()">Delete Actions</button>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
 
         @foreach (var g in Model.Actions)
@@ -134,10 +147,93 @@
                                                     </tbody>
                                                     break;
                                                 case CardActions.DICE:
+                                                    var diceAction = (DiceAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Roll Converted To</th>
+                                                        <th>Player</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@diceAction.Convert.GetDisplayName()</td>
+                                                        <td>@diceAction.PlayerAction.GetDisplayName()</td>
+                                                    </tr>
+                                                    </tbody>
                                                     break;
                                                 case CardActions.RESET:
+                                                    var resetAction = (ResetAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Reset Type</th>
+                                                        <th>Properties/Sets to Purge</th>
+                                                        <th>Player</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@resetAction.Reset.GetDisplayName()</td>
+                                                        <td>@resetAction.Value @(resetAction.IsPurgeSet ? "Sets" : "Properties")</td>
+                                                        <td>@resetAction.PlayerAction.GetDisplayName()</td>
+                                                    </tr>
+                                                    </tbody>
                                                     break;
-                                                case CardActions.CARD:
+                                                case CardActions.TAKE_CARD:
+                                                    var takeCardAction = (TakeCardAction)a;
+                                                    
+                                                    var types = "";
+                                                    foreach (var tc in takeCardAction.CardTypeIds)
+                                                    {
+                                                        var type = await CardService.FindCardType(tc, true);
+                                                        types += $"{(type?.Name ?? "Unknown!")} and ";
+                                                    }
+                                                    types = types[..^4];
+                                                    
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Card Types</th>
+                                                        <th>Player</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        <td>@types</td>
+                                                        <td>@takeCardAction.PlayerAction.GetDisplayName()</td>
+                                                    </tr>
+                                                    </tbody>
+                                                    break;
+                                                case CardActions.EVENT:
+                                                    var eventAction = (EventAction)a;
+                                                    <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>Event Type</th>
+                                                        <th>Free Parking Event</th>
+                                                        <th>End Condition</th>
+                                                        <th>Value</th>
+                                                        <th>Player</th>
+                                                        <th>Pay on GO?</th>
+                                                        <th>Receive Rent in Jail?</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light">
+                                                    <tr>
+                                                        @{
+                                                            var valType = eventAction.EventType switch
+                                                            {
+                                                                EventType.EXTRA_TURNS or EventType.MISS_TURNS => "Turns",
+                                                                EventType.TAX or EventType.STATIONS or EventType.UTILITIES => "Rent Multiplier",
+                                                                _ => eventAction.Condition.GetDisplayName()
+                                                            };
+                                                        }
+                                                        <td>@eventAction.EventType.GetDisplayName()</td>
+                                                        <td>@(eventAction.EventType != EventType.FREE_PARKING ? "-" : eventAction.FpEvent.GetDisplayName())</td>
+                                                        <td>@eventAction.Condition.GetDisplayName()</td>
+                                                        <td>@(eventAction.EventType == EventType.FREE_PARKING ? "-" : $"{eventAction.Value} {valType}")</td>
+                                                        <td>@eventAction.PlayerAction.GetDisplayName()</td>
+                                                        <td>@(eventAction.EventType != EventType.GO ? "-" : (eventAction.IsPayOnGo ? "Yes" : "No"))</td>
+                                                        <td>@(eventAction.EventType != EventType.JAIL ? "-" : (eventAction.IsReceiveRent ? "Yes" : "No"))</td>
+                                                    </tr>
+                                                    </tbody>
                                                     break;
                                                 default:
                                                     <p class="text-danger">
@@ -148,15 +244,11 @@
                                         }
                                     </table>
                                 </td>
-                                <td class="align-middle" style="width: 100px">
+                                <td class="align-middle" style="width: 50px">
                                     <div class="clearfix">
                                         <button class="btn btn-xs btn-link float-start" title="Edit Action"
                                                 onclick="location.assign('/Cards/Actions/Edit/@(Model.ActionConfig.CardId)/@(a.ActionId)/@(g.Key)/@((int)a.Type)')">
                                             <span class="fa-solid fa-pencil"></span>
-                                        </button>
-                                        <button class="btn btn-xs btn-link float-start" title="Delete Action"
-                                                onclick="location.assign('/Cards/Actions/Edit/@(Model.ActionConfig.CardId)/@(a.ActionId)/@(g.Key)/@((int)a.Type)')">
-                                            <span class="fa-solid fa-x text-danger"></span>
                                         </button>
                                     </div>
                                 </td>

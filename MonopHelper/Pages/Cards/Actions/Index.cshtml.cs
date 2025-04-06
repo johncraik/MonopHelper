@@ -27,6 +27,10 @@ public class Index : PageModel
     [BindProperty]
     [DisplayName("Player can Keep Card")]
     public bool IsKeep { get; set; }
+    [BindProperty]
+    [DisplayName("Play Condition")]
+    public int SelectedCondition { get; set; }
+    public List<SelectListItem> PlayConditions { get; set; }
     public bool Adding { get; set; }
 
     public class AddActionModel
@@ -51,6 +55,7 @@ public class Index : PageModel
         if (config != null)
         {
             ActionConfig = config;
+            SelectedCondition = (int)config.PlayCondition;
         }
         else
         {
@@ -61,6 +66,8 @@ public class Index : PageModel
             };
             Adding = true;
         }
+
+        PlayConditions = CardActionExtensions.GetPlayConditionList();
         
         //Setup add action:
         if (setupAddAction)
@@ -69,12 +76,12 @@ public class Index : PageModel
             {
                 Group = 0,
                 SelectedAction = 0,
-                Actions = CardActionExtensions.GetSelectList()
+                Actions = CardActionExtensions.GetCardActionList()
             };
         }
         else
         {
-            AddAction.Actions = CardActionExtensions.GetSelectList();
+            AddAction.Actions = CardActionExtensions.GetCardActionList();
         }
     }
     
@@ -84,7 +91,7 @@ public class Index : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPost(int id)
+    public async Task<IActionResult> OnPostSave(int id)
     {
         await Setup(id);
         
@@ -92,16 +99,30 @@ public class Index : PageModel
         if (Adding)
         {
             ActionConfig.IsKeep = IsKeep;
+            ActionConfig.PlayCondition = IsKeep switch
+            {
+                true => (PlayCondition)SelectedCondition,
+                _ => PlayCondition.NONE
+            };
             res = await _cardActionService.TryAddConfig(ActionConfig);
         }
         else
         {
             res = await _cardActionService
-                .TryUpdateConfig(IsKeep, ActionConfig, Actions.SelectMany(ac =>
+                .TryUpdateConfig(IsKeep, SelectedCondition, ActionConfig, Actions.SelectMany(ac =>
                     ac.Select(a => a)).ToList());
         }
 
         return res ? RedirectToPage(nameof(Index)) : Page();
+    }
+
+    public async Task<IActionResult> OnPostClear(int id)
+    {
+        await Setup(id);
+        await _cardActionService.ClearActions(ActionConfig, Actions.SelectMany(ac =>
+            ac.Select(a => a)).ToList(), id);
+
+        return RedirectToPage(nameof(Index));
     }
 
     public async Task<IActionResult> OnPostAddAction(int id)

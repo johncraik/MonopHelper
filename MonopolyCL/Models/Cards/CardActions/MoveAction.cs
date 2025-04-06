@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MonopolyCL.Models.Cards.CardActions;
 
@@ -17,4 +18,12 @@ public class MoveAction : ICardActionModel
     public bool IsAdvance { get; set; }
     [DisplayName("Affects All Players?")]
     public bool IsAllPlayers { get; set; }
+    
+    public void Validate(ModelStateDictionary modelState)
+    {
+        if (!IsAdvance && Value <= 0)
+        {
+            modelState.AddModelError("Move.Value", "You must enter a value for the number of spaces the player moves.");
+        }
+    }
 }

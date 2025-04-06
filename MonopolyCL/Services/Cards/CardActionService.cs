@@ -1,3 +1,5 @@
+using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -94,8 +96,9 @@ public class CardActionService
                 CardActions.PAY => JsonConvert.DeserializeObject<PayAction>(file),
                 CardActions.PROPERTY => JsonConvert.DeserializeObject<PropertyAction>(file),
                 CardActions.DICE => JsonConvert.DeserializeObject<DiceAction>(file),
-                CardActions.RESET => null,
-                CardActions.CARD => null,
+                CardActions.RESET => JsonConvert.DeserializeObject<ResetAction>(file),
+                CardActions.TAKE_CARD => JsonConvert.DeserializeObject<TakeCardAction>(file),
+                CardActions.EVENT => JsonConvert.DeserializeObject<EventAction>(file),
                 _ => null
             };
         }
@@ -114,13 +117,19 @@ public class CardActionService
         return true;
     }
 
-    public async Task<bool> TryUpdateConfig(bool isKeep, ActionConfig config, List<ICardActionModel> actions)
+    public async Task<bool> TryUpdateConfig(bool isKeep, int selectedCondition, ActionConfig config, List<ICardActionModel> actions)
     {
         if (config.CardId <= 0) return false;
+        if (!Enum.IsDefined(typeof(PlayCondition), selectedCondition)) return false;
 
         var types = actions.Select(a => a.Type).Distinct().Sum(a => (int)a);
         config.Actions = (CardActions)types;
         config.IsKeep = isKeep;
+        config.PlayCondition = isKeep switch
+        {
+            true => (PlayCondition)selectedCondition,
+            _ => PlayCondition.NONE
+        };
 
         await _cardContext.CardActionSet.UpdateAsync(config);
         return true;
@@ -183,18 +192,15 @@ public class CardActionService
         var json = JsonConvert.SerializeObject(model);
         await _filePathProvider.SaveFile($"{ActionPath}/{cardId.ToString()}", $"Action{model.Group}-{model.ActionId}.txt", json);
     }
-    
-    // public async Task<bool> TryCreateMoveAction(ActionConfig? config, MoveAction move, int cardId)
-    // {
-    //
-    //     var group = move.Group;
-    //     var newGroup = await UpdateActionConfig(config, cardId, group, (int)CardActions.MOVE);
-    //     if (group == 0) group = newGroup;
-    //     
-    //     var actionId = GetNextActionId(cardId, group);
-    //     var json = JsonConvert.SerializeObject(move);
-    //     await _filePathProvider.SaveFile($"{ActionPath}/{cardId.ToString()}", $"Action{group}-{actionId}.txt", json);
-    //
-    //     return true;
-    // }
+
+    public async Task ClearActions(ActionConfig? config, List<ICardActionModel> models, int cardId)
+    {
+        if (config != null)
+        {
+            await _cardContext.CardActionSet.RemoveAsync(config);
+        }
+
+        var path = $"{ActionPath}/{cardId}";
+        _filePathProvider.DeleteFiles(path);
+    }
 }

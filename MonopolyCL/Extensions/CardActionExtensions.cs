@@ -5,47 +5,24 @@ namespace MonopolyCL.Extensions;
 
 public static class CardActionExtensions
 {
-    public static List<SelectListItem> GetSelectList()
+    public static List<SelectListItem> GetCardActionList()
     {
-        var list = new List<SelectListItem>
+        var vals = Enum.GetValues(typeof(CardActions)).Cast<CardActions>();
+        return vals.Select(val => new SelectListItem
         {
-            new()
-            {
-                Text = "Move Action",
-                Value = "1"
-            },
-            new()
-            {
-                Text = "Pay Action",
-                Value = "2"
-            },
-            new()
-            {
-                Text = "Property Action",
-                Value = "4"
-            },
-            new()
-            {
-                Text = "Dice Action",
-                Value = "8"
-            },
-            new()
-            {
-                Text = "Reset Action",
-                Value = "16"
-            },
-            new()
-            {
-                Text = "Card Action",
-                Value = "32"
-            },
-            new()
-            {
-                Text = "Event Action",
-                Value = "64"
-            }
-        };
-        return list.OrderBy(i => i.Text).ToList();
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).OrderBy(a => a.Text).ToList();
+    }
+    
+    public static List<SelectListItem> GetPlayConditionList()
+    {
+        var vals = Enum.GetValues(typeof(PlayCondition)).Cast<PlayCondition>();
+        return vals.Select(val => new SelectListItem
+        {
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).ToList();
     }
 
     public static List<SelectListItem> GetPayToList(this ICardActionModel model)
@@ -91,6 +68,46 @@ public static class CardActionExtensions
     public static List<SelectListItem> GetConvertList(this ICardActionModel model)
     {
         var vals = Enum.GetValues(typeof(DiceConvert)).Cast<DiceConvert>();
+        return vals.Select(val => new SelectListItem
+        {
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).ToList();
+    }
+    
+    public static List<SelectListItem> GetResetList(this ICardActionModel model)
+    {
+        var vals = Enum.GetValues(typeof(ResetType)).Cast<ResetType>();
+        return vals.Select(val => new SelectListItem
+        {
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).ToList();
+    }
+    
+    public static List<SelectListItem> GetEventList(this ICardActionModel model)
+    {
+        var vals = Enum.GetValues(typeof(EventType)).Cast<EventType>();
+        return vals.Select(val => new SelectListItem
+        {
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).ToList();
+    }
+    
+    public static List<SelectListItem> GetEventConditionList(this ICardActionModel model)
+    {
+        var vals = Enum.GetValues(typeof(EventCondition)).Cast<EventCondition>();
+        return vals.Select(val => new SelectListItem
+        {
+            Text = val.GetDisplayName(), 
+            Value = ((int)val).ToString()
+        }).ToList();
+    }
+    
+    public static List<SelectListItem> GetFpEventList(this ICardActionModel model)
+    {
+        var vals = Enum.GetValues(typeof(FreeParkingEvent)).Cast<FreeParkingEvent>();
         return vals.Select(val => new SelectListItem
         {
             Text = val.GetDisplayName(), 

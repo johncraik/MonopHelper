@@ -50,4 +50,13 @@ public class FilePathProvider
         await using var output = new StreamWriter(path, false);
         await output.WriteLineAsync(content);
     }
+
+    public void DeleteFiles(string path)
+    {
+        var files = GetFiles(path);
+        foreach (var file in files)
+        {
+            File.Delete(file);
+        }
+    }
 }

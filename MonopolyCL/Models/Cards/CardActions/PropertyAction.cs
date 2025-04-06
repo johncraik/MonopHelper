@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MonopolyCL.Models.Cards.CardActions;
 
@@ -15,6 +16,14 @@ public class PropertyAction : ICardActionModel
     public bool IsSet { get; set; }
     [DisplayName("Swap Property/Set?")]
     public bool IsSwap { get; set; }
+    
+    public void Validate(ModelStateDictionary modelState)
+    {
+        if (IsSet && Source == PropertyFrom.FREE_PARKING)
+        {
+            modelState.AddModelError("Property.IsSet", "You can only deal with a property when selecting free parking.");
+        }
+    }
 }
 
 public enum PropertyFrom

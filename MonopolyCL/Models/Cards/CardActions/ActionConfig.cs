@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MonopolyCL.Extensions;
 
@@ -10,6 +11,7 @@ public class ActionConfig
     public int Id { get; set; }
     [DisplayName("Player can Keep Card")]
     public bool IsKeep { get; set; }
+    public PlayCondition PlayCondition { get; set; }
     public CardActions Actions { get; set; }
     public string? Groups { get; set; }
     
@@ -49,13 +51,26 @@ public class ActionConfig
 [Flags]
 public enum CardActions
 {
+    BLANK = 0,
     MOVE = 1,
     PAY = 2,
     PROPERTY = 4,
     DICE = 8,
     RESET = 16,
-    CARD = 32,
-    Event = 64
+    TAKE_CARD = 32,
+    EVENT = 64
+}
+
+public enum PlayCondition
+{
+    NONE = 0,
+    PAY_RENT,
+    PAY_TAX,
+    VISIT_GO,
+    VISIT_JAIL,
+    VISIT_FREE_PARKING,
+    ROLL_DOUBLE,
+    ROLL_TRIPLE
 }
 
 public interface ICardActionModel
@@ -63,4 +78,6 @@ public interface ICardActionModel
     public int ActionId { get; set; }
     public int Group { get; set; }
     public CardActions Type { get; }
+
+    public void Validate(ModelStateDictionary modelState);
 }
