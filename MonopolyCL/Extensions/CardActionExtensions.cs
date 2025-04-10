@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MonopolyCL.Models.Cards.CardActions;
+using MonopolyCL.Models.Cards.CardActions.EventActions;
 
 namespace MonopolyCL.Extensions;
 
@@ -84,34 +85,21 @@ public static class CardActionExtensions
             Value = ((int)val).ToString()
         }).ToList();
     }
-    
-    public static List<SelectListItem> GetEventList(this ICardActionModel model)
+
+    public static List<SelectListItem> GetEventTypeList(this ICardActionModel model)
     {
         var vals = Enum.GetValues(typeof(EventType)).Cast<EventType>();
-        return vals.Select(val => new SelectListItem
+        var list = vals.Select(val => new SelectListItem
         {
             Text = val.GetDisplayName(), 
             Value = ((int)val).ToString()
         }).ToList();
-    }
-    
-    public static List<SelectListItem> GetEventConditionList(this ICardActionModel model)
-    {
-        var vals = Enum.GetValues(typeof(EventCondition)).Cast<EventCondition>();
-        return vals.Select(val => new SelectListItem
+        
+        list.Insert(0, new SelectListItem
         {
-            Text = val.GetDisplayName(), 
-            Value = ((int)val).ToString()
-        }).ToList();
-    }
-    
-    public static List<SelectListItem> GetFpEventList(this ICardActionModel model)
-    {
-        var vals = Enum.GetValues(typeof(FreeParkingEvent)).Cast<FreeParkingEvent>();
-        return vals.Select(val => new SelectListItem
-        {
-            Text = val.GetDisplayName(), 
-            Value = ((int)val).ToString()
-        }).ToList();
+            Text = "Select an Event Type",
+            Value = "-1"
+        });
+        return list;
     }
 }

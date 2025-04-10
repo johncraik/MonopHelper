@@ -13,7 +13,7 @@ public class TakeCardAction : ICardActionModel
     [DisplayName("Card Types")]
     [MinLength(1)]
     public int[] CardTypeIds { get; set; }
-    [DisplayName("Player Action")]
+    [DisplayName("Player")]
     public PlayerAction PlayerAction { get; set; }
     
     public void Validate(ModelStateDictionary modelState)

@@ -11,7 +11,7 @@ public class DiceAction : ICardActionModel
     
     [DisplayName("Convert Dice To")]
     public DiceConvert Convert { get; set; }
-    [DisplayName("Player Action")]
+    [DisplayName("Player")]
     public PlayerAction PlayerAction { get; set; }
     
     public void Validate(ModelStateDictionary modelState)

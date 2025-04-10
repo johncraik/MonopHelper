@@ -1,14 +1,12 @@
-using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MonopHelper.Authentication;
 using MonopolyCL.Data;
 using MonopolyCL.Dictionaries;
 using MonopolyCL.Models.Cards.CardActions;
+using MonopolyCL.Models.Cards.CardActions.EventActions;
+using MonopolyCL.Models.Cards.CardActions.MoveActions;
 using Newtonsoft.Json;
 
 namespace MonopolyCL.Services.Cards;
@@ -92,13 +90,13 @@ public class CardActionService
 
             return type switch
             {
-                CardActions.MOVE => JsonConvert.DeserializeObject<MoveAction>(file),
+                CardActions.MOVE => JsonConvert.DeserializeObject<MoveBaseEvent>(file)?.GetMoveType(file),
                 CardActions.PAY => JsonConvert.DeserializeObject<PayAction>(file),
                 CardActions.PROPERTY => JsonConvert.DeserializeObject<PropertyAction>(file),
                 CardActions.DICE => JsonConvert.DeserializeObject<DiceAction>(file),
                 CardActions.RESET => JsonConvert.DeserializeObject<ResetAction>(file),
                 CardActions.TAKE_CARD => JsonConvert.DeserializeObject<TakeCardAction>(file),
-                CardActions.EVENT => JsonConvert.DeserializeObject<EventAction>(file),
+                CardActions.EVENT => JsonConvert.DeserializeObject<EventBaseAction>(file)?.GetEventType(file),
                 _ => null
             };
         }

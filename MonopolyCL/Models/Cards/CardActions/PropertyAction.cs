@@ -11,11 +11,16 @@ public class PropertyAction : ICardActionModel
     
     [DisplayName("Take Property/Set?")]
     public bool IsTake { get; set; } //Handing property back (false) or getting property (true)
+    
     public PropertyFrom Source { get; set; }
     [DisplayName("Property Set?")]
     public bool IsSet { get; set; }
+    
     [DisplayName("Swap Property/Set?")]
     public bool IsSwap { get; set; }
+    
+    [DisplayName("Player")]
+    public PlayerAction PlayerAction { get; set; }
     
     public void Validate(ModelStateDictionary modelState)
     {

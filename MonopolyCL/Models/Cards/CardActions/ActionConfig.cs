@@ -78,6 +78,7 @@ public interface ICardActionModel
     public int ActionId { get; set; }
     public int Group { get; set; }
     public CardActions Type { get; }
+    public PlayerAction PlayerAction { get; set; }
 
     public void Validate(ModelStateDictionary modelState);
 }

@@ -1,6 +1,9 @@
 @page "{id}"
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using MonopolyCL.Extensions
 @using MonopolyCL.Models.Cards.CardActions
+@using MonopolyCL.Models.Cards.CardActions.EventActions
+@using MonopolyCL.Models.Cards.CardActions.MoveActions
 @using MonopolyCL.Services.Cards
 @inject CardService CardService
 @model MonopHelper.Pages.Cards.Actions.Index
@@ -92,21 +95,21 @@
                                             switch (a.Type)
                                             {
                                                 case CardActions.MOVE:
-                                                    var moveAction = (MoveAction)a;
-                                                    <thead class="table-secondary">
-                                                    <tr>
-                                                        <th>Value</th>
-                                                        <th>Direction</th>
-                                                        <th>Player</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody class="table-light">
-                                                    <tr>
-                                                        <td>@(moveAction.IsAdvance ? $"Advance to Index {moveAction.Value}" : $"Move {moveAction.Value} Spaces")</td>
-                                                        <td>@(moveAction.IsForward ? "Move forwards (Pass GO)" : "Move backwards (Do not pass GO)")</td>
-                                                        <td>@(moveAction.IsAllPlayers ? "All Players" : "Player who plays the card")</td>
-                                                    </tr>
-                                                    </tbody>
+                                                    @* var moveAction = (MoveAction)a; *@
+                                                    @* <thead class="table-secondary"> *@
+                                                    @* <tr> *@
+                                                    @*     <th>Value</th> *@
+                                                    @*     <th>Direction</th> *@
+                                                    @*     <th>Player</th> *@
+                                                    @* </tr> *@
+                                                    @* </thead> *@
+                                                    @* <tbody class="table-light"> *@
+                                                    @* <tr> *@
+                                                    @*     <td>@(moveAction.IsAdvance ? $"Advance to Index {moveAction.Value}" : $"Move {moveAction.Value} Spaces")</td> *@
+                                                    @*     <td>@(moveAction.IsForward ? "Move forwards (Pass GO)" : "Move backwards (Do not pass GO)")</td> *@
+                                                    @*     <td>@(moveAction.IsAllPlayers ? "All Players" : "Player who plays the card")</td> *@
+                                                    @* </tr> *@
+                                                    @* </tbody> *@
                                                     break;
                                                 case CardActions.PAY:
                                                     var payAction = (PayAction)a;
@@ -203,37 +206,37 @@
                                                     </tbody>
                                                     break;
                                                 case CardActions.EVENT:
-                                                    var eventAction = (EventAction)a;
-                                                    <thead class="table-secondary">
-                                                    <tr>
-                                                        <th>Event Type</th>
-                                                        <th>Free Parking Event</th>
-                                                        <th>End Condition</th>
-                                                        <th>Value</th>
-                                                        <th>Player</th>
-                                                        <th>Pay on GO?</th>
-                                                        <th>Receive Rent in Jail?</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody class="table-light">
-                                                    <tr>
-                                                        @{
-                                                            var valType = eventAction.EventType switch
-                                                            {
-                                                                EventType.EXTRA_TURNS or EventType.MISS_TURNS => "Turns",
-                                                                EventType.TAX or EventType.STATIONS or EventType.UTILITIES => "Rent Multiplier",
-                                                                _ => eventAction.Condition.GetDisplayName()
-                                                            };
-                                                        }
-                                                        <td>@eventAction.EventType.GetDisplayName()</td>
-                                                        <td>@(eventAction.EventType != EventType.FREE_PARKING ? "-" : eventAction.FpEvent.GetDisplayName())</td>
-                                                        <td>@eventAction.Condition.GetDisplayName()</td>
-                                                        <td>@(eventAction.EventType == EventType.FREE_PARKING ? "-" : $"{eventAction.Value} {valType}")</td>
-                                                        <td>@eventAction.PlayerAction.GetDisplayName()</td>
-                                                        <td>@(eventAction.EventType != EventType.GO ? "-" : (eventAction.IsPayOnGo ? "Yes" : "No"))</td>
-                                                        <td>@(eventAction.EventType != EventType.JAIL ? "-" : (eventAction.IsReceiveRent ? "Yes" : "No"))</td>
-                                                    </tr>
-                                                    </tbody>
+                                                    @* var eventAction = (EventAction)a; *@
+                                                    @* <thead class="table-secondary"> *@
+                                                    @* <tr> *@
+                                                    @*     <th>Event Type</th> *@
+                                                    @*     <th>Free Parking Event</th> *@
+                                                    @*     <th>End Condition</th> *@
+                                                    @*     <th>Value</th> *@
+                                                    @*     <th>Player</th> *@
+                                                    @*     <th>Pay on GO?</th> *@
+                                                    @*     <th>Receive Rent in Jail?</th> *@
+                                                    @* </tr> *@
+                                                    @* </thead> *@
+                                                    @* <tbody class="table-light"> *@
+                                                    @* <tr> *@
+                                                    @*     @{ *@
+                                                    @*         var valType = eventAction.EventTypeOld switch *@
+                                                    @*         { *@
+                                                    @*             EventTypeOLD.EXTRA_TURNS or EventTypeOLD.MISS_TURNS => "Turns", *@
+                                                    @*             EventTypeOLD.TAX or EventTypeOLD.STATIONS or EventTypeOLD.UTILITIES => "Rent Multiplier", *@
+                                                    @*             _ => eventAction.Condition.GetDisplayName() *@
+                                                    @*         }; *@
+                                                    @*     } *@
+                                                    @*     <td>@eventAction.EventTypeOld.GetDisplayName()</td> *@
+                                                    @*     <td>@(eventAction.EventTypeOld != EventTypeOLD.FREE_PARKING ? "-" : eventAction.FpEventOld.GetDisplayName())</td> *@
+                                                    @*     <td>@eventAction.Condition.GetDisplayName()</td> *@
+                                                    @*     <td>@(eventAction.EventTypeOld == EventTypeOLD.FREE_PARKING ? "-" : $"{eventAction.Value} {valType}")</td> *@
+                                                    @*     <td>@eventAction.PlayerAction.GetDisplayName()</td> *@
+                                                    @*     <td>@(eventAction.EventTypeOld != EventTypeOLD.GO ? "-" : (eventAction.IsPayOnGo ? "Yes" : "No"))</td> *@
+                                                    @*     <td>@(eventAction.EventTypeOld != EventTypeOLD.JAIL ? "-" : (eventAction.IsReceiveRent ? "Yes" : "No"))</td> *@
+                                                    @* </tr> *@
+                                                    @* </tbody> *@
                                                     break;
                                                 default:
                                                     <p class="text-danger">

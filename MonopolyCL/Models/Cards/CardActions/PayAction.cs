@@ -15,7 +15,7 @@ public class PayAction : ICardActionModel
     [Range(1, int.MaxValue)]
     public int Value { get; set; } //Pay/Receive amount
     public PayTo PayTo { get; set; }
-    [DisplayName("Player Action")]
+    [DisplayName("Player")]
     public PlayerAction PlayerAction { get; set; }
     [DisplayName("Multiplier")]
     public PayMultiplier Multiplier { get; set; }

@@ -15,7 +15,7 @@ public class ResetAction : ICardActionModel
     public int Value { get; set; }
     [DisplayName("Purge Set?")]
     public bool IsPurgeSet { get; set; }
-    [DisplayName("Player Action")]
+    [DisplayName("Player")]
     public PlayerAction PlayerAction { get; set; }
     
     public void Validate(ModelStateDictionary modelState)

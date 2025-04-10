@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonopolyCL.Models.Cards;
 using MonopolyCL.Models.Cards.CardActions;
+using MonopolyCL.Models.Cards.CardActions.EventActions;
+using MonopolyCL.Models.Cards.CardActions.MoveActions;
 using MonopolyCL.Services.Cards;
 
 namespace MonopHelper.Pages.Cards.Actions;
@@ -21,8 +22,6 @@ public class Edit : PageModel
     }
     
     [BindProperty]
-    public MoveAction Move { get; set; }
-    [BindProperty]
     public PayAction Pay { get; set; }
     [BindProperty]
     public PropertyAction Property { get; set; }
@@ -32,8 +31,6 @@ public class Edit : PageModel
     public ResetAction Reset { get; set; }
     [BindProperty]
     public TakeCardAction TakeCard { get; set; }
-    [BindProperty]
-    public EventAction Event { get; set; }
     
     public CardActions Type { get; set; }
     public int Group { get; set; }
@@ -90,20 +87,20 @@ public class Edit : PageModel
         switch (Type)
         {
             case CardActions.MOVE:
-                if (AddingAction)
-                {
-                    Move = new MoveAction
-                    {
-                        Group = Group
-                    };
-                }
-                else
-                {
-                    var move = _cardActionService.GetAction(Card!.Id, Group, id, Type);
-                    if (move == null) return false;
-                    Move = (MoveAction)move;
-                    Move.Group = Group;
-                }
+                // if (AddingAction)
+                // {
+                //     Move = new MoveAction
+                //     {
+                //         Group = Group
+                //     };
+                // }
+                // else
+                // {
+                //     var move = _cardActionService.GetAction(Card!.Id, Group, id, Type);
+                //     if (move == null) return false;
+                //     Move = (MoveAction)move;
+                //     Move.Group = Group;
+                // }
                 break;
             case CardActions.PAY:
                 if (AddingAction)
@@ -193,20 +190,20 @@ public class Edit : PageModel
                 }
                 break;
             case CardActions.EVENT:
-                if (AddingAction)
-                {
-                    Event = new EventAction
-                    {
-                        Group = Group
-                    };
-                }
-                else
-                {
-                    var eventAction = _cardActionService.GetAction(Card!.Id, Group, id, Type);
-                    if (eventAction == null) return false;
-                    Event = (EventAction)eventAction;
-                    Event.Group = Group;
-                }
+                // if (AddingAction)
+                // {
+                //     Event = new EventAction
+                //     {
+                //         Group = Group
+                //     };
+                // }
+                // else
+                // {
+                //     var eventAction = _cardActionService.GetAction(Card!.Id, Group, id, Type);
+                //     if (eventAction == null) return false;
+                //     Event = (EventAction)eventAction;
+                //     Event.Group = Group;
+                // }
                 break;
             default:
                 return false;
@@ -233,12 +230,13 @@ public class Edit : PageModel
         switch (Type)
         {
             case CardActions.MOVE:
-                foreach (var key in ModelState.Keys.Where(key => !key.Contains("Move")))
-                {
-                    ModelState.Remove(key);
-                }
-                
-                model = Move;
+                // foreach (var key in ModelState.Keys.Where(key => !key.Contains("Move")))
+                // {
+                //     ModelState.Remove(key);
+                // }
+                //
+                // model = Move;
+                model = new MoveBaseEvent();
                 break;
             case CardActions.PAY:
                 foreach (var key in ModelState.Keys.Where(key => !key.Contains("Pay")))
@@ -281,12 +279,13 @@ public class Edit : PageModel
                 model = TakeCard;
                 break;
             case CardActions.EVENT:
-                foreach (var key in ModelState.Keys.Where(key => !key.Contains("Event")))
-                {
-                    ModelState.Remove(key);
-                }
-                
-                model = Event;
+                // foreach (var key in ModelState.Keys.Where(key => !key.Contains("Event")))
+                // {
+                //     ModelState.Remove(key);
+                // }
+                //
+                // model = Event;
+                model = new EventBaseAction();
                 break;
             default:
                 return Page();
