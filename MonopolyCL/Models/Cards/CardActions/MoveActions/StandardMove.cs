@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MonopolyCL.Models.Cards.CardActions.MoveActions;
 
-public class StandardMove : MoveBaseEvent
+public class StandardMove : MoveBaseAction
 {
     [Range(0, 39)]
     public int Value { get; set; }  //Advance => board index, !Advance => spaces.

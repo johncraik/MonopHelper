@@ -11,8 +11,8 @@ public class JailEvent : EventBaseAction
     [DisplayName("Turns to Remain in Jail")]
     public int Turns { get; set; }
 
-    [DisplayName("Swap with Current Player?")]
-    public bool IsSwapCurrentPlayer { get; set; } = true;
+    [DisplayName("Swap with Player")]
+    public PlayerAction PlayerSwap { get; set; }
 
     public override void Validate(ModelStateDictionary modelState)
     {
@@ -30,7 +30,7 @@ public class JailEvent : EventBaseAction
                     modelState.AddModelError("Event.PlayerAction", "You cannot send everyone to jail for a certain number of turns.");
                 }
 
-                IsSwapCurrentPlayer = false;
+                PlayerSwap = default;
                 break;
             case JailEventType.SWAP:
                 if (PlayerAction != PlayerAction.SPECIFIC_PLAYER)
@@ -42,7 +42,7 @@ public class JailEvent : EventBaseAction
                 break;
             default:
                 Turns = 0;
-                IsSwapCurrentPlayer = false;
+                PlayerSwap = default;
                 break;
         }
         

@@ -67,7 +67,7 @@ public class Index : PageModel
             Adding = true;
         }
 
-        PlayConditions = CardActionExtensions.GetPlayConditionList();
+        PlayConditions = PlayCondition.NONE.GetSelectList();
         
         //Setup add action:
         if (setupAddAction)
@@ -76,12 +76,12 @@ public class Index : PageModel
             {
                 Group = 0,
                 SelectedAction = 0,
-                Actions = CardActionExtensions.GetCardActionList()
+                Actions = CardActions.BLANK.GetSelectList()
             };
         }
         else
         {
-            AddAction.Actions = CardActionExtensions.GetCardActionList();
+            AddAction.Actions = CardActions.BLANK.GetSelectList();
         }
     }
     

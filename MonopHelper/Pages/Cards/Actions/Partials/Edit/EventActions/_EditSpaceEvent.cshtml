@@ -1,0 +1,52 @@
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions.EventActions
+@model MonopolyCL.Models.Cards.CardActions.EventActions.ActionViewModel<SpaceEvent>?
+
+@if (Model == null || Model.Action == null)
+{
+    <p class="text-danger">An error occured. Model is NULL.</p>
+}
+else
+{
+    
+    <form method="post" asp-controller="CardAction" asp-action="EditSpaceEvent">
+        <input type="hidden" asp-for="Action!.ActionId"/>
+        <input type="hidden" asp-for="Action!.Group"/>
+        <input type="hidden" asp-for="Action!.EventType"/>
+        <input type="hidden" asp-for="CardId"/>
+
+        <div class="mb-3">
+            <label asp-for="Action!.BoardSpace"></label>
+            <select asp-for="Action!.BoardSpace" asp-items="Model.Action!.BoardSpace.GetSelectList()" class="form-select"></select>
+            <span asp-validation-for="Action!.BoardSpace" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Action!.SpaceType"></label>
+            <select asp-for="Action!.SpaceType" asp-items="Model.Action!.SpaceType.GetSelectList()" class="form-select"
+                    onchange="ShowMultiplier(this)">
+            </select>
+            <span asp-validation-for="Action!.SpaceType" class="text-danger"></span>
+        </div>
+        <div class="mb-3" id="multi-val" hidden="@(Model.Action!.SpaceType != SpaceEventType.RENT_MULTIPLIER)">
+            <label asp-for="Action!.MultiplierValue"></label>
+            <input asp-for="Action!.MultiplierValue" class="form-control"/>
+            <span asp-validation-for="Action!.MultiplierValue" class="text-danger"></span>
+        </div>
+        <div class="mb-3" id="multi-type" hidden="@(Model.Action!.SpaceType != SpaceEventType.RENT_MULTIPLIER)">
+            <label asp-for="Action!.MultiplierType"></label>
+            <select asp-for="Action!.MultiplierType" asp-items="Model.Action!.MultiplierType.GetSelectList()" class="form-select"></select>
+            <span asp-validation-for="Action!.MultiplierType" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Action!.PlayerAction"></label>
+            <select asp-for="Action!.PlayerAction" asp-items="Model.Action!.PlayerAction.GetSelectList()" class="form-select"></select>
+            <span asp-validation-for="Action!.PlayerAction" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Action!.EndCondition"></label>
+            <select asp-for="Action!.EndCondition" asp-items="Model.Action!.EndCondition.GetSelectList()" class="form-select"></select>
+            <span asp-validation-for="Action!.EndCondition" class="text-danger"></span>
+        </div>
+        <button class="btn btn-success">@(Model.IsAdding ? "Add" : "Modify") Action</button>
+    </form>
+}

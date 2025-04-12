@@ -90,7 +90,7 @@ public class CardActionService
 
             return type switch
             {
-                CardActions.MOVE => JsonConvert.DeserializeObject<MoveBaseEvent>(file)?.GetMoveType(file),
+                CardActions.MOVE => JsonConvert.DeserializeObject<MoveBaseAction>(file)?.GetMoveType(file),
                 CardActions.PAY => JsonConvert.DeserializeObject<PayAction>(file),
                 CardActions.PROPERTY => JsonConvert.DeserializeObject<PropertyAction>(file),
                 CardActions.DICE => JsonConvert.DeserializeObject<DiceAction>(file),

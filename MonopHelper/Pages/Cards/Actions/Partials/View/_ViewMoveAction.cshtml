@@ -1,0 +1,96 @@
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions.MoveActions
+@model MonopolyCL.Models.Cards.CardActions.MoveActions.MoveBaseAction?
+
+@if (Model == null)
+{
+    <tbody>
+    <tr>ERROR -- Action is NULL</tr>
+    </tbody>
+}
+else
+{
+    StandardMove? standard = null;
+    SpecialAdvanceMove? special = null;
+    switch (Model.MoveType)
+    {
+        case MoveType.STANDARD:
+            standard = (StandardMove)Model;
+            break;
+        case MoveType.SPECIAL_ADVANCE:
+            special = (SpecialAdvanceMove)Model;
+            break;
+        case MoveType.NONE:
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
+    
+    <thead class="table-secondary">
+    <tr>
+        @switch (Model.MoveType)
+        {
+            case MoveType.STANDARD:
+                <th>@((standard?.IsAdvance ?? false) ? "Board Index" : "Spaces")</th>
+                <th>Movement Type</th>
+                break;
+            case MoveType.SPECIAL_ADVANCE:
+                <th>Advance To</th>
+                switch (special?.AdvanceTo)
+                {
+                    case AdvanceTo.SET_PROPERTY:
+                    case AdvanceTo.STATION:
+                    case AdvanceTo.UTILITY:
+                        <th>Owner of Space</th>
+                        break;
+                    case AdvanceTo.CARD:
+                        <th>Card Space</th>
+                        break;
+                    case AdvanceTo.TAX:
+                    case null:
+                        break;
+                }
+                <th>Advance to Nearest?</th>
+                break;
+            case MoveType.NONE:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        <th>Moving Forwards? (Pass GO)</th>
+        <th>Player</th>
+    </tr>
+    </thead>
+    <tbody class="table-light">
+    <tr>
+        @switch (Model.MoveType)
+        {
+            case MoveType.STANDARD:
+                <td>@(standard?.Value.ToString() ?? "ERROR")</td>
+                <td>@((standard?.IsAdvance ?? false) ? "Advance" : "Move")</td>
+                break;
+            case MoveType.SPECIAL_ADVANCE:
+                <td>@(special?.AdvanceTo.GetDisplayName() ?? "ERROR")</td>
+                switch (special?.AdvanceTo)
+                {
+                    case AdvanceTo.SET_PROPERTY:
+                    case AdvanceTo.STATION:
+                    case AdvanceTo.UTILITY:
+                        <td>@(special.AdvanceOwner.GetDisplayName())</td>
+                        break;
+                    case AdvanceTo.CARD:
+                        <td>@(special.IsChance ? "Chance" : "Community Chest")</td>
+                        break;
+                    case AdvanceTo.TAX:
+                    case null:
+                        break;
+                }
+                <td>@((special?.IsNearest ?? true) ? "Yes" : "No")</td>
+                break;
+            case MoveType.NONE:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        <td>@(Model.IsForward ? "Yes" : "No")</td>
+        <td>@Model.PlayerAction.GetDisplayName()</td>
+    </tr>
+    </tbody>
+}

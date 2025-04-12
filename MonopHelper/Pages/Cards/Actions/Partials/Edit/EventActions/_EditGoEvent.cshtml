@@ -1,0 +1,41 @@
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions.EventActions
+@model MonopolyCL.Models.Cards.CardActions.EventActions.ActionViewModel<GoEvent>?
+
+@if (Model == null || Model.Action == null)
+{
+    <p class="text-danger">An error occured. Model is NULL.</p>
+}
+else
+{
+    
+    <form method="post" asp-controller="CardAction" asp-action="EditGoEvent">
+        <input type="hidden" asp-for="Action!.ActionId"/>
+        <input type="hidden" asp-for="Action!.Group"/>
+        <input type="hidden" asp-for="Action!.EventType"/>
+        <input type="hidden" asp-for="CardId"/>
+
+        <div class="mb-3">
+            <label asp-for="Action!.Value"></label>
+            <input asp-for="Action!.Value" class="form-control"/>
+            <span asp-validation-for="Action!.Value" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            @if (Model.Action!.IsPay)
+            {
+                <input asp-for="Action!.IsPay" id="is-miss" class="form-check-input" checked/>
+            }
+            else
+            {
+                <input asp-for="Action!.IsPay" id="is-miss" class="form-check-input"/>
+            }
+            <label class="form-check-label" for="is-miss" asp-for="Action!.IsPay"></label>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Action!.PlayerAction"></label>
+            <select asp-for="Action!.PlayerAction" asp-items="Model.Action!.PlayerAction.GetSelectList()" class="form-select"></select>
+            <span asp-validation-for="Action!.PlayerAction" class="text-danger"></span>
+        </div>
+        <button class="btn btn-success">@(Model.IsAdding ? "Add" : "Modify") Action</button>
+    </form>
+}

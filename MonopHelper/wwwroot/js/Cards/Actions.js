@@ -1,3 +1,5 @@
+let baseUrl = '../../../../../../../CardAction/'
+
 function ShowPlayCondition(toggle){
     let condd = document.getElementById('con-dd');
     condd.hidden = toggle.checked !== true;
@@ -54,40 +56,55 @@ function SetResetInput(list){
     valInp.hidden = list.value !== "1";
 }
 
-function SetEventLabel(list){
-    let val = list.value;
-    let label = document.getElementById('event-val-label');
-    let valDiv = document.getElementById('event-val');
-    let fp = document.getElementById('fp-event');
-    let go = document.getElementById('go-event');
+function GetEventAction(list, card, group, action){
+    let selected = list.value;
+    let model = undefined;
+    let url = baseUrl + 'GetEditEventPartial?cardId=' + card + '&groupId=' + group + '&actionId' + action + '&eventType=' + selected;
     
-    if(val === "0" || val === "1" || val === "3"){
-        valDiv.hidden = false;
-        label.innerText = "Number of Turns"
-        fp.hidden = true;
-        go.hidden = true;
+    let eventActions = document.getElementsByClassName('event-actions');
+    
+    for (let i = 0; i < eventActions.length; i++){
+        let div = eventActions[i];
+        if(div.id === ('event-' + selected)){
+            model = div;
+            model.hidden = false;
+        }
+        else{
+            div.hidden = true;
+        }
     }
-    else if(val === "2"){
-        valDiv.hidden = false;
-        label.innerText = "Number of Properties"
-        fp.hidden = true;
-        go.hidden = true;
-    }
-    else if(val === "4" || val === "5" || val === "6"){
-        valDiv.hidden = false;
-        label.innerText = "Rent Multiplier"
-        fp.hidden = true;
-        go.hidden = true;
-    }
-    else if(val === "7"){
-        valDiv.hidden = true;
-        fp.hidden = false;
-        go.hidden = true;
+    
+    FetchPartial(url, model);
+}
+
+function ShowMultiplier(list){
+    let val = document.getElementById('multi-val');
+    let type = document.getElementById('multi-type');
+
+    if (list.value === "3"){
+        val.hidden = false;
+        type.hidden = false;
     }
     else{
-        valDiv.hidden = false;
-        label.innerText = "Pay/Receive on GO"
-        fp.hidden = true;
-        go.hidden = false;
+        val.hidden = true;
+        type.hidden = true;
+    }
+}
+
+function ShowFields(list){
+    let turns = document.getElementById('jail-turns');
+    let swap = document.getElementById('jail-swap');
+
+    if (list.value === "0"){
+        turns.hidden = false;
+        swap.hidden = true;
+    }
+    else if (list.value === "1"){
+        swap.hidden = false;
+        turns.hidden = true;
+    }
+    else{
+        turns.hidden = true;
+        turns.hidden = true;
     }
 }

@@ -13,7 +13,6 @@ public class SpaceEvent : EventBaseAction
     public SpaceEventType SpaceType { get; set; }
     
     [DisplayName("Multiplier Value")]
-    [Range(1, double.MaxValue)]
     public double MultiplierValue { get; set; }
     
     [DisplayName("Type of Multiplier")]

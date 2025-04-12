@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MonopolyCL.Models.Cards.CardActions.MoveActions;
 
-public class MoveBaseEvent : ICardActionModel
+public class MoveBaseAction : ICardActionModel
 {
     public int ActionId { get; set; }
     public int Group { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MonopolyCL.Models.Cards.CardActions.MoveActions;
 
-public class SpecialAdvanceMove : MoveBaseEvent
+public class SpecialAdvanceMove : MoveBaseAction
 {
     [DisplayName("Advance To")]
     public AdvanceTo AdvanceTo { get; set; }
