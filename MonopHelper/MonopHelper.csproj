@@ -18,15 +18,24 @@
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.6"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.6"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6"/>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Data\Migrations\" />
       <Folder Include="Models\GameDb\Cards\ViewModels\" />
+      <Folder Include="Pages\Cards\Actions\Dice\" />
+      <Folder Include="Pages\Cards\Actions\Event\" />
+      <Folder Include="Pages\Cards\Actions\Move\" />
+      <Folder Include="Pages\Cards\Actions\Pay\" />
+      <Folder Include="Pages\Cards\Actions\Property\" />
+      <Folder Include="Pages\Cards\Actions\TakeCard\" />
     </ItemGroup>
 
     <ItemGroup>

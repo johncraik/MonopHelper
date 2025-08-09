@@ -14,6 +14,14 @@ public class GameDbContext : DbContext
         : base(options)
     {
     }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        foreach (var fk in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            fk.DeleteBehavior = DeleteBehavior.Restrict;
+        
+        base.OnModelCreating(modelBuilder);
+    }
 
     #region Cards
 

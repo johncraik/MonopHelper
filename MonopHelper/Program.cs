@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MonopHelper;
 using MonopHelper.Areas.Admin.Services;
 using MonopHelper.Data;
 using MonopHelper.Authentication;
@@ -45,12 +46,18 @@ builder.Services.GetGameServices();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString)
+        .EnableSensitiveDataLogging()
+        .LogTo(Console.WriteLine, LogLevel.Information)
+);
 
 var gameDb = builder.Configuration.GetConnectionString("Game") ??
                        throw new InvalidOperationException("Connection string 'Game' not found.");
 builder.Services.AddDbContext<GameDbContext>(options =>
-    options.UseSqlite(gameDb));
+    options.UseSqlServer(gameDb)
+        .EnableSensitiveDataLogging()
+        .LogTo(Console.WriteLine, LogLevel.Information)
+);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

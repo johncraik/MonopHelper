@@ -75,7 +75,7 @@ public class GameDbSet<T>
             var tfp = TenantParams();
             var isDeletedName = nameof(TenantedModel.IsDeleted);
             
-            return _set.FromSqlRaw($"{_tenantQry} AND {isDeletedName} = False", tfp[0], tfp[1], tfp[2], isDeletedName);
+            return _set.FromSqlRaw($"{_tenantQry} AND {isDeletedName} = 0", tfp[0], tfp[1], tfp[2], isDeletedName);
         }
         catch (Exception ex)
         {
