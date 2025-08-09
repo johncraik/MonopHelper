@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MonopHelper.Authentication;
 using MonopHelper.Authentication.UserClaims;
-using MonopHelper.Migrations;
 
 namespace MonopHelper.Middleware;
 

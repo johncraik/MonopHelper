@@ -16,6 +16,7 @@ public static class GameServicesExtensions
         services.AddTransient<ShuffleList<Card>>();
         services.AddTransient<CardService>();
         services.AddTransient<CardGameService>();
+        services.AddTransient<CardActionService>();
         
         services.AddTransient<GeneralBoardSpaces>();
 

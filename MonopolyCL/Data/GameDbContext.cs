@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonopolyCL.Models.Boards.DataModel;
 using MonopolyCL.Models.Cards;
+using MonopolyCL.Models.Cards.CardActions;
 using MonopolyCL.Models.Game;
 using MonopolyCL.Models.Players.DataModel;
 using MonopolyCL.Models.Properties.DataModel;
@@ -13,6 +14,14 @@ public class GameDbContext : DbContext
         : base(options)
     {
     }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        foreach (var fk in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            fk.DeleteBehavior = DeleteBehavior.Restrict;
+        
+        base.OnModelCreating(modelBuilder);
+    }
 
     #region Cards
 
@@ -23,6 +32,8 @@ public class GameDbContext : DbContext
     public DbSet<CardGame> CardGames { get; set; }
     public DbSet<CardToGame> CardsToGames { get; set; }
     public DbSet<TypeToGame> TypesToGames { get; set; }
+    
+    public DbSet<ActionConfig> CardActionConfigs { get; set; }
     
     #endregion
 

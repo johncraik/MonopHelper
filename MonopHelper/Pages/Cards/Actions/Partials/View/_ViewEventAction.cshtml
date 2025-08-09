@@ -1,0 +1,145 @@
+@using System.Globalization
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions.EventActions
+@model MonopolyCL.Models.Cards.CardActions.EventActions.EventBaseAction?
+
+@if (Model == null)
+{
+    <tbody>
+    <tr>ERROR -- Action is NULL</tr>
+    </tbody>
+}
+else
+{
+    TurnsEvent? turns = null;
+    ForceMortgageEvent? mortgage = null;
+    SpaceEvent? space = null;
+    GoEvent? go = null;
+    FreeParkingEvent? freeParking = null;
+    JailEvent? jail = null;
+    switch (Model.EventType)
+    {
+        case EventType.TURNS:
+            turns = (TurnsEvent)Model;
+            break;
+        case EventType.FORCE_MORTGAGE:
+            mortgage = (ForceMortgageEvent)Model;
+            break;
+        case EventType.UNIQUE_SPACE:
+            space = (SpaceEvent)Model;
+            break;
+        case EventType.GO:
+            go = (GoEvent)Model;
+            break;
+        case EventType.FREE_PARKING:
+            freeParking = (FreeParkingEvent)Model;
+            break;
+        case EventType.JAIL:
+            jail = (JailEvent)Model;
+            break;
+        case EventType.NONE:
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
+    
+    <thead class="table-secondary">
+    <tr>
+        @switch (Model.EventType)
+        {
+            case EventType.TURNS:
+                <th>Number of Turns</th>
+                <th>Turn Event Type</th>
+                break;
+            case EventType.FORCE_MORTGAGE:
+                <th>Number of Properties</th>
+                <th>Number of Turns</th>
+                <th>Can Receive Mortgage Value?</th>
+                <th>Must Pay Mortgage Penalty?</th>
+                break;
+            case EventType.UNIQUE_SPACE:
+                <th>Board Space</th>
+                <th>Board Space Event type</th>
+                if (space?.SpaceType == SpaceEventType.RENT_MULTIPLIER)
+                {
+                    <th>Rent Multiplier Value</th>
+                    <th>Rent Multiplier Type</th>
+                }
+                break;
+            case EventType.GO:
+                <th>Amount</th>
+                <th>Player Paying/Receiving</th>
+                break;
+            case EventType.FREE_PARKING:
+                <th>Free Parking Event Type</th>
+                <th>Hand in Property to Free Parking?</th>
+                break;
+            case EventType.JAIL:
+                <th>Jail Event Type</th>
+                if (jail?.JailEventType == JailEventType.STAY_IN_JAIL)
+                {
+                    <th>Turns to Remain in Jail</th>
+                }
+                else if (jail?.JailEventType == JailEventType.SWAP)
+                {
+                    <th>Swap with Player</th>
+                }
+                break;
+            case EventType.NONE:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        <th>Player</th>
+        <th>End Condition</th>
+    </tr>
+    </thead>
+    <tbody class="table-light">
+    <tr>
+        @switch (Model.EventType)
+        {
+            case EventType.TURNS:
+                <td>@(turns?.Turns.ToString() ?? "ERROR")</td>
+                <td>@((turns?.IsMiss ?? false) ? "Miss Turns" : "Extra Turns")</td>
+                break;
+            case EventType.FORCE_MORTGAGE:
+                <td>@(mortgage?.Properties.ToString() ?? "ERROR")</td>
+                <td>@(mortgage?.Turns.ToString() ?? "ERROR")</td>
+                <td>@((mortgage?.IsReceiveValue ?? true) ? "Yes" : "No")</td>
+                <td>@((mortgage?.IsPayPenalty ?? true) ? "Yes" : "No")</td>
+                break;
+            case EventType.UNIQUE_SPACE:
+                <td>@(space?.BoardSpace.GetDisplayName() ?? "ERROR")</td>
+                <td>@(space?.SpaceType.GetDisplayName() ?? "ERROR")</td>
+                if (space?.SpaceType == SpaceEventType.RENT_MULTIPLIER)
+                {
+                    <td>@space.MultiplierValue</td>
+                    <td>@space.MultiplierType.GetDisplayName()</td>
+                }
+                break;
+            case EventType.GO:
+                <td>@(go?.Value.ToString() ?? "ERROR")</td>
+                <td>@((go?.IsPay ?? false) ? "Paying" : "Receiving")</td>
+                break;
+            case EventType.FREE_PARKING:
+                <td>@(freeParking?.FpType.GetDisplayName() ?? "ERROR")</td>
+                <td>@((freeParking?.IsHandInProperty ?? true) ? "Yes" : "No")</td>
+                break;
+            case EventType.JAIL:
+                <td>@(jail?.JailEventType.GetDisplayName() ?? "ERROR")</td>
+                if (jail?.JailEventType == JailEventType.STAY_IN_JAIL)
+                {
+                    <td>@jail.Turns</td>
+                }
+                else if (jail?.JailEventType == JailEventType.SWAP)
+                {
+                    <td>@jail.PlayerSwap.GetDisplayName()</td>
+                }
+                break;
+            case EventType.NONE:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        <td>@Model.PlayerAction.GetDisplayName()</td>
+        <td>@Model.EndCondition.GetDisplayName()</td>
+    </tr>
+    </tbody>
+}

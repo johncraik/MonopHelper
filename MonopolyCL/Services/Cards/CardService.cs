@@ -32,7 +32,9 @@ public class CardService
     public async Task<List<(Card, bool)>> GetCardsAndActionFromDeck(int deckId, bool undefined = false)
     {
         var cards = await GetCardsFromDeck(deckId, undefined);
-        return cards.Select(card => (card, false)).ToList();
+        return cards.Select(card => 
+            (card, _cardContext.CardActionSet.Query()
+                .FirstOrDefault(c => c.CardId == card.Id) != null)).ToList();
     }
 
     public async Task<bool> MoveCardsInDeck(int deckId, int newDeckId)

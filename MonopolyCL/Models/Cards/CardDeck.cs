@@ -8,4 +8,6 @@ public class CardDeck : TenantedModel
     public required string Name { get; set; }
     public double DiffRating { get; set; }
     public bool IsDeleted { get; set; }
+    
+    public virtual List<CardGame> Games { get; set; }
 }

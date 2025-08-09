@@ -1,0 +1,268 @@
+@page "{card}/{id}/{group}/{action}"
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonopolyCL.Extensions
+@using MonopolyCL.Models.Cards.CardActions
+@using MonopolyCL.Models.Cards.CardActions.EventActions
+@model MonopHelper.Pages.Cards.Actions.Edit
+
+@{
+    ViewData["Title"] = "Edit Action";
+}
+
+<button class="btn btn-sm btn-primary rounded-pill px-3 mb-3" onclick="location.assign('/Cards/Actions/@(Model.Card?.Id)')">Go Back</button>
+<div class="card mb-4">
+    <div class="card-header bg-warning">
+        @(Model.AddingAction ? "Add" : "Edit") Action
+    </div>
+    <div class="card-body bg-light">
+        @if (Model.Type != CardActions.MOVE)
+        {
+            <partial name="Cards/Actions/_CardInfo" model="Model.Card"/>
+        }
+
+        @switch (Model.Type)
+        {
+            case CardActions.MOVE:
+                <div class="row">
+                    <div class="col-sm-7">
+                        <partial name="Cards/Actions/_CardInfo" model="Model.Card"/>
+                        @* <form method="post"> *@
+                        @*     <input type="hidden" asp-for="Move.ActionId"/> *@
+                        @*     <input type="hidden" asp-for="Move.Group"/> *@
+                        @*     <div class="mb-3 form-check form-switch"> *@
+                        @*         @if (Model.Move.IsAdvance) *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsAdvance" id="is-advance" class="form-check-input" onchange="SetInputLabel('move-val', 'Spaces', 'Board Index')" checked/> *@
+                        @*         } *@
+                        @*         else *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsAdvance" id="is-advance" class="form-check-input" onchange="SetInputLabel('move-val', 'Spaces', 'Board Index')"/> *@
+                        @*         } *@
+                        @*         <label class="form-check-label" for="is-advance" asp-for="Move.IsAdvance"></label> *@
+                        @*     </div> *@
+                        @*     <div class="mb-3"> *@
+                        @*         <label id="move-val">@(Model.Move.IsAdvance ? "Board Index" : "Spaces")</label> *@
+                        @*         <input asp-for="Move.Value" class="form-control"/> *@
+                        @*         <span asp-validation-for="Move.Value" class="text-danger"></span> *@
+                        @*     </div> *@
+                        @*     <div class="mb-3 form-check form-switch"> *@
+                        @*         @if (Model.Move.IsForward) *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsForward" id="is-forward" class="form-check-input" checked/> *@
+                        @*         } *@
+                        @*         else *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsForward" id="is-forward" class="form-check-input"/> *@
+                        @*         } *@
+                        @*         <label class="form-check-label" for="is-forward" asp-for="Move.IsForward"></label> *@
+                        @*     </div> *@
+                        @*     <div class="mb-3 form-check form-switch"> *@
+                        @*         @if (Model.Move.IsAllPlayers) *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsAllPlayers" id="is-allplayers" class="form-check-input" checked/> *@
+                        @*         } *@
+                        @*         else *@
+                        @*         { *@
+                        @*             <input asp-for="Move.IsAllPlayers" id="is-allplayers" class="form-check-input"/> *@
+                        @*         } *@
+                        @*         <label class="form-check-label" for="is-allplayers" asp-for="Move.IsAllPlayers"></label> *@
+                        @*     </div> *@
+                        @*     <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button> *@
+                        @* </form> *@
+                    </div>
+                    <div class="col-sm-5 p-2">
+                        <img src="~/board.png" width="100%" height="100%" alt="Monopoly Board"/>
+                    </div>
+                </div>
+                break;
+            case CardActions.PAY:
+                <form method="post">
+                    <input type="hidden" asp-for="Pay.ActionId"/>
+                    <input type="hidden" asp-for="Pay.Group"/>
+                    <div class="mb-3 form-check form-switch">
+                        @if (Model.Pay.IsPay)
+                        {
+                            <input asp-for="Pay.IsPay" id="is-pay" class="form-check-input" onchange="SetPayLabels()" checked/>
+                        }
+                        else
+                        {
+                            <input asp-for="Pay.IsPay" id="is-pay" class="form-check-input" onchange="SetPayLabels()"/>
+                        }
+                        <label class="form-check-label" for="is-pay" asp-for="Pay.IsPay"></label>
+                    </div>
+                    <div class="mb-3">
+                        <label id="pay-val">@(Model.Pay.IsPay ? "Pay" : "Receive")</label>
+                        <input asp-for="Pay.Value" class="form-control"/>
+                        <span asp-validation-for="Pay.Value" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label id="payto">@(Model.Pay.IsPay ? "Pay To" : "Receive From")</label>
+                        <select asp-for="Pay.PayTo" asp-items="Model.Pay.PayTo.GetSelectList()" class="form-control"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Pay.PlayerAction"></label><br/>
+                        <small>Note: Must be set if pay/receive is set to player.</small>
+                        <select asp-for="Pay.PlayerAction" asp-items="Model.Pay.PlayerAction.GetSelectList()" class="form-control"></select>
+                        <span asp-validation-for="Pay.PlayerAction" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Pay.Multiplier"></label>
+                        <select asp-for="Pay.Multiplier" asp-items="Model.Pay.Multiplier.GetSelectList()" class="form-control"></select>
+                    </div>
+                    <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button>
+                </form>
+                break;
+            case CardActions.PROPERTY:
+                <form method="post">
+                    <input type="hidden" asp-for="Property.ActionId"/>
+                    <input type="hidden" asp-for="Property.Group"/>
+                    <div class="mb-3 form-check form-switch">
+                        @if (Model.Property.IsTake)
+                        {
+                            <input asp-for="Property.IsTake" id="is-take" class="form-check-input" onchange="SetPropLabels()" checked/>
+                        }
+                        else
+                        {
+                            <input asp-for="Property.IsTake" id="is-take" class="form-check-input" onchange="SetPropLabels()"/>
+                        }
+                        <label class="form-check-label" for="is-take" asp-for="Property.IsTake"></label>
+                    </div>
+                    <div class="mb-3">
+                        <label id="source">@(Model.Property.IsTake ? "Take Property From" : "Return Property To")</label>
+                        <select asp-for="Property.Source" asp-items="Model.Property.Source.GetSelectList()" class="form-control"></select>
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        @if (Model.Property.IsSet)
+                        {
+                            <input asp-for="Property.IsSet" id="is-set" class="form-check-input" checked/>
+                        }
+                        else
+                        {
+                            <input asp-for="Property.IsSet" id="is-set" class="form-check-input"/>
+                        }
+                        <label class="form-check-label" for="is-set" asp-for="Property.IsSet"></label>
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        @if (Model.Property.IsSwap)
+                        {
+                            <input asp-for="Property.IsSwap" id="is-swap" class="form-check-input" checked/>
+                        }
+                        else
+                        {
+                            <input asp-for="Property.IsSwap" id="is-swap" class="form-check-input"/>
+                        }
+                        <label class="form-check-label" for="is-swap" asp-for="Property.IsSwap"></label>
+                    </div>
+                    <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button>
+                </form>
+                break;
+            case CardActions.DICE:
+                <form method="post">
+                    <input type="hidden" asp-for="Dice.ActionId"/>
+                    <input type="hidden" asp-for="Dice.Group"/>
+                    <div class="mb-3">
+                        <label asp-for="Dice.Convert"></label>
+                        <select asp-for="Dice.Convert" asp-items="Model.Dice.Convert.GetSelectList()" class="form-control"></select>
+                        <span asp-validation-for="Dice.Convert"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Dice.PlayerAction"></label>
+                        <select asp-for="Dice.PlayerAction" asp-items="Model.Dice.PlayerAction.GetSelectList()" class="form-control"></select>
+                        <span asp-validation-for="Dice.PlayerAction"></span>
+                    </div>
+                    <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button>
+                </form>
+                break;
+            case CardActions.RESET:
+                <form method="post">
+                    <input type="hidden" asp-for="Reset.ActionId"/>
+                    <input type="hidden" asp-for="Reset.Group"/>
+                    <div class="mb-3">
+                        <label asp-for="Reset.Reset"></label>
+                        <select asp-for="Reset.Reset" asp-items="Model.Reset.Reset.GetSelectList()" class="form-control" onchange="SetResetInput(this)"></select>
+                        <span asp-validation-for="Reset.Reset"></span>
+                    </div>
+                    <div id="reset-val" hidden="@(Model.Reset.Reset != ResetType.PURGE)">
+                        <div class="mb-3">
+                            <label asp-for="Reset.Value"></label><br/>
+                            <input asp-for="Reset.Value" class="form-control"/>
+                            <span asp-validation-for="Reset.Value" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            @if (Model.Reset.IsPurgeSet)
+                            {
+                                <input asp-for="Reset.IsPurgeSet" id="is-pset" class="form-check-input" checked/>
+                            }
+                            else
+                            {
+                                <input asp-for="Reset.IsPurgeSet" id="is-pset" class="form-check-input"/>
+                            }
+                            <label class="form-check-label" for="is-pset" asp-for="Reset.IsPurgeSet"></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Reset.PlayerAction"></label>
+                        <select asp-for="Reset.PlayerAction" asp-items="Model.Reset.PlayerAction.GetSelectList()" class="form-control"></select>
+                        <span asp-validation-for="Reset.PlayerAction"></span>
+                    </div>
+                    <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button>
+                </form>
+                break;
+            case CardActions.TAKE_CARD:
+                <form method="post">
+                    <input type="hidden" asp-for="TakeCard.ActionId"/>
+                    <input type="hidden" asp-for="TakeCard.Group"/>
+                    <div class="mb-3">
+                        <label asp-for="TakeCard.CardTypeIds"></label>
+                        <select asp-for="TakeCard.CardTypeIds" asp-items="Model.CardTypes" class="chosen-select form-control mt mb"></select>
+                        <span asp-validation-for="TakeCard.PlayerAction"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TakeCard.PlayerAction"></label>
+                        <select asp-for="TakeCard.PlayerAction" asp-items="Model.TakeCard.PlayerAction.GetSelectList()" class="form-control"></select>
+                        <span asp-validation-for="TakeCard.PlayerAction"></span>
+                    </div>
+                    <button class="btn btn-success">@(Model.AddingAction ? "Add" : "Modify") Action</button>
+                </form>
+                break;
+            case CardActions.EVENT:
+                <div class="mb-3">
+                    <label asp-for="Event.EventType"></label>
+                    <select asp-for="Event.EventType" asp-items="Model.Event.EventType.GetSelectList()" class="form-select"
+                            onchange="GetEventAction(this, '@(Model.Card?.Id)', '@(Model.Event.Group)', '@(Model.Event.ActionId)')">
+                    </select>
+                    <span asp-validation-for="Event.EventType" class="text-danger"></span>
+                </div>
+                <div id="event-0" class="event-actions" hidden="@(Model.Event.EventType != EventType.TURNS)">
+                    <partial name="../Cards/Actions/Partials/Edit/EventActions/_EditTurnsEvent" model="@null"/>
+                </div>
+                <div id="event-1" class="event-actions" hidden="@(Model.Event.EventType != EventType.FORCE_MORTGAGE)">
+                    
+                </div>
+                <div id="event-2" class="event-actions" hidden="@(Model.Event.EventType != EventType.UNIQUE_SPACE)">
+                    
+                </div>
+                <div id="event-3" class="event-actions" hidden="@(Model.Event.EventType != EventType.GO)">
+                    
+                </div>
+                <div id="event-4" class="event-actions" hidden="@(Model.Event.EventType != EventType.FREE_PARKING)">
+                    
+                </div>
+                <div id="event-5" class="event-actions" hidden="@(Model.Event.EventType != EventType.JAIL)">
+                    
+                </div>
+                break;
+            default:
+                <p class="text-danger"><b>An unknown error occurred. Unable to determine the type of card action.</b></p>
+                break;
+        }
+    </div>
+</div>
+
+@section Scripts
+{
+<script type="text/javascript">
+    $(".chosen-select").chosen()
+</script>
+}
+<script type="text/javascript" src="~/js/Cards/Actions.js"></script>
